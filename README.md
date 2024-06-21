@@ -13,7 +13,7 @@ It's built with client-side React and a PartyKit server, and it's a good startin
 
 Refer to our docs for more information: https://github.com/partykit/partykit/blob/main/README.md. For more help, reach out to us on [Discord](https://discord.gg/g5uqHQJc3z), [GitHub](https://github.com/partykit/partykit), or [X/Twitter](https://twitter.com/partykit_io).
 
-![image](assets/yjs-editor.png)
+![Alt text](image.png)
 
 ## How it works
 
