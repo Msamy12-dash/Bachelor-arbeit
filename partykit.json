@@ -1,0 +1,14 @@
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "fewer-alike",
+  "main": "party/server.ts",
+  "compatibilityDate": "2024-06-18",
+  "parties": {
+    "user": "src/user.ts",
+    "connections": "src/connections.ts"
+  },
+  "serve": {
+    "path": "public",
+    "build": "app/client.tsx"
+  }
+}
