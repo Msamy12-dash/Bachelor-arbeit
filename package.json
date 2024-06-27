@@ -1,0 +1,35 @@
+{
+  "name": "fewer-alike",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@nextui-org/avatar": "^2.0.30",
+    "@nextui-org/react": "^2.4.2",
+    "@nextui-org/system": "^2.2.2",
+    "@nextui-org/theme": "^2.2.6",
+    "framer-motion": "^11.2.11",
+    "next": "^14.2.4",
+    "partysocket": "^1.0.1",
+    "quill-cursors": "^4.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-quill": "^2.0.0",
+    "react-quilljs": "^2.0.0",
+    "y-partykit": "^0.0.27",
+    "y-quill": "^1.0.0",
+    "yjs": "^13.6.14"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.5",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "partykit": "^0.0.100",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.4.2"
+  }
+}
