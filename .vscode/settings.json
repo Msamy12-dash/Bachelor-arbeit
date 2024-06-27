@@ -1,14 +1,18 @@
 {
-    "cSpell.words": [
-        "Costumquill",
-        "Editorinterface",
-        "Editorpage",
-        "nextui",
-        "partykit",
-        "partysocket",
-        "quilljs",
-        "tailwindcss",
-        "ydoc",
-        "ytext"
-    ]
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "deepscan.enable": true,
+  "cSpell.words": [
+    "clsx",
+    "Editorinterface",
+    "editorserver",
+    "nextui",
+    "partykit",
+    "partysocket",
+    "quillnext",
+    "quillrea",
+    "roominfo",
+    "roomserver",
+    "userlogin",
+    "ytext"
+  ]
 }
