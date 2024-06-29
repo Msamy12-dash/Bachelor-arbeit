@@ -25,6 +25,7 @@ export default function EditorPage() {
       <div style={{ display: "flex", height: "100vh" }}>
         <Card style={{ width: "20%", padding: "10px" }}>
           {/*<PollMaker >**/}
+          <CommentList room={currentRoom}/>
         </Card>
 
         <Card style={{ width: "60%", padding: "20px" }}>
