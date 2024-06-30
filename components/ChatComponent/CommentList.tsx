@@ -3,6 +3,7 @@ import CommentCard from "./CommentCard";
 import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
+//install mui: npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 
 
 interface Comment {
