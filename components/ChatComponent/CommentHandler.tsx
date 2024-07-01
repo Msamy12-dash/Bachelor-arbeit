@@ -5,10 +5,10 @@ interface Comment {
   key: number;
   name: string;
   content: string;
-  date: string; // oder `Date`, je nach Format
+  date: string; 
   upvotes: number;
-  history: string[]; // falls `history` eine Liste von Strings ist
-  room: any;
+  history: string[]; 
+  replies: Comment[];
 }
 
 export default function CommentHandler({
@@ -17,29 +17,36 @@ export default function CommentHandler({
   room: string;
 }>)
 {
-  // Zustand-Variablen, die bei Änderung eine Neurenderung des Komponents bewirken
   const [comments, setComments] = useState<Comment[]>([]);
+  const [showComments, setShowComments] = useState<boolean>(true);
 
-  // Handler
   const addComment = (
     name: string,
     content: string,
-    date: string, // oder `Date`, je nach Format
-    upvotes: number,
+    date: string,
   ) => {
     const newComment: Comment = {
       key: comments.length,
       name,
       content,
       date,
-      upvotes,
+      upvotes: 0, // Default to 0 upvotes for new comments
       history: [],
-      room: room
+      replies: [],
     };
     setComments((prevComments) => [...prevComments, newComment]);
   };
 
-  // Handler
+  const addReply = (parentKey: number, name: string, content: string, date: string) => {
+    setComments((prevComments) => 
+      prevComments.map((comment) => 
+        comment.key === parentKey
+          ? { ...comment, replies: [...comment.replies, { key: comment.replies.length, name, content, date, upvotes: 0, history: [], replies: [] }] }
+          : comment
+      )
+    );
+  };
+
   const incrementUpvote = (key: number) => {
     setComments(
       (prevComments) =>
@@ -67,18 +74,24 @@ export default function CommentHandler({
     );
   };
 
-  // Rückgabe von JSX
-  // JSX ist der Standard zum Schreiben von HTML mit JS
-  return ( 
-        <div className="comments">
-            <div className="Comment-font">Comments</div>
-          <CommentList
-            addComment={addComment}
-            incrementUpvote={incrementUpvote}
-            deleteComment={deleteComment}
-            editComment={editComment}
-            comments={comments}
-          />
-        </div>
+  return (
+    <div className="comments">
+      <div className="Comment-font">Comments</div>
+      <button onClick={() => setShowComments(!showComments)}>
+        {showComments ? "Hide Comments" : "Show Comments"}
+      </button>
+      {showComments && (
+        <CommentList
+          addComment={addComment}
+          addReply={addReply}
+          incrementUpvote={incrementUpvote}
+          deleteComment={deleteComment}
+          editComment={editComment}
+          comments={comments}
+        />
+      )}
+    </div>
   );
-};
+}
+
+

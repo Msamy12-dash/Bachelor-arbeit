@@ -1,12 +1,11 @@
 import React, { Component, ChangeEvent } from 'react';
 
 interface NewCommentProps {
-    addComment: (name: string, content: string, date: string, upvotes: number) => void;
+    addComment: (name: string, content: string, date: string) => void;
     cancel: () => void;
 }
 
 interface NewCommentState {
-    name: string;
     content: string;
 }
 
@@ -16,7 +15,6 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
     constructor(props: NewCommentProps) {
         super(props);
         this.state = {
-            name: 'Name', 
             content: ''
         };
         this.textareaRef = React.createRef();
@@ -31,16 +29,16 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
     handleOnClick = () => {
         const textarea = this.textareaRef.current;
         if (textarea && textarea.value !== "") {
-            const { name, content } = this.state;
-            const date = new Date().toLocaleDateString();
-            this.props.addComment(name, content, date, 0);
-            // Delete text in textarea after sending comment
-            textarea.value = "";
-            this.setState({ content: "" });
+          const { content } = this.state;
+          const name = "Name"; // Placeholder for the name
+          const date = new Date().toLocaleDateString();
+          this.props.addComment(name, content, date);  // Nur den Hauptkommentar hinzufügen
+          textarea.value = "";
+          this.setState({ content: "" });
         }
     }
 
-    render() { 
+    render() {
         return (
             <div className="card">
                 <div className="card-body">
@@ -53,7 +51,7 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
                     />
                     <div className="card-buttons">
                         <button onClick={this.handleOnClick} className='new-comment-btn'>Send</button>
-                        <button onClick={this.props.cancel} className="new-comment-close-btn">Close</button>
+                        <button onClick={this.props.cancel} className="new-comment-close-btn">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -62,3 +60,4 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
 }
 
 export default NewComment;
+

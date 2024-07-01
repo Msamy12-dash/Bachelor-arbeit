@@ -4,19 +4,20 @@ import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 
-
 interface Comment {
   key: number;
   name: string;
   content: string;
   date: string; // oder `Date`, je nach Format
   upvotes: number;
-  history: string[]; // oder den genauen Typ angeben, wenn bekannt
+  history: string[];
+  replies: Comment[];
 }
 
 interface CommentListProps {
   comments: Comment[];
-  addComment: (name: string, content: string, date: string, upvotes: number) => void;
+  addComment: (name: string, content: string, date: string) => void;
+  addReply: (parentKey: number, name: string, content: string, date: string) => void;
   incrementUpvote: (key: number) => void;
   deleteComment: (key: number) => void;
   editComment: (key: number, newContent: string) => void;
@@ -37,8 +38,8 @@ class CommentList extends Component<CommentListProps, CommentListState> {
     this.setState({ showIcon: false, showTextarea: true });
   };
 
-  handleSendOnClick = (name: string, content: string, date: string, upvotes: number) => {
-    this.props.addComment(name, content, date, upvotes);
+  handleSendOnClick = (name: string, content: string, date: string) => {
+    this.props.addComment(name, content, date);
     this.setState({ showTextarea: false, showIcon: true });
   };
 
@@ -46,24 +47,13 @@ class CommentList extends Component<CommentListProps, CommentListState> {
     this.setState({ showTextarea: false, showIcon: true });
   };
 
-  handleUpvoteOnClick = (key: number) => {
-    this.props.incrementUpvote(key);
-  };
-
-  handleDeleteOnClick = (key: number) => {
-    this.props.deleteComment(key);
-  }
-
-  handleEditComment = (key: number, newContent: string) => {
-    this.props.editComment(key, newContent);
-  }
-
   render() {
+    const { comments, addReply, incrementUpvote, deleteComment, editComment } = this.props;
     return (
       <div>
         {this.state.showIcon && (
           <IconButton onClick={this.showTextarea}>
-          <AddIcon />
+            <AddIcon />
           </IconButton>
         )}
         {this.state.showTextarea && (
@@ -72,18 +62,28 @@ class CommentList extends Component<CommentListProps, CommentListState> {
             cancel={this.cancel}
           />
         )}
-        {this.props.comments.map((comment) => (
-          <CommentCard
-            onIncrement={() => this.handleUpvoteOnClick(comment.key)}
-            onDelete={() => this.handleDeleteOnClick(comment.key)}
-            onEdit={(newContent: string) => this.handleEditComment(comment.key, newContent)}
-            key={comment.key}
-            name={comment.name}
-            date={comment.date}
-            content={comment.content}
-            upvotes={comment.upvotes}
-            history={comment.history}
-          />
+        {comments.map((comment) => (
+          <div key={comment.key} className="comment">
+            <CommentCard
+            onIncrement={() => incrementUpvote(comment.key)}
+            onDelete={() => deleteComment(comment.key)}
+            onEdit={(key: number, newContent: string) => editComment(key, newContent)}
+            addReply={(name: string, content: string, date: string) => addReply(comment.key, name, content, date)} 
+            comment={comment}
+            />
+            {comment.replies.length > 0 && (
+              <div className="replies">
+                <CommentList
+                  comments={comment.replies}
+                  addComment={() => {}}
+                  addReply={addReply}
+                  incrementUpvote={incrementUpvote}
+                  deleteComment={deleteComment}
+                  editComment={editComment}
+                />
+              </div>
+            )}
+          </div>
         ))}
       </div>
     );
@@ -91,4 +91,3 @@ class CommentList extends Component<CommentListProps, CommentListState> {
 }
 
 export default CommentList;
-

@@ -3,6 +3,7 @@ import React, { useState, useMemo } from "react";
 import { Card } from "@nextui-org/react";
 import dynamic from "next/dynamic";
 import Lobby from "../MainPageComponent/Lobby";
+import CommentList from "../ChatComponent/CommentHandler";
 
 function getRandomColor() {
   const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
