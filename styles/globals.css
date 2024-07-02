@@ -224,7 +224,7 @@
 }
 
 .commentsList{
-    overflow: scroll;
+    overflow: auto;
     height: 35vw;
 }
 

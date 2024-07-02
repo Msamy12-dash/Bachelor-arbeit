@@ -38,7 +38,7 @@ interface CommentListState {
 class CommentList extends Component<CommentListProps, CommentListState> {
   state: CommentListState = {
     showIcon: true,
-    showTextarea: false,
+    showTextarea: false
   };
 
   showTextarea = () => {
@@ -72,6 +72,7 @@ class CommentList extends Component<CommentListProps, CommentListState> {
         )}
         </div>
         <div className="commentsList">
+        {(this.props.comments.length == 0) && (<p className='NoComments' style={{marginTop:"10vw", opacity:"80%", fontSize: "large"}}>No Comments yet</p>)}
         {comments.map((comment) => (
           <div key={comment.key} className="comment">
             <CommentCard
