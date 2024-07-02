@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CommentList from './CommentList';
+import Quill from "react-quill";
 
 interface Comment {
   key: number;
@@ -7,41 +8,60 @@ interface Comment {
   content: string;
   date: string; 
   upvotes: number;
+  isTextSpecific: boolean;
+  selectedText: string;
+  index: number;
+  length: number;
   history: string[]; 
   replies: Comment[];
 }
 
 export default function CommentHandler({
-  room
+  room,
+  textSpecificComment,
+  editor
 }: Readonly<{
   room: string;
+  textSpecificComment: Comment | null;
+  editor: Quill|null;
 }>)
 {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
 
   const addComment = (
-    name: string,
-    content: string,
-    date: string,
+    comment: Comment
   ) => {
     const newComment: Comment = {
       key: comments.length,
-      name,
-      content,
-      date,
+      name: comment.name,
+      content: comment.content,
+      date: comment.date,
       upvotes: 0, // Default to 0 upvotes for new comments
+      isTextSpecific: comment.isTextSpecific,
+      selectedText: comment.selectedText,
+      index: comment.index,
+      length: comment.length,
       history: [],
       replies: [],
     };
     setComments((prevComments) => [...prevComments, newComment]);
   };
 
+
+  useEffect(() => {
+    if(textSpecificComment != null){
+      addComment(textSpecificComment);
+
+    }
+  }, [textSpecificComment]);
+
+
   const addReply = (parentKey: number, name: string, content: string, date: string) => {
     setComments((prevComments) => 
       prevComments.map((comment) => 
         comment.key === parentKey
-          ? { ...comment, replies: [...comment.replies, { key: comment.replies.length, name, content, date, upvotes: 0, history: [], replies: [] }] }
+          ? { ...comment, replies: [...comment.replies, { key: comment.replies.length, name, content, date, upvotes: 0, isTextSpecific: false, selectedText: "", index: 0, length: 0, history: [], replies: [] }] }
           : comment
       )
     );
@@ -88,6 +108,7 @@ export default function CommentHandler({
           deleteComment={deleteComment}
           editComment={editComment}
           comments={comments}
+          editor={editor}
         />
       )}
     </div>

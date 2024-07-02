@@ -1,13 +1,27 @@
 import React, { Component, ChangeEvent } from 'react';
 
 interface NewCommentProps {
-    addComment: (name: string, content: string, date: string) => void;
+    addComment: (comment: Comment) => void;
     cancel: () => void;
 }
 
 interface NewCommentState {
     content: string;
 }
+
+interface Comment {
+    key: number;
+    name: string;
+    content: string;
+    date: string; 
+    upvotes: number;
+    isTextSpecific: boolean;
+    selectedText: string;
+    index: number;
+    length: number;
+    history: string[]; 
+    replies: Comment[];
+  }
 
 class NewComment extends Component<NewCommentProps, NewCommentState> {
     textareaRef: React.RefObject<HTMLTextAreaElement>;
@@ -32,7 +46,8 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
           const { content } = this.state;
           const name = "Name"; // Placeholder for the name
           const date = new Date().toLocaleDateString();
-          this.props.addComment(name, content, date);  // Nur den Hauptkommentar hinzufügen
+          const comment: Comment = {key: 0, name: "Name", content: content, date: date, upvotes: 0, isTextSpecific: false, selectedText: "", index: 0, length: 0, history: [], replies: []}
+          this.props.addComment(comment);  // Nur den Hauptkommentar hinzufügen
           textarea.value = "";
           this.setState({ content: "" });
         }

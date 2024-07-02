@@ -6,23 +6,45 @@ import useYProvider from "y-partykit/react";
 import "react-quill/dist/quill.snow.css";
 import QuillCursors from "quill-cursors";
 import * as Y from "yjs";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from '@mui/icons-material/Close';
+import React from "react";
 
 import { SINGLETON_ROOM_ID } from "@/party/types";
+
+interface Range{
+  index: number,
+  length: number
+}
+
 
 Quill.register("modules/cursors", QuillCursors);
 
 export default function Editor({
   room,
   userColor,
+  setTextSpecificComment,
+  setEditor
 }: Readonly<{
   room: string;
   userColor: string;
+  setTextSpecificComment: Function;
+  setEditor: Function;
 }>) {
   const ydoc = new Y.Doc();
 
   const [text, setText] = useState("");
-  const quill = useRef<ReactQuill>(null);
+  const [selectedRange, setSelectedRange] = useState<Range|null>();
+  const [buttonPosition, setButtonPosition] = useState({top: 0, left: 0});
+  const [showButton, setShowButton] = useState(false);
+  const [textareaPosition, setTextareaPosition] = useState({top: 0, left: 0})
+  const [showTextarea, setShowTextarea] = useState(false);
+  const [selectedText, setSelectedText] = useState("");
+  const [commentContent, setCommentContent] = useState("");
 
+  const textareaRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
+  const quill = useRef<ReactQuill>(null);
+  
   const provider = useYProvider({
     host: "localhost:1999", // optional, defaults to window.location.host
     party: "editorserver",
@@ -35,6 +57,8 @@ export default function Editor({
       const ytext = provider.doc.getText("quill");
 
       const editor = quill.current!.getEditor();
+      setEditor(editor);
+      editor.on("selection-change", handleSelectionChange);
       const binding = new QuillBinding(ytext, editor, provider.awareness);
 
       provider.awareness.setLocalStateField("user", {
@@ -46,7 +70,84 @@ export default function Editor({
         binding.destroy();
       };
     }
-  }, [userColor, provider]);
+  }, [userColor, provider, setEditor]);
+
+
+
+  function handleSelectionChange(range:Range){
+    // If text is selected
+    if (range && range.length > 0){
+
+      // Get range the user selected and store it in state
+      const selection = quill.current!.getEditor().getSelection(); 
+      setSelectedRange(selection);
+      //console.log(quill.current!.getEditor().getText(selection?.index, selection?.length));
+
+
+      // Get positions of Editor itself and selected range (in pixels)
+      const editorRect = quill.current?.getEditor().root.getBoundingClientRect();
+      const bounds = quill.current!.getEditor().getBounds(selection!.index);
+      
+      // Set button position relative to selected text
+      setButtonPosition({top: editorRect!.top + bounds!.top -40, left: editorRect!.left + bounds!.left + bounds!.width/2});
+      setShowButton(true);
+      //console.log(buttonPosition);
+
+    }else{
+      setShowButton(false);
+    }
+  }
+
+  function handleCommentOnClick(){
+    setShowButton(false);
+    setShowTextarea(true);
+
+    // Get selected text
+    const gettext = quill.current!.getEditor().getText(selectedRange?.index, selectedRange?.length);
+
+    // Shorten text if too long
+    const threshold = 25;
+    if (gettext.length > threshold){
+      const shortenedText = gettext.substring(0,threshold) + "...";
+      setSelectedText(shortenedText);
+    }else{
+      setSelectedText(gettext);
+    }
+
+    const editorRect = quill.current?.getEditor().root.getBoundingClientRect();
+    const bounds = quill.current!.getEditor().getBounds(selectedRange!.index);
+
+    setTextareaPosition({top: editorRect!.top + bounds!.top - 60, left: editorRect!.left + bounds!.left + bounds!.width});
+  }
+
+  function handleCommentChange(event: React.ChangeEvent<HTMLTextAreaElement>){
+    setCommentContent(event.target.value);
+  }
+
+  function handleCloseOnClick(){
+    setShowTextarea(false);
+    setCommentContent("");
+    setSelectedRange(null);
+  }
+
+  function handleSendOnClick(){
+    if(textareaRef.current!.value != ""){
+      
+      // Mark the text
+      quill.current!.getEditor().formatText(selectedRange!.index, selectedRange!.length, {
+        'background': '#ffff66'
+      });
+
+      const date = new Date().toLocaleDateString();
+
+      // Send comment to Editorinterface
+      setTextSpecificComment({key: 0, name: "Name", content: commentContent, date:date, upvotes: 0, isTextSpecific: true, selectedText: selectedText, index: selectedRange!.index, length: selectedRange!.length, history: [], replies: []})
+
+      setShowTextarea(false);
+    }
+  }
+  
+
 
   return (
     <div>
@@ -54,12 +155,49 @@ export default function Editor({
         Editor <code>Room #{room}</code>
       </h1>
       <ReactQuill
+        className="quill"
         ref={quill}
         modules={{ cursors: true }}
         theme="snow"
         value={text}
         onChange={setText}
       />
+      {showButton && (
+        <button onClick={handleCommentOnClick} style={{
+              position: 'absolute',
+              top: `${buttonPosition.top}px`,
+              left: `${buttonPosition.left}px`,
+              background: "#eee",
+              border: '1px solid #ccc',
+              padding: '4px 13px',
+              borderRadius: "4px",
+              
+            }}>Comment </button>)
+        }
+
+      {showTextarea && (
+        <div className="newTextComment-card" style={{
+          position: 'absolute',
+          top: `${textareaPosition.top}px`,
+          left: `${textareaPosition.left}px`}}>
+
+          <div className="newTextComment-body">
+              <div className='newTextComment-top'>
+                <h5 className='newTextComment-name'>Name</h5>
+                <IconButton onClick={handleCloseOnClick}>
+                  <CloseIcon/>
+                </IconButton>
+              </div>
+              <textarea  className="newTextComment-textarea" onChange={handleCommentChange} ref={textareaRef} placeholder='Add new Comment here'></textarea>
+
+              <button  className='newTextComment-send' onClick={handleSendOnClick}>Send</button>
+              
+              
+            
+          </div>
+        </div>
+      )}
     </div>
+
   );
 }

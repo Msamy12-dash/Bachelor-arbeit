@@ -3,21 +3,27 @@ import CommentCard from "./CommentCard";
 import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
+import Quill from "react-quill";
 //install mui: npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 
 interface Comment {
   key: number;
   name: string;
   content: string;
-  date: string; // oder `Date`, je nach Format
+  date: string; 
   upvotes: number;
-  history: string[];
+  isTextSpecific: boolean;
+  selectedText: string;
+  index: number;
+  length: number;
+  history: string[]; 
   replies: Comment[];
 }
 
 interface CommentListProps {
   comments: Comment[];
-  addComment: (name: string, content: string, date: string) => void;
+  editor: Quill|null;
+  addComment: (comment: Comment) => void;
   addReply: (parentKey: number, name: string, content: string, date: string) => void;
   incrementUpvote: (key: number) => void;
   deleteComment: (key: number) => void;
@@ -39,8 +45,8 @@ class CommentList extends Component<CommentListProps, CommentListState> {
     this.setState({ showIcon: false, showTextarea: true });
   };
 
-  handleSendOnClick = (name: string, content: string, date: string) => {
-    this.props.addComment(name, content, date);
+  handleSendOnClick = (comment: Comment) => {
+    this.props.addComment(comment);
     this.setState({ showTextarea: false, showIcon: true });
   };
 
@@ -52,6 +58,7 @@ class CommentList extends Component<CommentListProps, CommentListState> {
     const { comments, addReply, incrementUpvote, deleteComment, editComment } = this.props;
     return (
       <div>
+        <div>
         {this.state.showIcon && (
           <IconButton onClick={this.showTextarea}>
             <AddIcon />
@@ -63,6 +70,8 @@ class CommentList extends Component<CommentListProps, CommentListState> {
             cancel={this.cancel}
           />
         )}
+        </div>
+        <div className="commentsList">
         {comments.map((comment) => (
           <div key={comment.key} className="comment">
             <CommentCard
@@ -71,10 +80,12 @@ class CommentList extends Component<CommentListProps, CommentListState> {
             onEdit={(key: number, newContent: string) => editComment(key, newContent)}
             addReply={(name: string, content: string, date: string) => addReply(comment.key, name, content, date)} 
             comment={comment}
+            editor={this.props.editor}
             />
             {comment.replies.length > 0 && (
               <div className="replies">
                 <CommentList
+                  editor={this.props.editor}
                   comments={comment.replies}
                   addComment={() => {}}
                   addReply={addReply}
@@ -86,6 +97,7 @@ class CommentList extends Component<CommentListProps, CommentListState> {
             )}
           </div>
         ))}
+        </div>
       </div>
     );
   }

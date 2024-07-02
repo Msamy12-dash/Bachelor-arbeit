@@ -6,19 +6,25 @@ import HistoryIcon from '@mui/icons-material/History';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ReplyIcon from '@mui/icons-material/Reply';
 import NewComment from './NewComment';
+import Quill from "react-quill";
 
 interface Comment {
   key: number;
   name: string;
-  date: string;
   content: string;
+  date: string; 
   upvotes: number;
-  history: string[];
+  isTextSpecific: boolean;
+  selectedText: string;
+  index: number;
+  length: number;
+  history: string[]; 
   replies: Comment[];
 }
 
 interface CommentCardProps {
   comment: Comment;
+  editor: Quill|null;
   onEdit: (key: number, newContent: string) => void;
   onDelete: (key: number) => void;
   onIncrement: (key: number) => void;
@@ -79,6 +85,17 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
     }));
   };
 
+  handleOnClick = () => {
+
+    // Doesn´t work yet
+    
+    // if(this.props.editor){
+    //   this.props.editor?.getEditor().setSelection(this.props.comment.index, this.props.comment.length);
+    //   this.props.editor?.getEditor().scrollSelectionIntoView();
+    // }
+    
+  }
+
   render() {
     const { comment, onDelete, onIncrement, addReply } = this.props;
     const { isEditing, editContent, showHistory, showReplyTextarea, hasBeenEdited } = this.state;
@@ -90,7 +107,9 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
             <div className="NameDate">
               <h5 className="card-title">{comment.name}</h5>
               <p className='comment-date'>{comment.date}</p>
+              
             </div>
+            
             <div className="EditDeleteHistory">
               {!isEditing && (
                 <>
@@ -115,6 +134,7 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
               </IconButton>
             </div>
           </div>
+          {comment.isTextSpecific && (<p className='commentedOn'>Commented on {comment.selectedText}</p>)}
           {isEditing ? (
             <div>
               <textarea
@@ -135,7 +155,7 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
           )}
           {showReplyTextarea && (
             <NewComment
-              addComment={(name: string, content: string, date: string) => addReply(name, content, date)}  // Corrected addReply usage
+              addComment={(comment: Comment) => addReply(comment.name, comment.content, comment.date)}  // Corrected addReply usage
               cancel={this.toggleReplyTextarea}
             />
           )}
@@ -155,6 +175,7 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
                 <CommentCard
                   key={reply.key}
                   comment={reply}
+                  editor={this.props.editor}
                   onEdit={this.props.onEdit}
                   onDelete={this.props.onDelete}
                   onIncrement={this.props.onIncrement}
@@ -164,6 +185,7 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
             </div>
           )}
         </div>
+        {comment.isTextSpecific && (<a onClick={this.handleOnClick} className='showInEditor'>Show in Editor</a>)}
       </div>
     );
   }
