@@ -29,6 +29,7 @@ interface CommentCardProps {
   onDelete: (key: number) => void;
   onIncrement: (key: number) => void;
   addReply: (name: string, content: string, date: string) => void;  // Corrected addReply signature
+  onGetRange: (index: number, length: number) => void;
 }
 
 interface CommentCardState {
@@ -89,11 +90,7 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
 
     // Doesn´t work yet
     
-    // if(this.props.editor){
-    //   this.props.editor?.getEditor().setSelection(this.props.comment.index, this.props.comment.length);
-    //   this.props.editor?.getEditor().scrollSelectionIntoView();
-    // }
-    
+    this.props.onGetRange(this.props.comment.index, this.props.comment.length);
   }
 
   render() {
@@ -180,6 +177,7 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
                   onDelete={this.props.onDelete}
                   onIncrement={this.props.onIncrement}
                   addReply={this.props.addReply}
+                  onGetRange={this.props.onGetRange}
                 />
               ))}
             </div>

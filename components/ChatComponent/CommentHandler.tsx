@@ -19,11 +19,13 @@ interface Comment {
 export default function CommentHandler({
   room,
   textSpecificComment,
-  editor
+  editor,
+  setRange
 }: Readonly<{
   room: string;
   textSpecificComment: Comment | null;
   editor: Quill|null;
+  setRange: Function;
 }>)
 {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -94,6 +96,11 @@ export default function CommentHandler({
     );
   };
 
+  const getRange = (index: number, length: number) => {
+    console.log(index, length);
+    setRange({index: index, length: length});
+  }
+
   return (
     <div className="comments">
       <div className="Comment-font">Comments</div>
@@ -107,6 +114,7 @@ export default function CommentHandler({
           incrementUpvote={incrementUpvote}
           deleteComment={deleteComment}
           editComment={editComment}
+          getRange={getRange}
           comments={comments}
           editor={editor}
         />

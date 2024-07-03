@@ -20,6 +20,11 @@ interface Comment {
   replies: Comment[];
 }
 
+interface Range{
+  index: number;
+  length: number;
+}
+
 function getRandomColor() {
   const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
 
@@ -39,14 +44,20 @@ export default function EditorPage() {
   const [textSpecificComment, setTextSpecificComment] = useState<Comment | null>(null);
   const [editor, setEditor] = useState<Quill|null>(null);
 
-  
+
+
+  function handleSetRange (range: Range){
+    // for 'Show in Editor'-Button functionality
+    editor?.getEditor().setSelection(range);
+    editor?.getEditor().root.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 
   return (
     <>
       <div style={{ display: "flex", height: "100vh" }}>
         <Card style={{ width: "20%", padding: "10px" }}>
           {/*<PollMaker >**/}
-          <CommentHandler room={currentRoom} textSpecificComment = {textSpecificComment} editor={editor}/>
+          <CommentHandler room={currentRoom} textSpecificComment = {textSpecificComment} editor={editor} setRange={handleSetRange}/>
         </Card>
 
         <Card style={{ width: "60%", padding: "20px" }}>

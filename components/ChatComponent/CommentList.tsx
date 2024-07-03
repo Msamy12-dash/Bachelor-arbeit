@@ -28,17 +28,22 @@ interface CommentListProps {
   incrementUpvote: (key: number) => void;
   deleteComment: (key: number) => void;
   editComment: (key: number, newContent: string) => void;
+  getRange: (index: number, length: number) => void;
 }
 
 interface CommentListState {
   showIcon: boolean;
   showTextarea: boolean;
+  index: number;
+  length: number;
 }
 
 class CommentList extends Component<CommentListProps, CommentListState> {
   state: CommentListState = {
     showIcon: true,
-    showTextarea: false
+    showTextarea: false,
+    index: 0,
+    length: 0
   };
 
   showTextarea = () => {
@@ -55,7 +60,7 @@ class CommentList extends Component<CommentListProps, CommentListState> {
   };
 
   render() {
-    const { comments, addReply, incrementUpvote, deleteComment, editComment } = this.props;
+    const { comments, addReply, incrementUpvote, deleteComment, editComment, getRange } = this.props;
     return (
       <div>
         <div>
@@ -80,6 +85,7 @@ class CommentList extends Component<CommentListProps, CommentListState> {
             onDelete={() => deleteComment(comment.key)}
             onEdit={(key: number, newContent: string) => editComment(key, newContent)}
             addReply={(name: string, content: string, date: string) => addReply(comment.key, name, content, date)} 
+            onGetRange = {(index: number, length: number) => getRange(index, length)}
             comment={comment}
             editor={this.props.editor}
             />
@@ -93,6 +99,7 @@ class CommentList extends Component<CommentListProps, CommentListState> {
                   incrementUpvote={incrementUpvote}
                   deleteComment={deleteComment}
                   editComment={editComment}
+                  getRange={getRange}
                 />
               </div>
             )}

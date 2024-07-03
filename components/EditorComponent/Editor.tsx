@@ -17,6 +17,11 @@ interface Range{
   length: number
 }
 
+interface Position{
+  top: number;
+  left: number;
+}
+
 
 Quill.register("modules/cursors", QuillCursors);
 
@@ -35,9 +40,9 @@ export default function Editor({
 
   const [text, setText] = useState("");
   const [selectedRange, setSelectedRange] = useState<Range|null>();
-  const [buttonPosition, setButtonPosition] = useState({top: 0, left: 0});
+  const [buttonPosition, setButtonPosition] = useState<Position>();
   const [showButton, setShowButton] = useState(false);
-  const [textareaPosition, setTextareaPosition] = useState({top: 0, left: 0})
+  const [textareaPosition, setTextareaPosition] = useState<Position>();
   const [showTextarea, setShowTextarea] = useState(false);
   const [selectedText, setSelectedText] = useState("");
   const [commentContent, setCommentContent] = useState("");
@@ -57,7 +62,9 @@ export default function Editor({
       const ytext = provider.doc.getText("quill");
 
       const editor = quill.current!.getEditor();
-      setEditor(editor);
+      if (quill.current) {
+        setEditor(quill.current);
+      }      
       editor.on("selection-change", handleSelectionChange);
       const binding = new QuillBinding(ytext, editor, provider.awareness);
 
@@ -81,15 +88,14 @@ export default function Editor({
       // Get range the user selected and store it in state
       const selection = quill.current!.getEditor().getSelection(); 
       setSelectedRange(selection);
-      //console.log(quill.current!.getEditor().getText(selection?.index, selection?.length));
 
 
       // Get positions of Editor itself and selected range (in pixels)
-      const editorRect = quill.current?.getEditor().root.getBoundingClientRect();
       const bounds = quill.current!.getEditor().getBounds(selection!.index);
       
       // Set button position relative to selected text
-      setButtonPosition({top: editorRect!.top + bounds!.top -40, left: editorRect!.left + bounds!.left + bounds!.width/2});
+      setButtonPosition({top: bounds!.top + 40, left: bounds!.left});
+      
       setShowButton(true);
       //console.log(buttonPosition);
 
@@ -101,7 +107,7 @@ export default function Editor({
   function handleCommentOnClick(){
     setShowButton(false);
     setShowTextarea(true);
-
+    console.log(buttonPosition);
     // Get selected text
     const gettext = quill.current!.getEditor().getText(selectedRange?.index, selectedRange?.length);
 
@@ -114,10 +120,9 @@ export default function Editor({
       setSelectedText(gettext);
     }
 
-    const editorRect = quill.current?.getEditor().root.getBoundingClientRect();
     const bounds = quill.current!.getEditor().getBounds(selectedRange!.index);
 
-    setTextareaPosition({top: editorRect!.top + bounds!.top - 60, left: editorRect!.left + bounds!.left + bounds!.width});
+    setTextareaPosition({top: bounds!.top, left: bounds!.left + bounds!.width + 100});
   }
 
   function handleCommentChange(event: React.ChangeEvent<HTMLTextAreaElement>){
@@ -165,8 +170,8 @@ export default function Editor({
       {showButton && (
         <button onClick={handleCommentOnClick} style={{
               position: 'absolute',
-              top: `${buttonPosition.top}px`,
-              left: `${buttonPosition.left}px`,
+              top: `${buttonPosition!.top}px`,
+              left: `${buttonPosition!.left}px`,
               background: "#eee",
               border: '1px solid #ccc',
               padding: '4px 13px',
@@ -178,8 +183,8 @@ export default function Editor({
       {showTextarea && (
         <div className="newTextComment-card" style={{
           position: 'absolute',
-          top: `${textareaPosition.top}px`,
-          left: `${textareaPosition.left}px`}}>
+          top: `${textareaPosition!.top}px`,
+          left: `${textareaPosition!.left}px`}}>
 
           <div className="newTextComment-body">
               <div className='newTextComment-top'>
