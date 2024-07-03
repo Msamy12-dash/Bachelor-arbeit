@@ -30,7 +30,19 @@ export default NextAuth({
   adapter: PrismaAdapter(prisma),
   secret: process.env.SECRET,
   session: {
-    strategy: 'database'
+    strategy: 'jwt'
+  },
+  callbacks: {
+    async jwt({token, user}) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({session, token}) {
+      session.user = token;
+      return session;
+    },
   },
   
 });
