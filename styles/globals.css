@@ -34,6 +34,10 @@
     margin: 0;
 }
 
+.card-text{
+    text-align: left;
+}
+
 .comment-history {
     margin-top: 10px;
 }
@@ -72,8 +76,8 @@
     width: 100%;
     border: 1px solid #ccc;
     border-radius: 8px;
-    margin-top: 8px;
-    margin-bottom: 20px;
+    margin-top: 4px;
+    margin-bottom: 4px;
     padding: 15px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
     background-color: #fff;
@@ -225,9 +229,21 @@
 
 .commentsList{
     overflow: auto;
-    height: 35vw;
+    height: 32vw;
 }
 
 .comment{
     padding: 20px;
+}
+
+.submitToAI-btn{
+    margin-top: 18px;
+    padding: 8px 16px;
+    font-size: medium;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    background-color: #007bff;
+    color: #fff;
+    transition: background-color 0.3s;
 }

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import CommentCard from "./CommentCard";
 import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
@@ -22,7 +22,6 @@ interface Comment {
 
 interface CommentListProps {
   comments: Comment[];
-  editor: Quill|null;
   addComment: (comment: Comment) => void;
   addReply: (parentKey: number, name: string, content: string, date: string) => void;
   incrementUpvote: (key: number) => void;
@@ -36,15 +35,21 @@ interface CommentListState {
   showTextarea: boolean;
   index: number;
   length: number;
+  checked: boolean;
+  checkedKeys: number[];
 }
 
-class CommentList extends Component<CommentListProps, CommentListState> {
+class CommentList extends Component<CommentListProps, CommentListState>  {
   state: CommentListState = {
     showIcon: true,
     showTextarea: false,
     index: 0,
-    length: 0
+    length: 0,
+    checked: false,
+    checkedKeys: []
   };
+
+  
 
   showTextarea = () => {
     this.setState({ showIcon: false, showTextarea: true });
@@ -58,6 +63,55 @@ class CommentList extends Component<CommentListProps, CommentListState> {
   cancel = () => {
     this.setState({ showTextarea: false, showIcon: true });
   };
+
+
+  newChecked = (key: number) => {
+    const currentKeys = this.state.checkedKeys;
+    currentKeys.push(key);
+    this.setState({checkedKeys: currentKeys, checked: true});
+  }
+
+  unchecked = (key: number) => {
+    let currentKeys = this.state.checkedKeys;
+
+    // remove key from checkedKeys
+    currentKeys = currentKeys.filter(number => number !== key);
+    this.setState({checkedKeys:currentKeys});
+
+    // If no comment is selected, don´t show button
+    // if(this.state.checkedKeys.length == 0){
+    //   this.setState({checked: false});
+    //   console.log("jetzt");
+    // }
+  }
+
+
+  handleSubmitOnClick = () => {
+    // If at least one comment is selected
+    if(this.state.checkedKeys.length != 0){
+      // Create prompt for the AI
+      let prompt = "";
+      let index = 0;
+      for(let key of this.state.checkedKeys){
+        const comment = this.props.comments.filter(comment => comment.key === key);
+        
+        if(comment[0] != null){
+          console.log(comment[0].content);
+          const content = comment[0].content;
+
+          if(comment[0].isTextSpecific){
+            prompt += `{Comment ${index}: \n Commented Text: ${comment[0].selectedText} \n Content: ${content}}\n`;
+          }else{
+            prompt += `{Comment ${index}: \n Content: ${content}}\n`;
+          }
+        }
+        index += 1;
+      }
+      console.log(prompt);
+    }
+  }
+
+
 
   render() {
     const { comments, addReply, incrementUpvote, deleteComment, editComment, getRange } = this.props;
@@ -87,12 +141,13 @@ class CommentList extends Component<CommentListProps, CommentListState> {
             addReply={(name: string, content: string, date: string) => addReply(comment.key, name, content, date)} 
             onGetRange = {(index: number, length: number) => getRange(index, length)}
             comment={comment}
-            editor={this.props.editor}
+            newChecked={this.newChecked}
+            unchecked={this.unchecked}
+
             />
             {comment.replies.length > 0 && (
               <div className="replies">
                 <CommentList
-                  editor={this.props.editor}
                   comments={comment.replies}
                   addComment={() => {}}
                   addReply={addReply}
@@ -106,6 +161,7 @@ class CommentList extends Component<CommentListProps, CommentListState> {
           </div>
         ))}
         </div>
+        {this.state.checked && (<button onClick={this.handleSubmitOnClick} className="submitToAI-btn">Submit to AI</button>)}
       </div>
     );
   }
