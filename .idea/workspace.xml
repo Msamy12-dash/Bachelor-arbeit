@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/pages/api/fetch-comments.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ChatComponent/CommentHandler.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ChatComponent/CommentHandler.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,8 +46,8 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/shahr/OneDrive/Desktop&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;comments-in-database&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/shahr/OneDrive/Desktop/se24-assignment8-main&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -105,7 +107,18 @@
       <workItem from="1719563006345" duration="580000" />
       <workItem from="1719602706465" duration="6172000" />
       <workItem from="1719734104398" duration="9352000" />
-      <workItem from="1719818983899" duration="869000" />
+      <workItem from="1719818983899" duration="2005000" />
+      <workItem from="1719836432320" duration="704000" />
+      <workItem from="1719863080461" duration="21000" />
+      <workItem from="1720022764363" duration="2735000" />
+      <workItem from="1720029209860" duration="42000" />
+      <workItem from="1720102833041" duration="6011000" />
+      <workItem from="1720109014538" duration="167000" />
+      <workItem from="1720109193867" duration="251000" />
+      <workItem from="1720109459403" duration="608000" />
+      <workItem from="1720110089910" duration="9000" />
+      <workItem from="1720117087448" duration="680000" />
+      <workItem from="1720124807439" duration="1695000" />
     </task>
     <servers />
   </component>

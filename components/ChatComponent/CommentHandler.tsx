@@ -49,6 +49,26 @@ export default function CommentHandler({
   };
 
   useEffect(() => {
+    // Fetch comments from the API when the component mounts
+    const fetchComments = async () => {
+      try {
+        const response = await fetch('/api/fetch-comments');
+        if (!response.ok) {
+          throw new Error('Failed to fetch comments');
+        }
+        const data = await response.json();
+        setComments(data);
+
+      } catch (error) {
+
+      }
+    };
+
+    fetchComments();
+  }, []);
+
+
+  useEffect(() => {
     if (textSpecificComment != null) {
       addComment(textSpecificComment);
     }
@@ -128,6 +148,7 @@ export default function CommentHandler({
       console.error('Failed to update comment:', error);
     }
   };
+
 
   const getRange = (index: number, length: number) => {
     console.log(index, length);
