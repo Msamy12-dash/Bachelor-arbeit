@@ -100,7 +100,6 @@ export default function Editor({
         binding.destroy();
       };
     }
-<<<<<<< components/EditorComponent/Editor.tsx
   }, [userColor, provider]);
   const saveTextToBackend = async () => {
     try {
@@ -126,7 +125,6 @@ export default function Editor({
 
     return () => clearInterval(interval);
   }, [text, room]);
-=======
 
 
 
@@ -202,7 +200,6 @@ export default function Editor({
     }
   }
   
->>>>>>> components/EditorComponent/Editor.tsx
 
 
   return (

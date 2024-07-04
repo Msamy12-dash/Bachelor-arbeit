@@ -3,7 +3,8 @@ import { useRouter } from 'next/router';
 
 export default function Signup() {
   const [name, setName] = useState('');
-  const [role, setRole] = useState('');
+  // Default role set to 'user'
+  const [role, setRole] = useState('user'); 
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,10 +24,31 @@ export default function Signup() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Username" required />
-      <input type="role" value={role} onChange={(e) => setRole(e.target.value)} placeholder="Rolle" required />
-      <button type="submit">Sign Up</button>
-    </form>
+    <div className="ls-container">
+      <div className="ls-form-box">
+        <h1 className="ls-form-title">Sign Up</h1>
+        <form onSubmit={handleSubmit} className="ls-form">
+          <input
+            type="text"
+            className="ls-input-field"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Username"
+            required
+          />
+          <select
+            className="ls-select-field"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            required
+          >
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button type="submit" className="ls-submit-button">Sign Up</button>
+        </form>
+      </div>
+    </div>
   );
 }
+
