@@ -106,6 +106,7 @@ export default function Editor({
       };
     }
   }, [userColor, provider]);
+
   const saveTextToBackend = async () => {
     try {
       const response = await fetch('/api/saveMainText', {
@@ -156,6 +157,7 @@ export default function Editor({
       //console.log(buttonPosition);
 
     }else{
+      setSelectedText("");
       setShowButton(false);
     }
   }

@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import usePartySocket from "partysocket/react";
+import Card from "../MUPComponents/MUPCard"; // Import the Card component
+import styles from "./Lobby.module.css"; // Import CSS module
 
 import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
 
@@ -14,6 +16,7 @@ export default function Lobby({
   selectedText: string;
 }>) {
   const [rooms, setRooms] = useState<Rooms>({});
+  const [cards, setCards] = useState<string[]>([]); // State to manage cards
 
   usePartySocket({
     party: "roomserver",
@@ -31,8 +34,13 @@ export default function Lobby({
     console.log("Selected text updated:", selectedText);
   }, [selectedText]);
 
+  // Handler to add a new card
+  const handleAddCard = () => {
+    setCards([...cards, selectedText]);
+  };
+
   return (
-    <div>
+    <div className={styles.lobbyContainer}>
       <h3>All Rooms</h3>
       <ul>
         {Object.entries(rooms).map(([room, count]) => {
@@ -50,18 +58,22 @@ export default function Lobby({
           );
         })}
       </ul>
-      {
-        <button
-          onClick={() =>
-            setCurrentRoom(Math.random().toString(36).substring(2, 8))
-          }
-        >
-          New Room
+      <button
+        onClick={() =>
+          setCurrentRoom(Math.random().toString(36).substring(2, 8))
+        }
+      >
+        New Room
+      </button>
+      {selectedText && selectedText.length > 0 && ( // Show button if there is selected text
+        <button onClick={handleAddCard}>
+          Add Card with Selected Text
         </button>
-      }
-      <div>
-        <h4>Selected Text:</h4>
-        <p>{selectedText}</p>
+      )}
+      <div className={styles.cardsContainer}>
+        {cards.map((text, index) => (
+          <Card key={index} selectedText={text} />
+        ))}
       </div>
     </div>
   );
