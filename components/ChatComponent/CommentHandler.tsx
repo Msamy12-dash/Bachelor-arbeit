@@ -19,7 +19,8 @@ interface Comment {
 export default function CommentHandler({
   room,
   textSpecificComment,
-  setRange
+  setRange,
+  editor
 }: Readonly<{
   room: string;
   textSpecificComment: Comment | null;
@@ -29,6 +30,7 @@ export default function CommentHandler({
 {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
+
 
   const addComment = (
     comment: Comment
@@ -115,6 +117,7 @@ export default function CommentHandler({
           editComment={editComment}
           getRange={getRange}
           comments={comments}
+          editor={editor}
         />
       )}
     </div>
