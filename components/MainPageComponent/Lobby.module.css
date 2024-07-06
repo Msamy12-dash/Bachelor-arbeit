@@ -3,11 +3,3 @@
     flex-direction: column;
     height: 100vh; /* Full viewport height */
   }
-  
-  .cardsContainer {
-    flex: 1; /* Grow to fill available space */
-    overflow-y: auto; /* Enable vertical scrolling */
-    padding: 10px;
-    border: 1px solid #ccc; /* Optional: to visually distinguish the container */
-    margin-top: 10px; /* Optional: spacing from other elements */
-  }

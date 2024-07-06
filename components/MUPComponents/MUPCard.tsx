@@ -1,16 +1,38 @@
-import React from 'react';
+// components/MUPComponents/MUPCard.tsx
+import React, { useState, useEffect } from "react";
 
-interface CardProps {
+// Interface to structure each card's data
+interface CardData {
+  id: string;
   selectedText: string;
+  editableText: string;
 }
 
-const Card: React.FC<CardProps> = ({ selectedText }) => {
+export default function MUPCard({
+  cardData,
+  room,
+  onTextChange,
+}: Readonly<{
+  cardData: CardData;
+  room: string;
+  onTextChange: (id: string, newText: string) => void;
+}>) {
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    setText(cardData.editableText);
+  }, [cardData]);
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value;
+    setText(newText);
+    onTextChange(cardData.id, newText);
+  };
+
   return (
     <div className="card">
-      <h4>Selected Text:</h4>
-      <p>{selectedText}</p>
+      <div className="selectedText">{cardData.selectedText}</div>
+      <textarea value={text} onChange={handleTextChange} />
     </div>
   );
-};
-
-export default Card;
+}
