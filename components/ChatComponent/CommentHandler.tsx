@@ -9,7 +9,7 @@ interface Comment {
   date: string; 
   upvotes: number;
   isTextSpecific: boolean;
-  selectedText: string;
+  shortenedSelectedText: string;
   index: number;
   length: number;
   history: string[]; 
@@ -40,7 +40,7 @@ export default function CommentHandler({
       date: comment.date,
       upvotes: 0, // Default to 0 upvotes for new comments
       isTextSpecific: comment.isTextSpecific,
-      selectedText: comment.selectedText,
+      shortenedSelectedText: comment.shortenedSelectedText,
       index: comment.index,
       length: comment.length,
       history: [],
@@ -62,7 +62,7 @@ export default function CommentHandler({
     setComments((prevComments) => 
       prevComments.map((comment) => 
         comment.key === parentKey
-          ? { ...comment, replies: [...comment.replies, { key: comment.replies.length, name, content, date, upvotes: 0, isTextSpecific: false, selectedText: "", index: 0, length: 0, history: [], replies: [] }] }
+          ? { ...comment, replies: [...comment.replies, { key: comment.replies.length, name, content, date, upvotes: 0, isTextSpecific: false, shortenedSelectedText: "", index: 0, length: 0, history: [], replies: [] }] }
           : comment
       )
     );

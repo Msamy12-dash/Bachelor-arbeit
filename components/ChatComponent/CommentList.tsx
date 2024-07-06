@@ -13,7 +13,7 @@ interface Comment {
   date: string; 
   upvotes: number;
   isTextSpecific: boolean;
-  selectedText: string;
+  shortenedSelectedText: string;
   index: number;
   length: number;
   history: string[]; 
@@ -100,7 +100,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
           const content = comment[0].content;
 
           if(comment[0].isTextSpecific){
-            prompt += `{Comment ${index}: \n Commented Text: ${comment[0].selectedText} \n Content: ${content}}\n`;
+            prompt += `{Comment ${index}: \n Commented Text: ${comment[0].shortenedSelectedText} \n Content: ${content}}\n`;
           }else{
             prompt += `{Comment ${index}: \n Content: ${content}}\n`;
           }

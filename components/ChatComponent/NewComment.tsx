@@ -16,7 +16,7 @@ interface Comment {
     date: string; 
     upvotes: number;
     isTextSpecific: boolean;
-    selectedText: string;
+    shortenedSelectedText: string;
     index: number;
     length: number;
     history: string[]; 
@@ -46,7 +46,7 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
           const { content } = this.state;
           const name = "Name"; // Placeholder for the name
           const date = new Date().toLocaleDateString();
-          const comment: Comment = {key: 0, name: "Name", content: content, date: date, upvotes: 0, isTextSpecific: false, selectedText: "", index: 0, length: 0, history: [], replies: []}
+          const comment: Comment = {key: 0, name: "Name", content: content, date: date, upvotes: 0, isTextSpecific: false, shortenedSelectedText: "", index: 0, length: 0, history: [], replies: []}
           this.props.addComment(comment);  // Nur den Hauptkommentar hinzufügen
           textarea.value = "";
           this.setState({ content: "" });

@@ -13,7 +13,7 @@ interface Comment {
   date: string; 
   upvotes: number;
   isTextSpecific: boolean;
-  selectedText: string;
+  shortenedSelectedText: string;
   index: number;
   length: number;
   history: string[]; 
@@ -61,7 +61,8 @@ export default function EditorPage() {
         </Card>
 
         <Card style={{ width: "60%", padding: "20px" }}>
-          <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor}/>
+          <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor} />
+
         </Card>
         <Card style={{ width: "20%", padding: "10px" }}>
           <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />

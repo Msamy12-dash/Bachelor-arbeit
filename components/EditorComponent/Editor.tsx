@@ -44,7 +44,8 @@ export default function Editor({
   const [showButton, setShowButton] = useState(false);
   const [textareaPosition, setTextareaPosition] = useState<Position>();
   const [showTextarea, setShowTextarea] = useState(false);
-  const [selectedText, setSelectedText] = useState("");
+  //const [selectedText, setSelectedText] = useState("");
+  const [shortenedSelectedText, setShortenedSelectedText] = useState("");
   const [commentContent, setCommentContent] = useState("");
 
   const textareaRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
@@ -163,9 +164,9 @@ export default function Editor({
     const threshold = 25;
     if (gettext.length > threshold){
       const shortenedText = gettext.substring(0,threshold) + "...";
-      setSelectedText(shortenedText);
+      setShortenedSelectedText(shortenedText);
     }else{
-      setSelectedText(gettext);
+      setShortenedSelectedText(gettext);
     }
 
     const bounds = quill.current!.getEditor().getBounds(selectedRange!.index);
@@ -194,7 +195,7 @@ export default function Editor({
       const date = new Date().toLocaleDateString();
 
       // Send comment to Editorinterface
-      setTextSpecificComment({key: 0, name: "Name", content: commentContent, date:date, upvotes: 0, isTextSpecific: true, selectedText: selectedText, index: selectedRange!.index, length: selectedRange!.length, history: [], replies: []})
+      setTextSpecificComment({key: 0, name: "Name", content: commentContent, date:date, upvotes: 0, isTextSpecific: true, shortenedSelectedText: shortenedSelectedText, index: selectedRange!.index, length: selectedRange!.length, history: [], replies: []})
 
       setShowTextarea(false);
     }
