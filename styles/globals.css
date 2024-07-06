@@ -231,3 +231,57 @@
 .comment{
     padding: 20px;
 }
+
+.ls-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f3f3f3; /* Optional: Light background for contrast */
+  }
+  
+  .ls-form-box {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px; /* Set a fixed width for the box */
+  }
+  
+  .ls-form-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .ls-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .ls-input-field,
+  .ls-select-field {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%; 
+  }
+  
+  .ls-submit-button {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #2e5886;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    align-self: center;
+    width: auto; 
+  }
+  
+  .ls-submit-button:hover {
+    background-color: #0056b3;
+  }
+  
