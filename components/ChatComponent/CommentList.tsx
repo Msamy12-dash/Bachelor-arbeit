@@ -28,6 +28,7 @@ interface CommentListProps {
   deleteComment: (key: number) => void;
   editComment: (key: number, newContent: string) => void;
   getRange: (index: number, length: number) => void;
+  editor: Quill|null;
 }
 
 interface CommentListState {
@@ -91,16 +92,18 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     if(this.state.checkedKeys.length != 0){
       // Create prompt for the AI
       let prompt = "";
+      const wholeText = this.props.editor?.getEditor().getText();
+      prompt += `Complete Text: \n ${wholeText} \n`;
       let index = 0;
       for(let key of this.state.checkedKeys){
         const comment = this.props.comments.filter(comment => comment.key === key);
         
         if(comment[0] != null){
-          console.log(comment[0].content);
           const content = comment[0].content;
 
           if(comment[0].isTextSpecific){
-            prompt += `{Comment ${index}: \n Commented Text: ${comment[0].shortenedSelectedText} \n Content: ${content}}\n`;
+            const selectedText = this.props.editor?.getEditor().getText(comment[0].index, comment[0].length);
+            prompt += `{Comment ${index}: \n Commented Text: ${selectedText} \n Content: ${content}}\n`;
           }else{
             prompt += `{Comment ${index}: \n Content: ${content}}\n`;
           }
@@ -155,6 +158,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
                   deleteComment={deleteComment}
                   editComment={editComment}
                   getRange={getRange}
+                  editor={this.props.editor}
                 />
               </div>
             )}
