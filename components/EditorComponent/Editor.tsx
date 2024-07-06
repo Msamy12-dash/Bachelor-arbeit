@@ -29,12 +29,16 @@ export default function Editor({
   room,
   userColor,
   setTextSpecificComment,
-  setEditor
+  setEditor,
+  selectedText,
+  setSelectedText
 }: Readonly<{
   room: string;
   userColor: string;
   setTextSpecificComment: Function;
   setEditor: Function;
+  selectedText: string;
+  setSelectedText: (text: string) => void;
 }>) {
   const ydoc = new Y.Doc();
 
@@ -44,7 +48,6 @@ export default function Editor({
   const [showButton, setShowButton] = useState(false);
   const [textareaPosition, setTextareaPosition] = useState<Position>();
   const [showTextarea, setShowTextarea] = useState(false);
-  //const [selectedText, setSelectedText] = useState("");
   const [shortenedSelectedText, setShortenedSelectedText] = useState("");
   const [commentContent, setCommentContent] = useState("");
 
@@ -99,6 +102,7 @@ export default function Editor({
 
       return () => {
         binding.destroy();
+        editor.off("selection-change", handleSelectionChange);
       };
     }
   }, [userColor, provider]);
@@ -138,6 +142,9 @@ export default function Editor({
       const selection = quill.current!.getEditor().getSelection(); 
       setSelectedRange(selection);
 
+      // Update selectedText
+      const getText = quill.current!.getEditor().getText(range.index, range.length);
+      setSelectedText(getText);
 
       // Get positions of Editor itself and selected range (in pixels)
       const bounds = quill.current!.getEditor().getBounds(selection!.index);

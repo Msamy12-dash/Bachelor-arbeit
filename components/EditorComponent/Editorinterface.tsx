@@ -43,6 +43,7 @@ export default function EditorPage() {
 
   const [textSpecificComment, setTextSpecificComment] = useState<Comment | null>(null);
   const [editor, setEditor] = useState<Quill|null>(null);
+  const [selectedText, setSelectedText] = useState<string>("");
 
 
 
@@ -61,11 +62,11 @@ export default function EditorPage() {
         </Card>
 
         <Card style={{ width: "60%", padding: "20px" }}>
-          <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor} />
+          <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor} selectedText={selectedText} setSelectedText={setSelectedText} />
 
         </Card>
         <Card style={{ width: "20%", padding: "10px" }}>
-          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
+          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} selectedText={selectedText} />
         </Card>
       </div>
     </>

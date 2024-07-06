@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import usePartySocket from "partysocket/react";
 
 import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
@@ -7,9 +7,11 @@ import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
 export default function Lobby({
   currentRoom,
   setCurrentRoom,
+  selectedText,
 }: Readonly<{
   currentRoom: string;
   setCurrentRoom: (room: string) => void;
+  selectedText: string;
 }>) {
   const [rooms, setRooms] = useState<Rooms>({});
 
@@ -24,6 +26,10 @@ export default function Lobby({
       }
     },
   });
+
+  useEffect(() => {
+    console.log("Selected text updated:", selectedText);
+  }, [selectedText]);
 
   return (
     <div>
@@ -53,6 +59,10 @@ export default function Lobby({
           New Room
         </button>
       }
+      <div>
+        <h4>Selected Text:</h4>
+        <p>{selectedText}</p>
+      </div>
     </div>
   );
 }
