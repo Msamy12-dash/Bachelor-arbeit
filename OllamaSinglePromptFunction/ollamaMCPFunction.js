@@ -5,10 +5,10 @@ import { getLLMResponse } from "./ollamaPrompting";
 //needs additional array to send the text its referring to.
 function buildPromptForMCP(completeText, userComments, userCommentsContext) { 
   
-    let task = `Rewrite the text at the end of this prompt by adhering to the feedback provided in the ${userComments.length} comments listed below. Respond only with the your final rewritten text. Do not add other text or symbols other than the rewritten text! The Text you need to rewrite is: 
+    let task = `Rewrite the base text that follows this prompt in double quotes by synthesizing the ${userComments.length} comments listed below and applying their meaining all at once. The base text you need to rewrite is: 
     
     "${completeText}"`;
-    let context = "";
+    let context = `The company you work for has described your next project in the following way.`;
     let exemplar = `For example, if the text you need to rewrite is:
      
     "There are times when the night sky glows with bands of color. The bands may
@@ -55,30 +55,31 @@ function buildPromptForMCP(completeText, userComments, userCommentsContext) {
     hundreds of years. They are not quite sure what causes them. In ancient times
     people were afraid of the Lights. They imagined that they saw fiery dragons in the
     sky. Some even concluded that the heavens were on fire."`;
-    let persona = "";
-    let format = "";
-    let tone = "";
+    let persona = `You are a linguistics professor that specializes in the application of synthesized feedback on texts. 
+In your job, you have multiple comments that grant feedback on a base text, more specifically regarding either the whole text or only specific sections of it. Then you need to synthesize the gist of the comments and apply them to the base text.`;
+    let format = `Let your response only be the rewritten version of the base text and no other text or symbols.`;
+    let tone = `Let your tone reflect the tone of the base text.`;
   
     let formattedUserFeedback = [`The user comments you need to take into account when rewriting the text is:`];
 
     const buildUserContextStringHelper = (context, index) => {
       if (context[index].length === 0) {
-        return `    Regarding the whole text stated at the beginning of this prompt.`;
+        return `    The following comment ${index + 1} is in regards to the complete base text stated at the beginning.`;
       } else {
-        return `    Regarding only the following serction of the text:
+        return `    The following comment ${index + 1} is in regards to the following section ${index + 1} of the base text.
   
-      "${context[index]}"`;
+      Section ${index + 1}:  
+
+        "${context[index]}"`;
       }
     };
 
     for (let i = 0; i < userComments.length; i++) {
         formattedUserFeedback.push(`
 
-  Comment ${i + 1}:
-
 ${buildUserContextStringHelper(userCommentsContext, i)}
 
-    The comment is:
+      Comment ${i + 1}:
 
         "${userComments[i]}"
 `)
@@ -86,11 +87,19 @@ ${buildUserContextStringHelper(userCommentsContext, i)}
 
     formattedUserFeedback = formattedUserFeedback.join("");
 
-    let prompt = `${task}
+    let prompt = `${persona}
+    
+${context}
+
+${task}
     
 ${formattedUserFeedback}
 
-${exemplar}`;
+${exemplar}
+
+${format}
+
+${tone}`;
 
     //for testing pruposes
     console.log(prompt); 

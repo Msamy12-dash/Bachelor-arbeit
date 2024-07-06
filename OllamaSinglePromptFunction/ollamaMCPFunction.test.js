@@ -3,7 +3,7 @@ import * as ollamaMCPFunction from "./ollamaMCPFunction.js";
 //todo: make prompt consistent (might need more powerful model)
 
 
-const sampleCompleteText = [
+const multipleSampleCompleteText = [
     `There are times when the night sky glows with bands of color. The bands may
     begin as cloud shapes and then spread into a great arc across the entire sky. They
     may fall in folds like a curtain drawn across the heavens. The lights usually grow
@@ -17,12 +17,12 @@ const sampleCompleteText = [
     `The genus Equus, which includes all extant equines, is believed to have evolved from Dinohippus, via the intermediate form Plesippus. One of the oldest species is Equus simplicidens, described as zebra-like with a donkey-shaped head. The oldest fossil to date is approximately 3.5 million years old, and was located in the US state of Idaho. The genus appears to have spread quickly into the Old World, with the similarly aged Equus livenzovensis documented from western Europe and Russia.`
 ];
 
-const sampleUserComments = [
+const multipleSampleUserComments = [
     [`Summarize this text.`, `Leave the first sentence the same.`],
     [`Summarize this text in two sentences.`, `I would like to have a short paragraph about dolphins at the end.`]
 ];
 
-const sampleUserCommentsContext = [
+const multipleSampleUserCommentsContext = [
     [`There are times when the night sky glows with bands of color. The bands may begin as cloud shapes and then spread into a great arc across the entire sky.`, ``],
     [`The genus Equus, which includes all extant equines, is believed to have evolved from Dinohippus, via the intermediate form Plesippus. One of the oldest species is Equus simplicidens, described as zebra-like with a donkey-shaped head. The oldest fossil to date is approximately 3.5 million years old, and was located in the US state of Idaho. The genus appears to have spread quickly into the Old World, with the similarly aged Equus livenzovensis documented from western Europe and Russia.`, ``]
 ];
@@ -31,7 +31,7 @@ const sampleUserCommentsContext = [
 
 
 test(`Test 1`, async () => {
-    const response = await ollamaMCPFunction.requestResponseForMCP(sampleCompleteText[0], sampleUserComments[0], sampleUserCommentsContext[0]);
+    const response = await ollamaMCPFunction.requestResponseForMCP(multipleSampleCompleteText[0], multipleSampleUserComments[0], multipleSampleUserCommentsContext[0]);
     console.log(`Response 1: 
     
     ${response}`);
@@ -40,7 +40,7 @@ test(`Test 1`, async () => {
 
 
 test(`Test 2`, async () => {
-    const response = await ollamaMCPFunction.requestResponseForMCP(sampleCompleteText[1], sampleUserComments[1], sampleUserCommentsContext[1]);
+    const response = await ollamaMCPFunction.requestResponseForMCP(multipleSampleCompleteText[1], multipleSampleUserComments[1], multipleSampleUserCommentsContext[1]);
     console.log(`Response 2: 
     
     ${response}`);
