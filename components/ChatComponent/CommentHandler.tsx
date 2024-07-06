@@ -14,6 +14,9 @@ interface Comment {
   length: number;
   history: string[]; 
   replies: Comment[];
+  parentKey: number | null;
+  canReply: boolean
+
 }
 
 export default function CommentHandler({
@@ -29,8 +32,26 @@ export default function CommentHandler({
 }>) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
+  const [key, setKey] = useState<number>(0);
 
-  const addComment = (comment: Comment) => {
+  const getNewKey = (): number => {
+    const newKey = key;
+    setKey(key + 1);
+    return newKey;
+  };
+  
+  const addComment = (comment:Comment) => {
+    const newKey = getNewKey();
+    let canReply = true;
+
+    //check if its a subsubcomment -> cant reply
+    if (comment.parentKey !== null) {
+      // Find the comment with the matching parentkey
+      const parentComment = comments.find(comment => comment.key === comment.parentKey);
+      if (parentComment === undefined) {
+        canReply = false;
+      }
+    
     const newComment: Comment = {
       key: comments.length,
       name: comment.name,
@@ -43,6 +64,8 @@ export default function CommentHandler({
       length: comment.length,
       history: [],
       replies: [],
+      parentKey: comment.parentKey,
+      canReply: canReply
     };
     setComments((prevComments) => [...prevComments, newComment]);
     saveComment(newComment); // Speichert den Kommentar in der MongoDB
@@ -178,8 +201,8 @@ export default function CommentHandler({
   return (
     <div className="comments">
       <div className="Comment-font">Comments</div>
-      <button onClick={() => setShowComments(!showComments)}>
-        {showComments ? "Hide Comments" : "Show Comments"}
+      <button onClick={() => setShowComments(!showComments)} className="HideShowComments">
+        {showComments ? 'Hide Comments' : 'Show Comments'}
       </button>
       {showComments && (
         <CommentList
