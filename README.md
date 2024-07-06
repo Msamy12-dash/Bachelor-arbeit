@@ -22,6 +22,10 @@ You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
 ```bash
 npm install
 ```
+
+install for the Commenticons:
+npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
+
 ### Run partykit
 
 ```bash
