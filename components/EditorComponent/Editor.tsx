@@ -31,7 +31,8 @@ export default function Editor({
   setTextSpecificComment,
   setEditor,
   selectedText,
-  setSelectedText
+  setSelectedText,
+  setCompleteText
 }: Readonly<{
   room: string;
   userColor: string;
@@ -39,6 +40,7 @@ export default function Editor({
   setEditor: Function;
   selectedText: string;
   setSelectedText: (text: string) => void;
+  setCompleteText: (text: string) => void;
 }>) {
   const ydoc = new Y.Doc();
 

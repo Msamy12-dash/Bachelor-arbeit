@@ -5,9 +5,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === 'POST') {
         // Handle POST request
         try {
-            const { highlightedText, userFeedback } = req.body;
-            const responseText = await requestResponseForMUP(highlightedText, userFeedback); 
-            res.status(200).json({ Response: responseText });
+            const { completeText, highlightedText, multiUserPrompt } = req.body;
+            const responseText = await requestResponseForMUP(completeText, highlightedText, multiUserPrompt); 
+            res.status(200).json({ response: responseText });
         } catch (error) {
             console.error('Error processing request:', error);
             res.status(500).json({ error: 'Internal Server Error' });

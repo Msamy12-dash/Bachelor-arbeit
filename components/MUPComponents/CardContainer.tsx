@@ -8,16 +8,19 @@ import styles from "./CardContainer.module.css"; // Import CSS module
 // Interface to structure each card's data
 interface CardData {
   id: string;
-  selectedText: string;
-  editableText: string;
+  completeText: string;
+  selectedTextOnMUPCard: string;
+  promptText: string;
 }
 
 export default function CardContainer({
   selectedText,
   room,
+  completeText,
 }: Readonly<{
   selectedText: string;
   room: string;
+  completeText:string;
 }>) {
   const ydoc = useRef(new Y.Doc()).current;
   const [cards, setCards] = useState<CardData[]>([]);
@@ -46,11 +49,15 @@ export default function CardContainer({
 
   const handleAddCard = () => {
     const yarray = ydoc.getArray<CardData>("cards");
+    const newPromptText = ""; // Initial prompt text
     const newCard = {
       id: Math.random().toString(36).substring(2, 8),
-      selectedText,
-      editableText: "",
+      completeText,
+      selectedTextOnMUPCard: selectedText,
+      promptText: newPromptText,
     };
+
+    // Pushing the new card to Y.Array
     yarray.push([newCard]);
   };
 
@@ -58,7 +65,7 @@ export default function CardContainer({
     const yarray = ydoc.getArray<CardData>("cards");
     const index = yarray.toArray().findIndex((card) => card.id === id);
     if (index !== -1) {
-      const updatedCard = { ...yarray.get(index), editableText: newText };
+      const updatedCard = { ...yarray.get(index), promptText: newText };
       yarray.delete(index, 1);
       yarray.insert(index, [updatedCard]);
     }

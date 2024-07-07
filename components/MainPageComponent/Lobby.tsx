@@ -11,10 +11,12 @@ export default function Lobby({
   currentRoom,
   setCurrentRoom,
   selectedText,
+  completeText
 }: Readonly<{
   currentRoom: string;
   setCurrentRoom: (room: string) => void;
   selectedText: string;
+  completeText: string;
 }>) {
   const [rooms, setRooms] = useState<Rooms>({});
 
@@ -49,7 +51,7 @@ export default function Lobby({
         New Room
       </button>
       {currentRoom && (
-        <CardContainer key={currentRoom} selectedText={selectedText} room={currentRoom} />
+        <CardContainer key={currentRoom} selectedText={selectedText} room={currentRoom} completeText={completeText} />
       )}
     </div>
   );
