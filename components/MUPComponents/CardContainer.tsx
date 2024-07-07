@@ -1,16 +1,15 @@
-// components/MUPComponents/CardContainer.tsx
 import React, { useEffect, useState, useRef } from "react";
 import * as Y from "yjs";
 import useYProvider from "y-partykit/react";
 import MUPCard from "./MUPCard";
-import styles from "./CardContainer.module.css"; // Import CSS module
+import styles from "./CardContainer.module.css";
 
-// Interface to structure each card's data
 interface CardData {
   id: string;
   completeText: string;
   selectedTextOnMUPCard: string;
   promptText: string;
+  responseText: string;
 }
 
 export default function CardContainer({
@@ -20,15 +19,15 @@ export default function CardContainer({
 }: Readonly<{
   selectedText: string;
   room: string;
-  completeText:string;
+  completeText: string;
 }>) {
   const ydoc = useRef(new Y.Doc()).current;
   const [cards, setCards] = useState<CardData[]>([]);
 
   const provider = useYProvider({
-    host: "localhost:1999", // or your server address
+    host: "localhost:1999",
     party: "editorserver",
-    room, // <-- Use room as the identifier for Y.Doc, not SINGLETON_ROOM_ID 
+    room,
     doc: ydoc,
   });
 
@@ -40,7 +39,7 @@ export default function CardContainer({
     };
 
     yarray.observe(updateCards);
-    updateCards(); // Initial load
+    updateCards();
 
     return () => {
       yarray.unobserve(updateCards);
@@ -49,15 +48,13 @@ export default function CardContainer({
 
   const handleAddCard = () => {
     const yarray = ydoc.getArray<CardData>("cards");
-    const newPromptText = ""; // Initial prompt text
     const newCard = {
       id: Math.random().toString(36).substring(2, 8),
       completeText,
       selectedTextOnMUPCard: selectedText,
-      promptText: newPromptText,
+      promptText: "",
+      responseText: ""
     };
-
-    // Pushing the new card to Y.Array
     yarray.push([newCard]);
   };
 
@@ -66,6 +63,16 @@ export default function CardContainer({
     const index = yarray.toArray().findIndex((card) => card.id === id);
     if (index !== -1) {
       const updatedCard = { ...yarray.get(index), promptText: newText };
+      yarray.delete(index, 1);
+      yarray.insert(index, [updatedCard]);
+    }
+  };
+
+  const handleResponseChange = (id: string, newResponse: string) => {
+    const yarray = ydoc.getArray<CardData>("cards");
+    const index = yarray.toArray().findIndex((card) => card.id === id);
+    if (index !== -1) {
+      const updatedCard = { ...yarray.get(index), responseText: newResponse };
       yarray.delete(index, 1);
       yarray.insert(index, [updatedCard]);
     }
@@ -87,6 +94,7 @@ export default function CardContainer({
             cardData={card}
             room={room}
             onTextChange={handleCardTextChange}
+            onResponseChange={handleResponseChange}
           />
         ))}
       </div>

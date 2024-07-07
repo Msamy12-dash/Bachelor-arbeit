@@ -1,36 +1,35 @@
-// components/MUPComponents/MUPCard.tsx
 import React, { useState, useEffect } from "react";
 import styles from "./MUPCard.module.css";
 
-// Interface to structure each card's data
 interface CardData {
   id: string;
   completeText: string;
   selectedTextOnMUPCard: string;
   promptText: string;
+  responseText: string;
 }
 
 export default function MUPCard({
   cardData,
   room,
   onTextChange,
+  onResponseChange
 }: Readonly<{
   cardData: CardData;
   room: string;
   onTextChange: (id: string, newText: string) => void;
+  onResponseChange: (id: string, newResponse: string) => void;
 }>) {
-  const [submitting, setSubmitting] = useState(false); // State for submit action
-  const [responseText, setResponseText] = useState(""); // State for response text
-  
+  const [submitting, setSubmitting] = useState(false);
+
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
     onTextChange(cardData.id, newText);
   };
 
   const handleSubmitToAI = async () => {
-    // Perform API call to submit selectedTextOnMUPCard
     try {
-      setSubmitting(true); // Set submitting state to true during submission
+      setSubmitting(true);
 
       const requestBody = {
         completeText: "",
@@ -54,12 +53,12 @@ export default function MUPCard({
 
       console.log(data);
 
-      setResponseText(data.response);
+      onResponseChange(cardData.id, data.response);
     } catch (error) {
       console.error("Error submitting to AI:", error);
-      setResponseText("Error submitting to AI");
+      onResponseChange(cardData.id, "Error submitting to AI");
     } finally {
-      setSubmitting(false); // Set submitting state back to false after response
+      setSubmitting(false);
     }
   };
 
@@ -71,17 +70,14 @@ export default function MUPCard({
         value={cardData.promptText}
         onChange={handleTextChange}
       />
-
       <button
         className={styles.submitButton}
         onClick={handleSubmitToAI}
-        disabled={submitting || cardData.promptText.trim().length === 0} // Disable if submitting or no text
+        disabled={submitting || cardData.promptText.trim().length === 0}
       >
         {submitting ? "Submitting..." : "Submit to AI"}
       </button>
-
-      {/* Display response text below the button */}
-      {responseText && <div className={styles.responseText}>{responseText}</div>}
+      {cardData.responseText && <div className={styles.responseText}>{cardData.responseText}</div>}
     </div>
   );
 }
