@@ -1,5 +1,6 @@
 // components/MUPComponents/MUPCard.tsx
 import React, { useState, useEffect } from "react";
+import styles from "./MUPCard.module.css";
 
 // Interface to structure each card's data
 interface CardData {
@@ -30,9 +31,13 @@ export default function MUPCard({
   };
 
   return (
-    <div className="card">
-      <div className="selectedText">{cardData.selectedText}</div>
-      <textarea value={text} onChange={handleTextChange} />
+    <div className={styles.card}>
+      <div className={styles.selectedText}>{cardData.selectedText}</div>
+      <textarea
+        className={styles.textField}
+        value={text}
+        onChange={handleTextChange}
+      />
     </div>
   );
 }

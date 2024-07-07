@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import * as Y from "yjs";
 import useYProvider from "y-partykit/react";
 import MUPCard from "./MUPCard";
-import { SINGLETON_ROOM_ID } from "@/party/types";
+import styles from "./CardContainer.module.css"; // Import CSS module
 
 // Interface to structure each card's data
 interface CardData {
@@ -65,11 +65,15 @@ export default function CardContainer({
   };
 
   return (
-    <div>
-      {selectedText && selectedText.length > 0 && (
-        <button onClick={handleAddCard}>Add Card with Selected Text</button>
-      )}
-      <div className="cardsContainer">
+    <div className={styles.cardContainer}>
+      <button
+        className={`${styles.addButton} ${selectedText ? "" : styles.disabled}`}
+        onClick={handleAddCard}
+        disabled={!selectedText}
+      >
+        Add Card with Selected Text
+      </button>
+      <div className={styles.cardsContainer}>
         {cards.map((card) => (
           <MUPCard
             key={card.id}
