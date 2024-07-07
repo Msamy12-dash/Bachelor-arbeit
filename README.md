@@ -9,13 +9,18 @@
 - [Framer Motion](https://www.framer.com/motion)
 - [next-themes](https://github.com/pacocoursey/next-themes)
 - [PartyKit](https://partykit.io)
+- [Ollama](https://ollama.com/)
 
 ## How to Use
 
 pull the branch 
 
+### Install Ollama once per PC
 
-### (Unix script for executing everything below)
+https://ollama.com/
+
+
+### (Unix script for executing everything down below)
 
 #### Only once per PC:
 
@@ -41,12 +46,18 @@ You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
 ```bash
 npm install
 ```
+
+### Run Ollama
+
+```bash
+ollama run llama3
+```
+
 ### Run partykit
 
 ```bash
 npx partykit dev
 ```
-
 
 ### Run Next js
 
