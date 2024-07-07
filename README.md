@@ -17,7 +17,7 @@ pull the branch
 
 ### (Unix script for executing everything below)
 
-#### Only once:
+#### Only once per PC:
 
 ```bash
 chmod +x start-dev.sh

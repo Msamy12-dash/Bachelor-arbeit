@@ -2,7 +2,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import usePartySocket from "partysocket/react";
-import styles from "./Lobby.module.css"; // Correctly import CSS module
+import styles from "./Lobby.module.css"; // Import CSS module
+
 import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
 import CardContainer from "../MUPComponents/CardContainer"; // Import the CardContainer component
 
@@ -22,6 +23,7 @@ export default function Lobby({
     room: SINGLETON_ROOM_ID,
     onMessage(evt) {
       const data = JSON.parse(evt.data);
+
       if (data.type === "rooms") {
         setRooms(data.rooms as Rooms);
       }
@@ -46,7 +48,9 @@ export default function Lobby({
       <button onClick={() => setCurrentRoom(Math.random().toString(36).substring(2, 8))}>
         New Room
       </button>
-      <CardContainer selectedText={selectedText} room={currentRoom} />
+      {currentRoom && (
+        <CardContainer key={currentRoom} selectedText={selectedText} room={currentRoom} />
+      )}
     </div>
   );
 }

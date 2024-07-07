@@ -19,28 +19,28 @@ export default function CardContainer({
   selectedText: string;
   room: string;
 }>) {
-  const [cards, setCards] = useState<CardData[]>([]);
   const ydoc = useRef(new Y.Doc()).current;
+  const [cards, setCards] = useState<CardData[]>([]);
+
   const provider = useYProvider({
     host: "localhost:1999", // or your server address
     party: "editorserver",
-    room: SINGLETON_ROOM_ID,
+    room, // <-- Use room as the identifier for Y.Doc, not SINGLETON_ROOM_ID 
     doc: ydoc,
   });
 
   useEffect(() => {
     const yarray = ydoc.getArray<CardData>("cards");
 
-    setCards(yarray.toArray());
-
-    const observer = (event: Y.YArrayEvent<CardData>) => {
+    const updateCards = () => {
       setCards(yarray.toArray());
     };
 
-    yarray.observe(observer);
+    yarray.observe(updateCards);
+    updateCards(); // Initial load
 
     return () => {
-      yarray.unobserve(observer);
+      yarray.unobserve(updateCards);
     };
   }, [ydoc]);
 
