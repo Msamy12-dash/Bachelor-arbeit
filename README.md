@@ -15,6 +15,25 @@
 pull the branch 
 
 
+### (Unix script for executing everything below)
+
+#### Only once:
+
+```bash
+chmod +x start-dev.sh
+```
+
+#### Starting dev server:
+
+```bash
+./start-dev.sh
+```
+
+#### Terminating dev server:
+
+Press `Ctrl + C` in bash.
+
+
 ### Install dependencies
 
 You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
