@@ -16,7 +16,6 @@ interface Comment {
   replies: Comment[];
   parentKey: number | null;
   canReply: boolean
-
 }
 
 export default function CommentHandler({
@@ -39,7 +38,7 @@ export default function CommentHandler({
     setKey(key + 1);
     return newKey;
   };
-  
+
   const addComment = (comment:Comment) => {
     const newKey = getNewKey();
     let canReply = true;
@@ -67,7 +66,32 @@ export default function CommentHandler({
       parentKey: comment.parentKey,
       canReply: canReply
     };
-    setComments((prevComments) => [...prevComments, newComment]);
+    if (comment.parentKey === null) {
+      // If parentkey is null, add the new comment as a root comment
+      setComments(prevComments => [...prevComments, newComment]);
+    } else {
+      const addReplyToComment = (commentsArray: Comment[], keyToFind: number, replyToAdd: Comment): Comment[] => {
+        return commentsArray.map(comment => {
+          if (comment.key === keyToFind) {
+            // Add new comment as a reply to this comment
+            return {
+              ...comment,
+              replies: [...comment.replies, replyToAdd]
+            };
+          } else if (comment.replies.length > 0) {
+            // Recursively check in replies
+            return {
+              ...comment,
+              replies: addReplyToComment(comment.replies, keyToFind, replyToAdd)
+            };
+          }
+          return comment;
+        });
+      };
+  
+      const updatedComments = addReplyToComment(comments, parentkey, newComment);
+      setComments(updatedComments);
+    }
     saveComment(newComment); // Speichert den Kommentar in der MongoDB
   };
 
@@ -108,19 +132,42 @@ export default function CommentHandler({
   };
 
   const incrementUpvote = (key: number) => {
-    setComments(
-      (prevComments) =>
-        prevComments.map((comment) =>
-          comment.key === key
-            ? { ...comment, upvotes: comment.upvotes + 1 }
-            : comment
-        )
-    );
+    const updateUpvote = (comments: Comment[]): Comment[] => {
+      return comments.map(comment => {
+        if (comment.key === key) {
+          return {
+            ...comment,
+            upvotes: comment.upvotes + 1
+          };
+        } else if (comment.replies.length > 0) {
+          return {
+            ...comment,
+            replies: updateUpvote(comment.replies)
+          };
+        }
+        return comment;
+      });
+    };
+    setComments(prevComments => updateUpvote(prevComments));
   };
 
   const deleteComment = async (key: number) => {
-    // Lokal aus der State-Variable entfernen
-    const updatedComments = comments.filter(comment => comment.key !== key);
+    const removeComment = (comments: Comment[]): Comment[] => {
+      return comments.reduce((acc, comment) => {
+        if (comment.key === key && comment.parentKey === parentKey) {
+          return acc;
+        } else {
+          const updatedReplies = comment.replies.length > 0 ? removeComment(comment.replies) : [];
+          acc.push({
+            ...comment,
+            replies: updatedReplies
+          });
+          return acc;
+        }
+      }, [] as Comment[]);
+    };
+  
+    const updatedComments = removeComment(comments);
     setComments(updatedComments);
 
     try {
@@ -143,15 +190,19 @@ export default function CommentHandler({
   };
 
   const editComment = async (key: number, newContent: string) => {
-    // Lokal in der State-Variable aktualisieren
-    setComments(
-      (prevComments) =>
-        prevComments.map((comment) =>
-          comment.key === key
-            ? { ...comment, history: [...comment.history, comment.content], content: newContent }
-            : comment
-        )
-    );
+    const updateComment = (comments: Comment[]): Comment[] => {
+      return comments.map((comment) => {
+        if (comment.key === key && comment.parentKey === parentKey) {
+          return { ...comment, history: [...comment.history, comment.content], content: newContent };
+        }
+        if (comment.replies.length > 0) {
+          return { ...comment, replies: updateComment(comment.replies) };
+        }
+        return comment;
+      });
+    };
+
+    setComments(prevComments => updateComment(prevComments));
 
     try {
       // API-Aufruf zum Aktualisieren des Kommentars in der MongoDB
@@ -202,7 +253,7 @@ export default function CommentHandler({
     <div className="comments">
       <div className="Comment-font">Comments</div>
       <button onClick={() => setShowComments(!showComments)} className="HideShowComments">
-        {showComments ? 'Hide Comments' : 'Show Comments'}
+        {showComments ? "Hide Comments" : "Show Comments"}
       </button>
       {showComments && (
         <CommentList

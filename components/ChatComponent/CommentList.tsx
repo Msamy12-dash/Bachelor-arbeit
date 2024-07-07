@@ -18,16 +18,19 @@ interface Comment {
   length: number;
   history: string[]; 
   replies: Comment[];
+  parentKey: number | null;
+  canReply: boolean;
+
 }
 
 interface CommentListProps {
   comments: Comment[];
   editor: Quill|null;
-  addComment: (comment: Comment) => void;
+  addComment: (parentKey: number | null, name: string, content: string, date: string) => void;
   addReply: (parentKey: number, name: string, content: string, date: string) => void;
   incrementUpvote: (key: number) => void;
-  deleteComment: (key: number) => void;
-  editComment: (key: number, newContent: string) => void;
+  deleteComment: (key: number, parentKey: number | null) => void
+  editComment: (key: number, newContent: string, parentKey: number | null) => void;
   getRange: (index: number, length: number) => void;
 }
 
@@ -59,8 +62,32 @@ class CommentList extends Component<CommentListProps, CommentListState> {
     this.setState({ showTextarea: false, showIcon: true });
   };
 
+
+  renderCommentsRecursive = (comments: Comment[], level = 0) => {
+    return comments.map((comment) => {
+      const classNames = "comment comment-level-${level}";
+      return (
+        <div key={comment.key} className={classNames}>
+          <CommentCard
+            onIncrement={() => this.props.incrementUpvote(comment.key)}
+            onDelete={(key, parentKey) => this.props.deleteComment(key, parentKey)}
+            onEdit={(key, newContent, parentKey) => this.props.editComment(key, newContent, parentKey)}
+            addComment={(parentKey, name, content, date) => this.props.addComment(parentKey, name, content, date)}
+            comment={comment}
+          />
+          {comment.replies.length > 0 && (
+            <div className={"replies replies-level-${level}"}>
+              {this.renderCommentsRecursive(comment.replies, level + 1)}
+            </div>
+          )}
+        </div>
+      );
+    });
+  };
+
   render() {
     const { comments, addReply, incrementUpvote, deleteComment, editComment, getRange } = this.props;
+    const { showTextarea } = this.state;
     return (
       <div>
         <div>
@@ -112,3 +139,4 @@ class CommentList extends Component<CommentListProps, CommentListState> {
 }
 
 export default CommentList;
+

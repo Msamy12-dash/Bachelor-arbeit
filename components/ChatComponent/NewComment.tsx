@@ -76,3 +76,5 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
 
 export default NewComment;
 
+
+
