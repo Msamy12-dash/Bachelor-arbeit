@@ -10,6 +10,7 @@ interface CardData {
   selectedTextOnMUPCard: string;
   promptText: string;
   responseText: string;
+  submitting: boolean;
 }
 
 export default function CardContainer({
@@ -53,7 +54,8 @@ export default function CardContainer({
       completeText,
       selectedTextOnMUPCard: selectedText,
       promptText: "",
-      responseText: ""
+      responseText: "",
+      submitting: false,
     };
     yarray.push([newCard]);
   };
@@ -78,6 +80,16 @@ export default function CardContainer({
     }
   };
 
+  const handleSubmittingChange = (id: string, isSubmitting: boolean) => {
+    const yarray = ydoc.getArray<CardData>("cards");
+    const index = yarray.toArray().findIndex((card) => card.id === id);
+    if (index !== -1) {
+      const updatedCard = { ...yarray.get(index), submitting: isSubmitting };
+      yarray.delete(index, 1);
+      yarray.insert(index, [updatedCard]);
+    }
+  };
+
   return (
     <div className={styles.cardContainer}>
       <button
@@ -95,6 +107,7 @@ export default function CardContainer({
             room={room}
             onTextChange={handleCardTextChange}
             onResponseChange={handleResponseChange}
+            onSubmittingChange={handleSubmittingChange}
           />
         ))}
       </div>

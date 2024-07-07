@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import styles from "./MUPCard.module.css";
 
 interface CardData {
@@ -7,21 +7,22 @@ interface CardData {
   selectedTextOnMUPCard: string;
   promptText: string;
   responseText: string;
+  submitting: boolean;
 }
 
 export default function MUPCard({
   cardData,
   room,
   onTextChange,
-  onResponseChange
+  onResponseChange,
+  onSubmittingChange,
 }: Readonly<{
   cardData: CardData;
   room: string;
   onTextChange: (id: string, newText: string) => void;
   onResponseChange: (id: string, newResponse: string) => void;
+  onSubmittingChange: (id: string, isSubmitting: boolean) => void;
 }>) {
-  const [submitting, setSubmitting] = useState(false);
-
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
     onTextChange(cardData.id, newText);
@@ -29,7 +30,7 @@ export default function MUPCard({
 
   const handleSubmitToAI = async () => {
     try {
-      setSubmitting(true);
+      onSubmittingChange(cardData.id, true);
 
       const requestBody = {
         completeText: "",
@@ -50,7 +51,6 @@ export default function MUPCard({
       }
 
       const data = await response.json();
-
       console.log(data);
 
       onResponseChange(cardData.id, data.response);
@@ -58,7 +58,7 @@ export default function MUPCard({
       console.error("Error submitting to AI:", error);
       onResponseChange(cardData.id, "Error submitting to AI");
     } finally {
-      setSubmitting(false);
+      onSubmittingChange(cardData.id, false);
     }
   };
 
@@ -73,9 +73,9 @@ export default function MUPCard({
       <button
         className={styles.submitButton}
         onClick={handleSubmitToAI}
-        disabled={submitting || cardData.promptText.trim().length === 0}
+        disabled={cardData.submitting || cardData.promptText.trim().length === 0}
       >
-        {submitting ? "Submitting..." : "Submit to AI"}
+        {cardData.submitting ? "Submitting..." : "Submit to AI"}
       </button>
       {cardData.responseText && <div className={styles.responseText}>{cardData.responseText}</div>}
     </div>
