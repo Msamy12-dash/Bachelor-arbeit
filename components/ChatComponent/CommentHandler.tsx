@@ -31,7 +31,7 @@ export default function CommentHandler({
 }>) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
-  const [key, setKey] = useState<number>(0);
+  const [key, setKey] = useState<number>(0); 
 
   const getNewKey = (): number => {
     const newKey = key;
@@ -39,7 +39,27 @@ export default function CommentHandler({
     return newKey;
   };
 
-  const addComment = (comment:Comment) => {
+  // Funktion zum Speichern eines neuen Kommentars in der MongoDB
+  const saveComment = async (comment: Comment) => {
+    try {
+      const response = await fetch('/api/save-comment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ room, comment }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to save comment');
+      }
+      const data = await response.json();
+      console.log('Comment saved successfully:', data);
+    } catch (error) {
+      console.error('Failed to save comment:', error);
+    }
+  };
+
+  const addComment = (comment: Comment) => {
     const newKey = getNewKey();
     let canReply = true;
 
@@ -50,9 +70,10 @@ export default function CommentHandler({
       if (parentComment === undefined) {
         canReply = false;
       }
+    }
     
     const newComment: Comment = {
-      key: comments.length,
+      key: newKey,
       name: comment.name,
       content: comment.content,
       date: comment.date,
@@ -66,9 +87,12 @@ export default function CommentHandler({
       parentKey: comment.parentKey,
       canReply: canReply
     };
+
     if (comment.parentKey === null) {
       // If parentkey is null, add the new comment as a root comment
       setComments(prevComments => [...prevComments, newComment]);
+      // save only main comments
+      saveComment(newComment); // Speichert den Kommentar in der MongoDB
     } else {
       const addReplyToComment = (commentsArray: Comment[], keyToFind: number, replyToAdd: Comment): Comment[] => {
         return commentsArray.map(comment => {
@@ -89,10 +113,9 @@ export default function CommentHandler({
         });
       };
   
-      const updatedComments = addReplyToComment(comments, parentkey, newComment);
+      const updatedComments = addReplyToComment(comments, comment.parentKey, newComment);
       setComments(updatedComments);
     }
-    saveComment(newComment); // Speichert den Kommentar in der MongoDB
   };
 
   useEffect(() => {
@@ -121,15 +144,6 @@ export default function CommentHandler({
     }
   }, [textSpecificComment]);
 
-  const addReply = (parentKey: number, name: string, content: string, date: string) => {
-    setComments((prevComments) =>
-      prevComments.map((comment) =>
-        comment.key === parentKey
-          ? { ...comment, replies: [...comment.replies, { key: comment.replies.length, name, content, date, upvotes: 0, isTextSpecific: false, selectedText: "", index: 0, length: 0, history: [], replies: [] }] }
-          : comment
-      )
-    );
-  };
 
   const incrementUpvote = (key: number) => {
     const updateUpvote = (comments: Comment[]): Comment[] => {
@@ -151,7 +165,7 @@ export default function CommentHandler({
     setComments(prevComments => updateUpvote(prevComments));
   };
 
-  const deleteComment = async (key: number) => {
+  const deleteComment = async (key: number, parentKey: number | null) => {
     const removeComment = (comments: Comment[]): Comment[] => {
       return comments.reduce((acc, comment) => {
         if (comment.key === key && comment.parentKey === parentKey) {
@@ -189,7 +203,7 @@ export default function CommentHandler({
     }
   };
 
-  const editComment = async (key: number, newContent: string) => {
+  const editComment = async (key: number, newContent: string, parentKey: number | null) => {
     const updateComment = (comments: Comment[]): Comment[] => {
       return comments.map((comment) => {
         if (comment.key === key && comment.parentKey === parentKey) {
@@ -229,25 +243,7 @@ export default function CommentHandler({
     setRange({index: index, length: length});
   };
 
-  // Funktion zum Speichern eines neuen Kommentars in der MongoDB
-  const saveComment = async (comment: Comment) => {
-    try {
-      const response = await fetch('/api/save-comment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ room, comment }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to save comment');
-      }
-      const data = await response.json();
-      console.log('Comment saved successfully:', data);
-    } catch (error) {
-      console.error('Failed to save comment:', error);
-    }
-  };
+  
 
   return (
     <div className="comments">
@@ -258,7 +254,6 @@ export default function CommentHandler({
       {showComments && (
         <CommentList
           addComment={addComment}
-          addReply={addReply}
           incrementUpvote={incrementUpvote}
           deleteComment={deleteComment}
           editComment={editComment}
@@ -270,4 +265,5 @@ export default function CommentHandler({
     </div>
   );
 }
+
 

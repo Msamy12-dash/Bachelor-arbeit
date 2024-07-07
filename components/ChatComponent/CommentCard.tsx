@@ -20,8 +20,8 @@ interface Comment {
   length: number;
   history: string[]; 
   replies: Comment[];
-  parentKey: number | null;   
-  canReply: boolean;
+  parentKey: number | null;
+  canReply: boolean
 }
 
 interface CommentCardProps {
@@ -29,9 +29,8 @@ interface CommentCardProps {
   editor: Quill|null;
   onEdit: (key: number, newContent: string, parentKey: number | null) => void;
   onDelete: (key: number,parentId: number | null) => void;
-  onIncrement: (key: number) => void;
-  addReply: (name: string, content: string, date: string) => void;  
-  addComment: (parentKey: number| null, name: string, content: string, date: string) => void;
+  onIncrement: (key: number) => void; 
+  addComment: (comment: Comment) => void;
   onGetRange: (index: number, length: number) => void;
 }
 
@@ -98,26 +97,24 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
     this.props.onGetRange(this.props.comment.index, this.props.comment.length);
   }
 
-  handleAddReply = (parentKey: number | null, name: string, content: string, date: string) => {
-    this.props.addComment(parentKey, name, content, date);
+  handleAddReply = (comment: Comment) => {
+    comment.parentKey = this.state.ParentKey;
+    this.props.addComment(comment);
     this.toggleReplyTextarea();
   };
 
 
 
   render() {
-    const { comment, onDelete, onIncrement, addReply } = this.props;
+    const { comment, onDelete, onIncrement } = this.props;
     const { isEditing, editContent, showHistory, showReplyTextarea, hasBeenEdited } = this.state;
 
     return (
       <div className="card">
          <div className="card-body">
           <div className='card-top'>
-            <div className="NameDate">
               <h5 className="card-title">{comment.name}</h5>
-              <p className='comment-date'>{comment.date}</p>
-            </div>
-
+              
       <div className="EditDeleteHistory">
         {!isEditing && (
           <>
@@ -168,7 +165,7 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
 
     {showReplyTextarea && (
       <NewComment
-        addComment={(comment: Comment) => addReply(comment.name, comment.content, comment.date)}  // Corrected addReply usage
+        addComment={(comment: Comment) => this.handleAddReply(comment)}  
         cancel={this.toggleReplyTextarea}
       />
     )}
@@ -181,23 +178,6 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
             <li key={index}>{item}</li>
           ))}
         </ul>
-      </div>
-    )}
-
-    {comment.replies.length > 0 && (
-      <div className="replies">
-        {comment.replies.map((reply) => (
-          <CommentCard
-            key={reply.key}
-            comment={reply}
-            editor={this.props.editor}
-            onEdit={this.props.onEdit}
-            onDelete={this.props.onDelete}
-            onIncrement={this.props.onIncrement}
-            addReply={this.props.addReply}
-            onGetRange={this.props.onGetRange}
-          />
-        ))}
       </div>
     )}
   </div>

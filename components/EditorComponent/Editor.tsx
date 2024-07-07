@@ -194,7 +194,7 @@ export default function Editor({
       const date = new Date().toLocaleDateString();
 
       // Send comment to Editorinterface
-      setTextSpecificComment({key: 0, name: "Name", content: commentContent, date:date, upvotes: 0, isTextSpecific: true, selectedText: selectedText, index: selectedRange!.index, length: selectedRange!.length, history: [], replies: []})
+      setTextSpecificComment({key: 0, name: "Name", content: commentContent, date:date, upvotes: 0, isTextSpecific: true, selectedText: selectedText, index: selectedRange!.index, length: selectedRange!.length, history: [], replies: [], parentKey: null, canReply: true})
 
       setShowTextarea(false);
     }

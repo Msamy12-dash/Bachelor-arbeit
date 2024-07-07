@@ -21,6 +21,8 @@ interface Comment {
     length: number;
     history: string[]; 
     replies: Comment[];
+    parentKey: number | null;
+    canReply: boolean
   }
 
 class NewComment extends Component<NewCommentProps, NewCommentState> {
@@ -46,7 +48,7 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
           const { content } = this.state;
           const name = "Name"; // Placeholder for the name
           const date = new Date().toLocaleDateString();
-          const comment: Comment = {key: 0, name: "Name", content: content, date: date, upvotes: 0, isTextSpecific: false, selectedText: "", index: 0, length: 0, history: [], replies: []}
+          const comment: Comment = {key: 0, name: name, content: content, date: date, upvotes: 0, isTextSpecific: false, selectedText: "", index: 0, length: 0, history: [], replies: [], parentKey: null, canReply: true}
           this.props.addComment(comment);  // Nur den Hauptkommentar hinzufügen
           textarea.value = "";
           this.setState({ content: "" });
@@ -54,20 +56,20 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
     }
 
     render() {
+        const { cancel } = this.props;
+
         return (
-            <div className="card">
-                <div className="card-body">
-                    <h5 className='new-comment-name'>Name</h5>
-                    <textarea
-                        onChange={this.handleChange}
-                        ref={this.textareaRef}
-                        className="new-comment-input"
-                        placeholder='Add new Comment here'
-                    />
-                    <div className="card-buttons">
-                        <button onClick={this.handleOnClick} className='new-comment-btn'>Send</button>
-                        <button onClick={this.props.cancel} className="new-comment-close-btn">Cancel</button>
-                    </div>
+            <div className="new-comment">
+                <textarea
+                    ref={this.textareaRef}
+                    value={this.state.content}
+                    onChange={this.handleChange}
+                    placeholder="Add a comment..."
+                    className="new-comment-input"
+                />
+                <div className="new-comment-buttons">
+                    <button className="new-comment-btn" onClick={this.handleOnClick}>Send</button>
+                    <button className="new-comment-close-btn" onClick={cancel}>Cancel</button>
                 </div>
             </div>
         );
