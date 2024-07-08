@@ -158,7 +158,6 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
       <div>
         <p className="card-text">{comment.content}</p>
         <div className='card-bottom'>
-          <p className='upvotes'>Upvotes: {comment.upvotes}</p>
         </div>
       </div>
     )}
