@@ -33,9 +33,44 @@ export default function CommentHandler({
   const [showComments, setShowComments] = useState<boolean>(true);
   const [key, setKey] = useState<number>(0); 
 
-  const getNewKey = (): number => {
-    const newKey = key;
-    setKey(key + 1);
+  const fetchCurrentKey = async (): Promise<number> => {
+    try {
+      const response = await fetch('/api/get-key');
+      if (!response.ok) {
+        throw new Error('Failed to fetch key');
+      }
+      const data = await response.json();
+      return data.currentKey;
+    } catch (error) {
+      console.error('Failed to fetch key:', error);
+      return 0;
+    }
+  };
+  
+  const updateKey = async (newKey: number) => {
+    try {
+      const response = await fetch('/api/update-key', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ currentKey: newKey }),
+      });      
+      if (!response.ok) {
+        throw new Error('Failed to update key');
+      }
+      const data = await response.json();
+      console.log('Key updated successfully:', data);
+    } catch (error) {
+      console.error('Failed to update key:', error);
+    }
+  };
+
+  const getNewKey = async (): Promise<number> => {
+    const currentKey = await fetchCurrentKey();
+    const newKey = currentKey + 1;
+    setKey(newKey);
+    await updateKey(newKey);
     return newKey;
   };
 
@@ -59,8 +94,8 @@ export default function CommentHandler({
     }
   };
 
-  const addComment = (comment: Comment) => {
-    const newKey = getNewKey();
+  const addComment = async (comment: Comment) => {
+    const newKey = await getNewKey();
     let canReply = true;
 
     //check if its a subsubcomment -> cant reply
