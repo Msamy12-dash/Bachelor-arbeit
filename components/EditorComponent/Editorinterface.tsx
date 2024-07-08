@@ -18,6 +18,8 @@ interface Comment {
   length: number;
   history: string[]; 
   replies: Comment[];
+  parentKey: number | null;
+  canReply: boolean
 }
 
 interface Range{
