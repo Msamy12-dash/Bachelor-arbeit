@@ -91,28 +91,36 @@ export default function CardContainer({
   };
 
   return (
-    <div className="flex flex-1 flex-col p-6 bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg shadow-lg mt-4 overflow-y-auto border-t-3 border-gray-300 relative h-full -mx-6 -mb-6">
-      <Button
-        className={`inline-flex items-center justify-center px-6 py-3 mb-6 text-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-md ${
-          selectedText ? "hover:from-blue-600 hover:to-indigo-600" : "opacity-60 cursor-not-allowed"
-        } transition-all duration-300`}
-        onClick={handleAddCard}
-        disabled={!selectedText}
-      >
-        Add Card with Selected Text
-      </Button>
-      <div className="flex flex-col space-y-6">
-        {cards.map((card) => (
-          <MUPCard
-            key={card.id}
-            cardData={card}
-            room={room}
-            onTextChange={handleCardTextChange}
-            onResponseChange={handleResponseChange}
-            onSubmittingChange={handleSubmittingChange}
-          />
-        ))}
+    <div className="flex flex-col bg-gradient-to-bfrom-gray-100 to-gray-200 rounded-lg shadow-lg overflow-hidden relative">
+      <div className="flex flex-col items-center mb-2 mx-4">
+        <Button
+          className={`inline-flex items-center justify-center w-full m-6 px-6 py-6 text-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full ${
+            selectedText ? "hover:from-blue-600 hover:to-indigo-600" : "opacity-60 cursor-not-allowed"
+          } transition-all duration-300`}
+          onClick={handleAddCard}
+          disabled={!selectedText}
+          style={{ minWidth: "200px", maxWidth: "100%", wordWrap: "break-word" }}
+          // ^ Ensure button doesn't exceed its parent's width and text wraps if necessary
+        >
+          Add Card with Selected Text
+        </Button>
       </div>
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 px-2 pb-6"
+  style={{ maxHeight: "72vh", minHeight: "400px" }}>
+  <div className="flex flex-col space-y-6">
+    {cards.map((card) => (
+      <MUPCard
+        key={card.id}
+        cardData={card}
+        room={room}
+        onTextChange={handleCardTextChange}
+        onResponseChange={handleResponseChange}
+        onSubmittingChange={handleSubmittingChange}
+      />
+    ))}
+  </div>
+</div>
+
     </div>
   );
   

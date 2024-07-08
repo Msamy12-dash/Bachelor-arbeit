@@ -65,7 +65,7 @@ export default function EditorPage() {
           <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor} selectedText={selectedText} setSelectedText={setSelectedText} setCompleteText={setCompleteText}/>
 
         </Card>
-        <Card style={{ width: "20%", padding: "10px" }}>
+        <Card style={{ width: "20%" }}>
           <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} selectedText={selectedText} completeText={completeText}/>
         </Card>
       </div>
