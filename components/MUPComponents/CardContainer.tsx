@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import * as Y from "yjs";
 import useYProvider from "y-partykit/react";
 import MUPCard from "./MUPCard";
-import styles from "./CardContainer.module.css";
+import { Button } from "@nextui-org/react";
 
 interface CardData {
   id: string;
@@ -91,15 +91,17 @@ export default function CardContainer({
   };
 
   return (
-    <div className={styles.cardContainer}>
-      <button
-        className={`${styles.addButton} ${selectedText ? "" : styles.disabled}`}
+    <div className="flex flex-1 flex-col p-6 bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg shadow-lg mt-4 overflow-y-auto border-t-3 border-gray-300 relative h-full -mx-6 -mb-6">
+      <Button
+        className={`inline-flex items-center justify-center px-6 py-3 mb-6 text-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-md ${
+          selectedText ? "hover:from-blue-600 hover:to-indigo-600" : "opacity-60 cursor-not-allowed"
+        } transition-all duration-300`}
         onClick={handleAddCard}
         disabled={!selectedText}
       >
         Add Card with Selected Text
-      </button>
-      <div className={styles.cardsContainer}>
+      </Button>
+      <div className="flex flex-col space-y-6">
         {cards.map((card) => (
           <MUPCard
             key={card.id}
@@ -113,4 +115,7 @@ export default function CardContainer({
       </div>
     </div>
   );
+  
+  
+  
 }
