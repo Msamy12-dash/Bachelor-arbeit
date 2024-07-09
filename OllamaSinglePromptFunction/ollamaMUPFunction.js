@@ -1,4 +1,4 @@
-import { getLLMResponse } from "./ollamaPrompting";
+import { getLLMResponse } from "./ollamaPrompting.js";
 
 //Builds Prompt for adequate multi-user-prompting response.
 //might add another parameter called "context" that hold the entire document (to give the ai more context and make changes to paragraphs or sentences be mroe in line with the surrounding text).

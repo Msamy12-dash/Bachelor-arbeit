@@ -1,4 +1,4 @@
-import { getLLMResponse } from "./ollamaPrompting";
+import { getLLMResponse } from "./ollamaPrompting.js";
 
 //Builds Prompt for adequate multi-comment-prompting response.
 //userComments is an array of strings
