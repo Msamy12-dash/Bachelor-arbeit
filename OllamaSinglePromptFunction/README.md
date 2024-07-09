@@ -1,19 +1,64 @@
-*To run tests successfully, ensure Ollama is running llama3 first!*
 
-This file is its own project. Open it in a separate vscode instance.
+## Technologies Used
 
-In vscode, dowload the jest extension.
+- [Ollama](https://ollama.com/)
 
-Install dependencies:
+
+## How to Use
+
+### Do once per system
+
+Download Jest extension for VSCode (tab on the left).
+
+
+### Install Ollama once per PC
+
+https://ollama.com/download
+
+
+### Install dependencies
+
+You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
 
 ```bash
 npm i
 ```
 
-You can run single tests by clicking on the play button on the left of the function in vscode.
 
-You can run all tests by running
+### Run Ollama with model llama3
+
+```bash
+ollama run llama3
+```
+
+
+## Running tests
+
+### Running single tests
+
+In VSCode, click the green play button next to the test function you want to execute.
+
+
+### Running all Jest tests
 
 ```bash
 npx jest
+```
+
+
+## General remarks
+
+This file is its own project( . or ../OllamaSinglePromptFunction). For better usability open it in a separate VSCode instance.
+
+### In the inlp2024 folder
+
+```bash
+code ./OllamaSinglePromptFunction
+```
+
+
+### In the OllamaSinglePromptFunction
+
+```bash
+code .
 ```
