@@ -1,6 +1,19 @@
-*TO RUN THE TESTS in ./test.js OLLAMA MUST BE RUNNING FIRST!*
-To test, open the terminal and navigate to the this project folder (or just open the integrated terminal in vscode). Then execute _node test.js_.
-You may modify the sampleHighlightedText*2* and the sampleUserFeedback*2* on the bottom of the file to test further scenarios.
-Depending on the sample text given, computing the output may take more or less time.
+*To run tests successfully, ensure Ollama is running llama3 first!*
 
-For Prompt composition, see ./main.js.
+This file is its own project. Open it in a separate vscode instance.
+
+In vscode, dowload the jest extension.
+
+Install dependencies:
+
+```bash
+npm i
+```
+
+You can run single tests by clicking on the play button on the left of the function in vscode.
+
+You can run all tests by running
+
+```bash
+npx jest
+```
