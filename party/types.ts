@@ -1,15 +1,4 @@
 /* eslint-disable prettier/prettier */
-export type Poll = {
-  title: string;
-  options: string[];
-  votes?: number[];
-};
-
-export type Rooms ={
-  [key: string]: number;
-}
-export const SINGLETON_ROOM_ID = "index";
-
 import z from "zod";
 const allowedReactions = ["clap", "heart", "thumbsup", "party"] as const;
 const allowedReactionsSchema = z.enum(allowedReactions);
@@ -46,7 +35,15 @@ export const createUpdateMessage = (reactions: Record<string, number>) => {
 export const parseUpdateMessage = (message: string) => {
   return ReactionUpdateSchema.parse(JSON.parse(message));
 };
+export type Poll = {
+  title: string;
+  options: string[];
+  votes?: number[];
+};
 
-
-
+export type Rooms = {
+  [key: string]: number;
+};
+export const SINGLETON_ROOM_ID = "index";
+export const LOCAL_HOST = "http://localhost:1999";
 
