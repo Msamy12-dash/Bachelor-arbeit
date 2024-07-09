@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useState, useRef, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import { QuillBinding } from "y-quill";

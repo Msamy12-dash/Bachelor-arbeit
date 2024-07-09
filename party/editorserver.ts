@@ -37,7 +37,7 @@ export default class EditorServer implements Party.Server {
   }
 
   handleYDocChange(_: Doc) {
-    // delect any changes handleYDocChange is called
+    //  any changes handleYDocChange is called
     
     
   }
