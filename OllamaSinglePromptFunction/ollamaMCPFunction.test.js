@@ -31,7 +31,7 @@ const multipleSampleUserCommentsContext = [
 
 
 test(`Test 1`, async () => {
-    const response = await ollamaMCPFunction.requestResponseForMCP(multipleSampleCompleteText[0], multipleSampleUserComments[0], multipleSampleUserCommentsContext[0]);
+    const response = await ollamaMCPFunction.requestResponseForMCP(multipleSampleCompleteText[0], multipleSampleUserComments[0][0], multipleSampleUserCommentsContext[0][0]);
     console.log(`Response 1: 
     
     ${response}`);

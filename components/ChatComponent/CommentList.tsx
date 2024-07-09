@@ -44,7 +44,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     showTextarea: false,
     index: 0,
     length: 0,
-    checkedKeys: [],
+    checkedKeys: []
   };
 
   

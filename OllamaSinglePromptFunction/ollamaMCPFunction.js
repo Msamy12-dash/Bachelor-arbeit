@@ -62,7 +62,7 @@ ${tone}`;
     return prompt;
   }
   
-  //This is the function that gets called by the server API
+  // This is the function that gets called by the server API
   export async function requestResponseForMCP(completeText, userComments, userCommentsContext) {
     try {
       return await getLLMResponse(buildPromptForMCP(completeText, userComments, userCommentsContext));  
