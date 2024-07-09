@@ -13,7 +13,7 @@ Download Jest extension for VSCode (tab on the left).
 
 ### Install Ollama once per PC
 
-https://ollama.com/download
+ehttps://ollama.com/download
 
 
 ### Install dependencies
