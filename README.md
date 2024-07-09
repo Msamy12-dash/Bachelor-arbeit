@@ -26,17 +26,28 @@ npm install
 install for the Commenticons:
 npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 
-### Run partykit
+## server configuration
+
+```bash
+
+cp .env.example .env
+```
+### run server and party kit together 
+
+```bash
+npm run dev
+```
+### Run partykit only 
 
 ```bash
 npx partykit dev
 ```
 
 
-### Run Next js
+### Run Next js only 
 
 ```bash
-npm run dev
+npm run dev1
 ```
 
 ## License
