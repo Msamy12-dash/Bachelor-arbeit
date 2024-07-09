@@ -164,7 +164,7 @@ export default function Editor({
     }
   }
 
-  function handleCommentOnClick(){
+  function handleCommentOnClick() {
     setShowButton(false);
     setShowTextarea(true);
     console.log(buttonPosition);

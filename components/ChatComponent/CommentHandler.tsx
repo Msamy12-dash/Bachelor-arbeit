@@ -20,12 +20,14 @@ export default function CommentHandler({
   room,
   textSpecificComment,
   setRange,
-  editor
+  editor,
+  setAIChanges
 }: Readonly<{
   room: string;
   textSpecificComment: Comment | null;
   editor: Quill|null;
   setRange: Function;
+  setAIChanges: Function;
 }>)
 {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -118,6 +120,7 @@ export default function CommentHandler({
           getRange={getRange}
           comments={comments}
           editor={editor}
+          setAIChanges={setAIChanges}
         />
       )}
     </div>

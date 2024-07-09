@@ -5,6 +5,8 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
 import { buildPromptForMCP } from "@/OllamaSinglePromptFunction/ollamaMCPFunction";
+
+
 interface Comment {
   key: number;
   name: string;
@@ -28,6 +30,7 @@ interface CommentListProps {
   editComment: (key: number, newContent: string) => void;
   getRange: (index: number, length: number) => void;
   editor: Quill|null;
+  setAIChanges: Function;
 }
 
 interface CommentListState {
@@ -44,7 +47,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     showTextarea: false,
     index: 0,
     length: 0,
-    checkedKeys: []
+    checkedKeys: [],
   };
 
   
@@ -104,6 +107,12 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
         index += 1;
       }
       buildPromptForMCP(completeText, userComments, userCommentsContext);
+      const response = "Test Response";
+
+      this.props.setAIChanges(response);
+
+
+
     }
   }
 
@@ -153,6 +162,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
                   editComment={editComment}
                   getRange={getRange}
                   editor={this.props.editor}
+                  setAIChanges={this.props.setAIChanges}
                 />
               </div>
             )}

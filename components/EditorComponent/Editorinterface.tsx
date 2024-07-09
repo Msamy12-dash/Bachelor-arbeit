@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import Lobby from "../MainPageComponent/Lobby";
 import CommentHandler from "../ChatComponent/CommentHandler";
 import Quill from "react-quill";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from '@mui/icons-material/Close';
 
 interface Comment {
   key: number;
@@ -45,7 +47,16 @@ export default function EditorPage() {
   const [editor, setEditor] = useState<Quill|null>(null);
   const [selectedText, setSelectedText] = useState<string>("");
   const [completeText, setCompleteText] = useState<string>("");
+  const [showAIChangesDiv, setShowAIChangesDiv] = useState<boolean>(false);
+  const [AIChanges, setAIChanges] = useState<string>("");
 
+
+  useEffect(() => {
+    // If there is new MCP Response
+    if(AIChanges != ""){
+      setShowAIChangesDiv(true);
+    }
+  }, [AIChanges]);
 
   function handleSetRange (range: Range){
     // for 'Show in Editor'-Button functionality
@@ -53,17 +64,33 @@ export default function EditorPage() {
     editor?.getEditor().root.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
+  function handleCloseOnClick (){
+    setAIChanges("");
+    setShowAIChangesDiv(false);
+  }
+
   return (
     <>
       <div style={{ display: "flex", height: "100vh" }}>
         <Card style={{ width: "20%", padding: "10px" }}>
           {/*<PollMaker >**/}
-          <CommentHandler room={currentRoom} textSpecificComment = {textSpecificComment} editor={editor} setRange={handleSetRange}/>
+          <CommentHandler room={currentRoom} textSpecificComment = {textSpecificComment} editor={editor} setRange={handleSetRange} setAIChanges={setAIChanges}/>
         </Card>
 
         <Card style={{ width: "60%", padding: "20px" }}>
           <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor} selectedText={selectedText} setSelectedText={setSelectedText} setCompleteText={setCompleteText}/>
-
+          {showAIChangesDiv && (
+            <div style={{width: "30vw", height: "20vw", background: "#eee", position: "absolute", left: "100px", top: "100px", zIndex: "10000"}}>
+              <IconButton onClick={handleCloseOnClick}>
+                <CloseIcon/>
+              </IconButton>
+              <p>{AIChanges}</p>
+              <input type="checkbox"></input>
+              <p>Delete selected Comments</p>
+              <button>Accept changes</button>
+              <button>Deny changes</button>
+            </div>
+          )}
         </Card>
         <Card style={{ width: "20%" }}>
           <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} selectedText={selectedText} completeText={completeText}/>
