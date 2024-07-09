@@ -1,11 +1,10 @@
-import React, { Component, useEffect } from "react";
+import React, { ChangeEvent, Component, useEffect } from "react";
 import CommentCard from "./CommentCard";
 import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
-//install mui: npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
-
+import { buildPromptForMCP } from "@/OllamaSinglePromptFunction/ollamaMCPFunction";
 interface Comment {
   key: number;
   name: string;
@@ -36,7 +35,6 @@ interface CommentListState {
   showTextarea: boolean;
   index: number;
   length: number;
-  checked: boolean;
   checkedKeys: number[];
 }
 
@@ -46,8 +44,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     showTextarea: false,
     index: 0,
     length: 0,
-    checked: false,
-    checkedKeys: []
+    checkedKeys: [],
   };
 
   
@@ -69,7 +66,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
   newChecked = (key: number) => {
     const currentKeys = this.state.checkedKeys;
     currentKeys.push(key);
-    this.setState({checkedKeys: currentKeys, checked: true});
+    this.setState({checkedKeys: currentKeys});
   }
 
   unchecked = (key: number) => {
@@ -79,38 +76,34 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     currentKeys = currentKeys.filter(number => number !== key);
     this.setState({checkedKeys:currentKeys});
 
-    // If no comment is selected, don´t show button
-    // if(this.state.checkedKeys.length == 0){
-    //   this.setState({checked: false});
-    //   console.log("jetzt");
-    // }
   }
 
 
   handleSubmitOnClick = () => {
     // If at least one comment is selected
     if(this.state.checkedKeys.length != 0){
+
       // Create prompt for the AI
-      let prompt = "";
-      const wholeText = this.props.editor?.getEditor().getText();
-      prompt += `Complete Text: \n ${wholeText} \n`;
+      const completeText = this.props.editor?.getEditor().getText();
+      let userComments = [];
+      let userCommentsContext = [];
       let index = 0;
       for(let key of this.state.checkedKeys){
         const comment = this.props.comments.filter(comment => comment.key === key);
         
         if(comment[0] != null){
-          const content = comment[0].content;
+          userComments.push(comment[0].content);
 
           if(comment[0].isTextSpecific){
             const selectedText = this.props.editor?.getEditor().getText(comment[0].index, comment[0].length);
-            prompt += `{Comment ${index}: \n Commented Text: ${selectedText} \n Content: ${content}}\n`;
+            userCommentsContext.push(selectedText);
           }else{
-            prompt += `{Comment ${index}: \n Content: ${content}}\n`;
+            userCommentsContext.push("");
           }
         }
         index += 1;
       }
-      console.log(prompt);
+      buildPromptForMCP(completeText, userComments, userCommentsContext);
     }
   }
 
@@ -132,6 +125,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
             cancel={this.cancel}
           />
         )}
+        
         </div>
         <div className="commentsList">
         {(this.props.comments.length == 0) && (<p className='NoComments' style={{marginTop:"10vw", opacity:"80%", fontSize: "large"}}>No Comments yet</p>)}
@@ -165,7 +159,13 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
           </div>
         ))}
         </div>
-        {this.state.checked && (<button onClick={this.handleSubmitOnClick} className="submitToAI-btn">Submit to AI</button>)}
+        <div style={{display: "flex", float: "right"}}>
+            <p>Select all</p>
+            <input type="checkbox" style={{marginLeft: "0.75vw", marginRight: "0.5vw"}}/>
+        </div>
+        <div style={{justifyContent: "center"}}>
+            <button onClick={this.handleSubmitOnClick} className="submitToAI-btn">Submit to AI</button>
+        </div>
       </div>
     );
   }

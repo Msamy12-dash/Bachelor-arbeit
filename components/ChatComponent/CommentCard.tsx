@@ -6,7 +6,6 @@ import HistoryIcon from '@mui/icons-material/History';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ReplyIcon from '@mui/icons-material/Reply';
 import NewComment from './NewComment';
-import Quill from "react-quill";
 
 interface Comment {
   key: number;
