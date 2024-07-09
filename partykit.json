@@ -4,7 +4,7 @@
   "compatibilityDate": "2024-06-20",
   "parties": {
     "editorserver":"party/EditorServer.ts",
-    "rooms":"party/roomserver.ts",
+    "rooms":"party/roomserver.ts"
     
   }
 }
