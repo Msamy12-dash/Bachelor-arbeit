@@ -24,26 +24,10 @@ export const createUpdateMessage = (reactions: Record<string, number>) => {
   return JSON.stringify(
     ReactionUpdateSchema.parse({
       type: "update",
-      reactions :  {
-        "heart": 0,
-        "thumbsup": 0
-      }
+      reactions,
     })
   );
 };
-
 export const parseUpdateMessage = (message: string) => {
   return ReactionUpdateSchema.parse(JSON.parse(message));
 };
-export type Poll = {
-  title: string;
-  options: string[];
-  votes?: number[];
-};
-
-export type Rooms = {
-  [key: string]: number;
-};
-export const SINGLETON_ROOM_ID = "index";
-export const LOCAL_HOST = "http://localhost:1999";
-

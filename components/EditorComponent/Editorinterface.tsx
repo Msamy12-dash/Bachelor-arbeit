@@ -1,7 +1,8 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { Card } from "@nextui-org/react";
 import dynamic from "next/dynamic";
+
 import Lobby from "../MainPageComponent/Lobby";
 
 function getRandomColor() {
@@ -22,17 +23,13 @@ export default function EditorPage() {
 
   return (
     <>
+    <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
       <div style={{ display: "flex", height: "100vh" }}>
-        <Card style={{ width: "20%", padding: "10px" }}>
-          {/*<PollMaker >**/}
-        </Card>
-
+        <Card style={{ width: "20%", padding: "10px" }} />
         <Card style={{ width: "60%", padding: "20px" }}>
           <Editor key={currentRoom} room={currentRoom} userColor={userColor} />
         </Card>
-        <Card style={{ width: "20%", padding: "10px" }}>
-          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
-        </Card>
+        <Card style={{ width: "20%", padding: "10px" }} />
       </div>
     </>
   );

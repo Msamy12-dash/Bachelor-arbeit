@@ -1,30 +1,28 @@
+/* eslint-disable prettier/prettier */
 import type * as Party from "partykit/server";
 
 import { onConnect, type YPartyKitOptions } from "y-partykit";
-import * as Y from "yjs";
+import { Doc } from "yjs";
 
 import { SINGLETON_ROOM_ID } from "./types";
 
-export default class editorserver implements Party.Server {
-  yjsOptions: YPartyKitOptions = {};
-  options: Party.ServerOptions = {
-    hibernate: true,
+export default class EditorServer implements Party.Server {
+  yjsOptions: YPartyKitOptions = {
+    persist: { mode: "snapshot" },
+    
+   
   };
   constructor(public room: Party.Room) {}
 
   getOpts() {
     // options must match when calling unstable_getYDoc and onConnect
     const opts: YPartyKitOptions = {
-      async load() {
-        // load a document from a database, or some remote resource
-        // and return a Y.Doc instance here (or null if no document exists)
-        const doc = new Y.Doc();
-
-        return doc;
-      },
-      callback: { handler: (doc) => this.handleYDocChange(doc) },
+      callback: { handler: (doc) => this.handleYDocChange(doc), 
+        debounceWait: 10000, // default: 2000 ms
+        debounceMaxWait: 20000, // default: 10000 ms
+        timeout: 5000}
     };
-
+    
     return opts;
   }
 
@@ -38,9 +36,10 @@ export default class editorserver implements Party.Server {
     await this.updateCount();
   }
 
-  handleYDocChange(_: Y.Doc) {
-    // called on every ydoc change
-    // no-op
+  handleYDocChange(_: Doc) {
+    // delect any changes handleYDocChange is called
+    
+    
   }
 
   async updateCount() {
@@ -54,5 +53,6 @@ export default class editorserver implements Party.Server {
       body: JSON.stringify({ room: this.room.id, count }),
     });
   }
+
+
 }
-editorserver satisfies Party.Worker;

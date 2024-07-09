@@ -5,6 +5,10 @@
     "clsx",
     "Editorinterface",
     "editorserver",
+    "INLP",
+    "kamoun",
+    "likeserver",
+    "likesserver",
     "nextui",
     "partykit",
     "partysocket",
@@ -12,7 +16,12 @@
     "quillrea",
     "roominfo",
     "roomserver",
+    "thumbsup",
+    "Tooltipeditors",
     "userlogin",
+    "voteserver",
+    "wafi",
+    "ydoc",
     "ytext"
   ]
 }
