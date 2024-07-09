@@ -3,14 +3,8 @@
   "deepscan.enable": true,
   "cSpell.words": [
     "clsx",
-    "Componets",
     "Editorinterface",
     "editorserver",
-    "INLP",
-    "kamoun",
-    "likeserver",
-    "likesserver",
-    "messageformat",
     "nextui",
     "partykit",
     "partysocket",
@@ -18,12 +12,7 @@
     "quillrea",
     "roominfo",
     "roomserver",
-    "thumbsup",
-    "Tooltipeditors",
     "userlogin",
-    "voteserver",
-    "wafi",
-    "ydoc",
     "ytext"
   ]
 }
