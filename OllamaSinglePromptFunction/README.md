@@ -6,14 +6,14 @@
 
 ## How to Use
 
-### Do once per system
+### Do once per PC
 
 Download Jest extension for VSCode (tab on the left).
 
 
 ### Install Ollama once per PC
 
-ehttps://ollama.com/download
+https://ollama.com/download
 
 
 ### Install dependencies
@@ -22,13 +22,6 @@ You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
 
 ```bash
 npm i
-```
-
-
-### Run Ollama with model llama3
-
-```bash
-ollama run llama3
 ```
 
 
@@ -46,7 +39,7 @@ npx jest
 ```
 
 
-## General remarks
+## Recommendations
 
 This file is its own project( . or ../OllamaSinglePromptFunction). For better usability open it in a separate VSCode instance.
 
