@@ -26,7 +26,7 @@ export default function CommentHandler({
 }: Readonly<{
   room: string;
   textSpecificComment: Comment | null;
-  editor: Quill|null;
+  editor: Quill | null;
   setRange: Function;
 }>) {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -72,7 +72,7 @@ export default function CommentHandler({
     return newKey;
   };
 
-  // Funktion zum Speichern eines neuen Kommentars in der MongoDB
+  // Function to save a new comment in MongoDB
   const saveComment = async (comment: Comment) => {
     try {
       const response = await fetch('/api/save-comment', {
@@ -96,7 +96,7 @@ export default function CommentHandler({
     const newKey = await getNewKey();
     let canReply = true;
 
-    //check if its a subsubcomment -> cant reply
+    // Check if it's a subsubcomment -> can't reply
     if (comment.parentKey !== null) {
       // Find the comment with the matching parentkey
       const parentKey = comment.parentKey;
@@ -122,13 +122,13 @@ export default function CommentHandler({
       canReply: canReply
     };
 
-    //save comment in Database
+    // Save comment in Database
     saveComment(newComment);
 
     if (comment.parentKey === null) {
       // If parentkey is null, add the new comment as a root comment
       setComments(prevComments => [...prevComments, newComment]);
-      // save only main comments
+      // Save only main comments
     } else {
       const addReplyToComment = (commentsArray: Comment[], keyToFind: number, replyToAdd: Comment): Comment[] => {
         return commentsArray.map(comment => {
@@ -201,7 +201,7 @@ export default function CommentHandler({
     setComments(updatedComments);
 
     try {
-      // API-Aufruf zum Aktualisieren des Kommentars in der MongoDB
+      // API call to update the comment in MongoDB
       const response = await fetch('/api/increment-comment', {
         method: 'PUT',
         headers: {
@@ -239,7 +239,7 @@ export default function CommentHandler({
     setComments(updatedComments);
     
     try {
-      // API-Aufruf zum Löschen des Kommentars in der MongoDB
+      // API call to delete the comment in MongoDB
       const response = await fetch('/api/delete-comment', {
         method: 'DELETE',
         headers: {
@@ -274,7 +274,7 @@ export default function CommentHandler({
     setComments(updatedComments);  
 
     try {
-      // API-Aufruf zum Aktualisieren des Kommentars in der MongoDB
+      // API call to update the comment in MongoDB
       const response = await fetch('/api/update-comment', {
         method: 'PUT',
         headers: {
@@ -301,21 +301,23 @@ export default function CommentHandler({
   
 
   return (
-    <div className="comments">
-      <div className="Comment-font">Comments</div>
-      <button onClick={() => setShowComments(!showComments)} className="HideShowComments">
+    <div className="comments text-center block">
+      <div className="Comment-font text-xl font-bold">Comments</div>
+      <button onClick={() => setShowComments(!showComments)} className="HideShowComments text-black font-normal py-2 px-4 rounded">
         {showComments ? "Hide Comments" : "Show Comments"}
       </button>
       {showComments && (
-        <CommentList
-          addComment={addComment}
-          incrementUpvote={incrementUpvote}
-          deleteComment={deleteComment}
-          editComment={editComment}
-          getRange={getRange}
-          comments={comments}
-          editor={editor}
-        />
+        <div className="mt-8">
+          <CommentList
+            comments={comments}
+            incrementUpvote={incrementUpvote}
+            deleteComment={deleteComment}
+            editComment={editComment}
+            addComment={addComment}
+            editor={editor}
+            getRange={getRange}
+          />
+        </div>
       )}
     </div>
   );

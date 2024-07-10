@@ -58,7 +58,7 @@ class CommentList extends Component<CommentListProps, CommentListState> {
 
   renderCommentsRecursive = (comments: Comment[], level = 0) => {
     return comments.map((comment) => {
-      const classNames = "comment comment-level-${level}";
+      const classNames = `comment comment-level-${level} text-center block`;
       return (
         <div key={comment.key} className={classNames}>
           <CommentCard
@@ -71,7 +71,7 @@ class CommentList extends Component<CommentListProps, CommentListState> {
             editor={this.props.editor}
           />
           {comment.replies.length > 0 && (
-            <div className={"replies replies-level-${level}"}>
+            <div className={`replies replies-level-${level} ml-5`}>
               {this.renderCommentsRecursive(comment.replies, level + 1)}
             </div>
           )}
@@ -84,7 +84,7 @@ class CommentList extends Component<CommentListProps, CommentListState> {
     const { comments } = this.props;
     const { showTextarea } = this.state;
     return (
-      <div className="comment-list"> 
+      <div className="comment-list max-h-[850px] overflow-y-scroll"> 
           {this.renderCommentsRecursive(comments)}
           <div className='CommentListTextArea'>
             {showTextarea ? (
@@ -103,4 +103,3 @@ class CommentList extends Component<CommentListProps, CommentListState> {
 }
 
 export default CommentList;
-
