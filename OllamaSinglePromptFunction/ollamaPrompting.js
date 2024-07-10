@@ -1,4 +1,4 @@
-import ollama from 'ollama';
+import ollama from 'ollama/browser';
 
 // Returns a response from llama3 to a given prompt string.
 export async function getLLMResponse(prompt) {

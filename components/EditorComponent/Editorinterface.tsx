@@ -1,12 +1,11 @@
 "use client";
-import React, { useState, useMemo, useEffect } from "react";
-import { Card } from "@nextui-org/react";
+import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import Lobby from "../MainPageComponent/Lobby";
 import CommentHandler from "../ChatComponent/CommentHandler";
 import Quill from "react-quill";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from '@mui/icons-material/Close';
+import { Card, Button } from "@nextui-org/react";
+
 
 interface Comment {
   key: number;
@@ -49,6 +48,7 @@ export default function EditorPage() {
   const [completeText, setCompleteText] = useState<string>("");
   const [showAIChangesDiv, setShowAIChangesDiv] = useState<boolean>(false);
   const [AIChanges, setAIChanges] = useState<string>("");
+  const [isChecked, setIsChecked] = useState<boolean>(true); 
 
 
   useEffect(() => {
@@ -58,15 +58,25 @@ export default function EditorPage() {
     }
   }, [AIChanges]);
 
+
   function handleSetRange (range: Range){
     // for 'Show in Editor'-Button functionality
     editor?.getEditor().setSelection(range);
     editor?.getEditor().root.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  function handleCloseOnClick (){
+  function handleDiscardOnClick (){
     setAIChanges("");
     setShowAIChangesDiv(false);
+  }
+
+  function handleCheckboxOnChange (event: ChangeEvent<HTMLInputElement>){
+      // if checkbox is checked
+      if(event.target.checked){
+        setIsChecked(true);
+      }else{
+        setIsChecked(false);
+      }
   }
 
   return (
@@ -80,15 +90,19 @@ export default function EditorPage() {
         <Card style={{ width: "60%", padding: "20px" }}>
           <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor} selectedText={selectedText} setSelectedText={setSelectedText} setCompleteText={setCompleteText}/>
           {showAIChangesDiv && (
-            <div style={{width: "30vw", height: "20vw", background: "#eee", position: "absolute", left: "100px", top: "100px", zIndex: "10000"}}>
-              <IconButton onClick={handleCloseOnClick}>
-                <CloseIcon/>
-              </IconButton>
-              <p>{AIChanges}</p>
-              <input type="checkbox"></input>
-              <p>Delete selected Comments</p>
-              <button>Accept changes</button>
-              <button>Deny changes</button>
+            <div style={{position: "absolute", left: "100px", top:"100px"}}>
+              <Card style={{ width: "40vw", padding: "1vw", backgroundColor: "#eee"}}>
+                <p style={{fontWeight: "bold", marginBottom: "1vw"}}>Changes made by the AI according to selected Comments</p>
+                <p style={{marginBottom: "1vw"}}>{AIChanges}</p>
+                <div style={{display: "flex", marginBottom: "1vw"}}>
+                  <input type="checkbox" checked={isChecked} onChange={handleCheckboxOnChange} ></input>
+                  <p style={{marginLeft: "0.5vw"}}>Delete selected Comments</p>
+                </div>
+                <div style={{display: "flex"}}>                  
+                  <Button color="success">Accept changes</Button>
+                  <Button onClick={handleDiscardOnClick}>Discard</Button>
+                </div>
+              </Card>
             </div>
           )}
         </Card>

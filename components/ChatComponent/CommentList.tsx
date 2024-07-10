@@ -4,7 +4,8 @@ import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
-import { buildPromptForMCP } from "@/OllamaSinglePromptFunction/ollamaMCPFunction";
+import { requestResponseForMCP } from "@/OllamaSinglePromptFunction/ollamaMCPFunction";
+
 
 
 interface Comment {
@@ -82,7 +83,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
   }
 
 
-  handleSubmitOnClick = () => {
+  handleSubmitOnClick = async () => {
     // If at least one comment is selected
     if(this.state.checkedKeys.length != 0){
 
@@ -106,9 +107,8 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
         }
         index += 1;
       }
-      buildPromptForMCP(completeText, userComments, userCommentsContext);
-      const response = "Test Response";
-
+      // const response = await requestResponseForMCP(completeText, userComments, userCommentsContext);
+      const response = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
       this.props.setAIChanges(response);
 
 
