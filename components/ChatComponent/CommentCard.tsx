@@ -27,15 +27,15 @@ interface Comment {
 interface CommentCardProps {
   comment: Comment;
   editor: Quill|null;
-  onEdit: (key: number, newContent: string, parentKey: number | null) => void;
-  onDelete: (key: number,parentId: number | null) => void;
-  onIncrement: (key: number) => void; 
+  onEdit: (comment: Comment, newContent: string) => void;
+  onDelete: (comment: Comment) => void;
+  onIncrement: (comment: Comment) => void; 
   addComment: (comment: Comment) => void;
   onGetRange: (index: number, length: number) => void;
 }
 
 interface CommentCardState {
-  hasBeenEdited: boolean;
+ // hasBeenEdited: boolean;
   isEditing: boolean;
   editContent: string;
   oldContent: string;
@@ -46,7 +46,7 @@ interface CommentCardState {
 
 class CommentCard extends Component<CommentCardProps, CommentCardState> {
   state: CommentCardState = {
-    hasBeenEdited: false,
+   // hasBeenEdited: false,
     isEditing: false,
     editContent: this.props.comment.content,
     oldContent: this.props.comment.content,
@@ -66,11 +66,11 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
   saveEdit = () => {
     if (this.state.oldContent !== this.state.editContent) {
       const { comment, onEdit } = this.props;
-      onEdit(comment.key, this.state.editContent, comment.parentKey);
+      onEdit(comment, this.state.editContent);
       this.setState({
         oldContent: this.state.editContent,
         isEditing: false,
-        hasBeenEdited: true,
+        //hasBeenEdited: true,
       });
     }
   };
@@ -107,7 +107,7 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
 
   render() {
     const { comment, onDelete, onIncrement } = this.props;
-    const { isEditing, editContent, showHistory, showReplyTextarea, hasBeenEdited } = this.state;
+    const { isEditing, editContent, showHistory, showReplyTextarea, } = this.state;
 
     return (
       <div className="card">
@@ -121,17 +121,17 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
             <IconButton onClick={this.enableEditMode}>
               <EditIcon />
             </IconButton>
-            <IconButton onClick={() => onDelete(comment.key, comment.parentKey)}>
+            <IconButton onClick={() => onDelete(comment)}>
               <DeleteIcon />
             </IconButton>
           </>
         )}
-        {hasBeenEdited && !isEditing && (
+        {comment.history.length > 0 && !isEditing && (
           <IconButton onClick={this.toggleHistory}>
             <HistoryIcon />
           </IconButton>
         )}
-        <IconButton onClick={() => onIncrement(comment.key)}>
+        <IconButton onClick={() => onIncrement(comment)}>
           <ThumbUpIcon />
         </IconButton>
         {comment.canReply && (
@@ -158,6 +158,7 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
       <div>
         <p className="card-text">{comment.content}</p>
         <div className='card-bottom'>
+          <p className='upvotes'>Upvotes: {comment.upvotes}</p>
         </div>
       </div>
     )}

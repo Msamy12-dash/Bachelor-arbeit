@@ -26,9 +26,9 @@ interface CommentListProps {
   comments: Comment[];
   editor: Quill|null;
   addComment: (comment: Comment) => void;
-  incrementUpvote: (key: number) => void;
-  deleteComment: (key: number, parentKey: number | null) => void
-  editComment: (key: number, newContent: string, parentKey: number | null) => void;
+  incrementUpvote: (comment: Comment) => void;
+  deleteComment: (comment: Comment) => void
+  editComment: (comment: Comment, newContent: string) => void;
   getRange: (index: number, length: number) => void;
 }
 
@@ -62,9 +62,9 @@ class CommentList extends Component<CommentListProps, CommentListState> {
       return (
         <div key={comment.key} className={classNames}>
           <CommentCard
-            onIncrement={() => this.props.incrementUpvote(comment.key)}
-            onDelete={(key, parentKey) => this.props.deleteComment(key, parentKey)}
-            onEdit={(key, newContent, parentKey) => this.props.editComment(key, newContent, parentKey)}
+            onIncrement={() => this.props.incrementUpvote(comment)}
+            onDelete={(comment) => this.props.deleteComment(comment)}
+            onEdit={(comment, newContent) => this.props.editComment(comment, newContent)}
             addComment={(newcomment) => this.props.addComment(newcomment)}
             onGetRange = {(index: number, length: number) => this.props.getRange(index, length)}
             comment={comment}
