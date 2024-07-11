@@ -216,15 +216,10 @@ export default function Editor({
         onChange={setText}
       />
       {showButton && (
-        <button onClick={handleCommentOnClick} style={{
+        <button className="new-comment-btn bg-blue-500 text-white py-1 px-3 rounded hover:bg-cyan-500 transition-colors" onClick={handleCommentOnClick} style={{
               position: 'absolute',
               top: `${buttonPosition!.top}px`,
-              left: `${buttonPosition!.left}px`,
-              background: "#eee",
-              border: '1px solid #ccc',
-              padding: '4px 13px',
-              borderRadius: "4px",
-              
+              left: `${buttonPosition!.left}px`,    
             }}>Comment </button>)
         }
 
@@ -234,20 +229,18 @@ export default function Editor({
           top: `${textareaPosition!.top}px`,
           left: `${textareaPosition!.left}px`}}>
 
-          <div className="newTextComment-body">
-              <div className='newTextComment-top'>
-                <h5 className='newTextComment-name'>Name</h5>
-                <IconButton onClick={handleCloseOnClick}>
-                  <CloseIcon/>
-                </IconButton>
-              </div>
-              <textarea  className="newTextComment-textarea" onChange={handleCommentChange} ref={textareaRef} placeholder='Add new Comment here'></textarea>
-
-              <button  className='newTextComment-send' onClick={handleSendOnClick}>Send</button>
-              
-              
-            
-          </div>
+            <div className="new-comment flex flex-col items-start p-4 rounded-lg shadow-md mt-2 mb-2">
+                <textarea
+                    ref={textareaRef}
+                    onChange={handleCommentChange}
+                    placeholder="Add a comment..."
+                    className="new-comment-input w-full min-h-20 p-2 mb-2 border border-gray-300 rounded-md resize-vertical text-base"
+                />
+                <div className="new-comment-buttons flex space-x-2">
+                    <button className="new-comment-btn bg-blue-500 text-white py-1 px-3 rounded hover:bg-cyan-500 transition-colors" onClick={handleSendOnClick}>Send</button>
+                    <button className="new-comment-close-btn bg-pink-500 text-white py-1 px-2 rounded hover:bg-yellow-500 transition-colors" onClick={handleCloseOnClick}>Cancel</button>
+                </div>
+            </div>
         </div>
       )}
     </div>
