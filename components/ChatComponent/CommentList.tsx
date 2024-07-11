@@ -4,7 +4,8 @@ import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
-//import {requestResponseForMCP} from "C:\--- UNI ---\inlp2024-1\components\OllamaSinglePromptFunction\ollamaMCPFunction.js"
+import { Spinner } from "@nextui-org/react";
+import {requestResponseForMCP} from "../../OllamaSinglePromptFunction/ollamaMCPFunction"
 
 interface Comment {
   key: number;
@@ -38,6 +39,7 @@ interface CommentListState {
   index: number;
   length: number;
   checkedKeys: number[];
+  loading: boolean;
 }
 
 class CommentList extends Component<CommentListProps, CommentListState> {
@@ -45,7 +47,8 @@ class CommentList extends Component<CommentListProps, CommentListState> {
     showTextarea: false,
     index: 0,
     length: 0,
-    checkedKeys: []
+    checkedKeys: [],
+    loading: false
   };
 
   toggleTextarea = () => {
@@ -78,6 +81,8 @@ class CommentList extends Component<CommentListProps, CommentListState> {
     // If at least one comment is selected
     if(this.state.checkedKeys.length != 0){
 
+      this.setState({loading: true});
+
       // Create prompt for the AI
       const completeText = this.props.editor?.getEditor().getText();
       let userComments = [];
@@ -98,12 +103,11 @@ class CommentList extends Component<CommentListProps, CommentListState> {
         }
         index += 1;
       }
-      //const response = await requestResponseForMCP(completeText, userComments, userCommentsContext);
-      const response = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
+      const response = await requestResponseForMCP(completeText, userComments, userCommentsContext);
+      // const response = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
       this.props.setAIChanges(response);
 
-
-
+      this.setState({loading: false});
     }
   }
 
@@ -160,7 +164,16 @@ class CommentList extends Component<CommentListProps, CommentListState> {
             <input type="checkbox" style={{marginLeft: "0.75vw", marginRight: "0.5vw"}}/>
           </div> */}
           <div style={{justifyContent: "center"}}>
-            <button onClick={this.handleSubmitOnClick} className="submitToAI-btn">Submit to AI</button>
+            <button onClick={this.handleSubmitOnClick} className="submitToAI-btn">
+                {this.state.loading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                      <Spinner color="current" />
+                  <span className="font-semibold">Submitting...</span>
+                  </div>
+                  ) : (
+                  "Submit to AI"
+                )}
+            </button>
           </div>
 
         </div>
