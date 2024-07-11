@@ -4,7 +4,7 @@ import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
-//install mui: npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
+//import {requestResponseForMCP} from "C:\--- UNI ---\inlp2024-1\components\OllamaSinglePromptFunction\ollamaMCPFunction.js"
 
 interface Comment {
   key: number;
@@ -30,19 +30,22 @@ interface CommentListProps {
   deleteComment: (key: number, parentKey: number | null) => void
   editComment: (key: number, newContent: string, parentKey: number | null) => void;
   getRange: (index: number, length: number) => void;
+  setAIChanges: Function;
 }
 
 interface CommentListState {
   showTextarea: boolean;
   index: number;
   length: number;
+  checkedKeys: number[];
 }
 
 class CommentList extends Component<CommentListProps, CommentListState> {
   state: CommentListState = {
     showTextarea: false,
     index: 0,
-    length: 0
+    length: 0,
+    checkedKeys: []
   };
 
   toggleTextarea = () => {
@@ -55,6 +58,56 @@ class CommentList extends Component<CommentListProps, CommentListState> {
       this.toggleTextarea();
     }
   };
+
+  newChecked = (key: number) => {
+    const currentKeys = this.state.checkedKeys;
+    currentKeys.push(key);
+    this.setState({checkedKeys: currentKeys});
+  }
+
+  unchecked = (key: number) => {
+    let currentKeys = this.state.checkedKeys;
+
+    // remove key from checkedKeys
+    currentKeys = currentKeys.filter(number => number !== key);
+    this.setState({checkedKeys:currentKeys});
+
+  }
+
+  handleSubmitOnClick = async () => {
+    // If at least one comment is selected
+    if(this.state.checkedKeys.length != 0){
+
+      // Create prompt for the AI
+      const completeText = this.props.editor?.getEditor().getText();
+      let userComments = [];
+      let userCommentsContext = [];
+      let index = 0;
+      for(let key of this.state.checkedKeys){
+        const comment = this.props.comments.filter(comment => comment.key === key);
+        
+        if(comment[0] != null){
+          userComments.push(comment[0].content);
+
+          if(comment[0].isTextSpecific){
+            const selectedText = this.props.editor?.getEditor().getText(comment[0].index, comment[0].length);
+            userCommentsContext.push(selectedText);
+          }else{
+            userCommentsContext.push("");
+          }
+        }
+        index += 1;
+      }
+      //const response = await requestResponseForMCP(completeText, userComments, userCommentsContext);
+      const response = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
+      this.props.setAIChanges(response);
+
+
+
+    }
+  }
+
+
 
   renderCommentsRecursive = (comments: Comment[], level = 0) => {
     return comments.map((comment) => {
@@ -69,6 +122,8 @@ class CommentList extends Component<CommentListProps, CommentListState> {
             onGetRange = {(index: number, length: number) => this.props.getRange(index, length)}
             comment={comment}
             editor={this.props.editor}
+            newChecked={this.newChecked}
+            unchecked={this.unchecked}
           />
           {comment.replies.length > 0 && (
             <div className={"replies replies-level-${level}"}>
@@ -84,20 +139,32 @@ class CommentList extends Component<CommentListProps, CommentListState> {
     const { comments } = this.props;
     const { showTextarea } = this.state;
     return (
-      <div className="comment-list"> 
-          {this.renderCommentsRecursive(comments)}
-          <div className='CommentListTextArea'>
-            {showTextarea ? (
-              <NewComment 
-              addComment={(comment: Comment) => this.handleAddComment(comment)}
-              cancel={this.toggleTextarea} />
-            ) : (
-              <IconButton onClick={this.toggleTextarea}>
-                <AddIcon />
-              </IconButton>
-            )}
+      <div>
+        <div className="comment-list"> 
+            <div className='CommentListTextArea'>
+              {showTextarea ? (
+                <NewComment 
+                addComment={(comment: Comment) => this.handleAddComment(comment)}
+                cancel={this.toggleTextarea} />
+              ) : (
+                <IconButton onClick={this.toggleTextarea}>
+                  <AddIcon />
+                </IconButton>
+              )}
+            </div>
+            {this.renderCommentsRecursive(comments)}
+            
           </div>
+          {/* <div style={{display: "flex", float: "right"}}>
+            <p>Select all</p>
+            <input type="checkbox" style={{marginLeft: "0.75vw", marginRight: "0.5vw"}}/>
+          </div> */}
+          <div style={{justifyContent: "center"}}>
+            <button onClick={this.handleSubmitOnClick} className="submitToAI-btn">Submit to AI</button>
+          </div>
+
         </div>
+
     );
   }
 }

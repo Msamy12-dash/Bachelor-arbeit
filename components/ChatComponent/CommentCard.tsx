@@ -32,6 +32,9 @@ interface CommentCardProps {
   onIncrement: (key: number) => void; 
   addComment: (comment: Comment) => void;
   onGetRange: (index: number, length: number) => void;
+  newChecked: (key: number) => void;
+  unchecked: (key: number) => void;
+
 }
 
 interface CommentCardState {
@@ -92,7 +95,7 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
     }));
   };
 
-  handleOnClick = () => {
+  handleShowInEditorOnClick  = () => {
 
     this.props.onGetRange(this.props.comment.index, this.props.comment.length);
   }
@@ -103,6 +106,16 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
     this.toggleReplyTextarea();
   };
 
+  handleCheckboxOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+
+    // if checkbox is checked
+    if(event.target.checked){
+      this.props.newChecked(this.props.comment.key);
+    }else{
+      this.props.unchecked(this.props.comment.key);
+    }
+  }
+
 
 
   render() {
@@ -110,79 +123,82 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
     const { isEditing, editContent, showHistory, showReplyTextarea, hasBeenEdited } = this.state;
 
     return (
-      <div className="card">
-         <div className="card-body">
-          <div className='card-top'>
-              <h5 className="card-title">{comment.name}</h5>
-              
-      <div className="EditDeleteHistory">
-        {!isEditing && (
-          <>
-            <IconButton onClick={this.enableEditMode}>
-              <EditIcon />
+      <div style={{display: "flex"}}> 
+        <div className="card">
+          <div className="card-body">
+            <div className='card-top'>
+                <h5 className="card-title">{comment.name}</h5>
+                
+        <div className="EditDeleteHistory">
+          {!isEditing && (
+            <>
+              <IconButton onClick={this.enableEditMode}>
+                <EditIcon />
+              </IconButton>
+              <IconButton onClick={() => onDelete(comment.key, comment.parentKey)}>
+                <DeleteIcon />
+              </IconButton>
+            </>
+          )}
+          {hasBeenEdited && !isEditing && (
+            <IconButton onClick={this.toggleHistory}>
+              <HistoryIcon />
             </IconButton>
-            <IconButton onClick={() => onDelete(comment.key, comment.parentKey)}>
-              <DeleteIcon />
+          )}
+          <IconButton onClick={() => onIncrement(comment.key)}>
+            <ThumbUpIcon />
+          </IconButton>
+          {comment.canReply && (
+            <IconButton onClick={() => this.toggleReplyTextarea()}>
+              <ReplyIcon />
             </IconButton>
-          </>
-        )}
-        {hasBeenEdited && !isEditing && (
-          <IconButton onClick={this.toggleHistory}>
-            <HistoryIcon />
-          </IconButton>
-        )}
-        <IconButton onClick={() => onIncrement(comment.key)}>
-          <ThumbUpIcon />
-        </IconButton>
-        {comment.canReply && (
-          <IconButton onClick={() => this.toggleReplyTextarea()}>
-            <ReplyIcon />
-          </IconButton>
-        )}
-      </div>
-    </div>
-
-    {comment.isTextSpecific && (<p className='commentedOn'>Commented on {comment.selectedText}</p>)}
-
-    {isEditing ? (
-      <div>
-        <textarea
-          className="edit-textarea"
-          value={editContent}
-          onChange={this.handleContentChange}
-        />
-        <button onClick={this.saveEdit} className="btn-save">Save</button>
-        <button onClick={this.cancelEdit} className="btn-cancel">Cancel</button>
-      </div>
-    ) : (
-      <div>
-        <p className="card-text">{comment.content}</p>
-        <div className='card-bottom'>
-          <p className='upvotes'>Upvotes: {comment.upvotes}</p>
+          )}
         </div>
       </div>
-    )}
 
-    {showReplyTextarea && (
-      <NewComment
-        addComment={(comment: Comment) => this.handleAddReply(comment)}  
-        cancel={this.toggleReplyTextarea}
-      />
-    )}
+      {comment.isTextSpecific && (<p className='commentedOn'>Commented on {comment.selectedText}</p>)}
 
-    {showHistory && (
-      <div className="comment-history">
-        <h6>History:</h6>
-        <ul>
-          {comment.history.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      </div>
-    )}
+      {isEditing ? (
+        <div>
+          <textarea
+            className="edit-textarea"
+            value={editContent}
+            onChange={this.handleContentChange}
+          />
+          <button onClick={this.saveEdit} className="btn-save">Save</button>
+          <button onClick={this.cancelEdit} className="btn-cancel">Cancel</button>
+        </div>
+      ) : (
+        <div>
+          <p className="card-text">{comment.content}</p>
+          <div className='card-bottom'>
+            <p className='upvotes'>Upvotes: {comment.upvotes}</p>
+          </div>
+        </div>
+      )}
+
+      {showReplyTextarea && (
+        <NewComment
+          addComment={(comment: Comment) => this.handleAddReply(comment)}  
+          cancel={this.toggleReplyTextarea}
+        />
+      )}
+
+      {showHistory && (
+        <div className="comment-history">
+          <h6>History:</h6>
+          <ul>
+            {comment.history.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+
+    {comment.isTextSpecific && (<a onClick={this.handleShowInEditorOnClick } className='showInEditor'>Show in Editor</a>)}
   </div>
-
-  {comment.isTextSpecific && (<a onClick={this.handleOnClick} className='showInEditor'>Show in Editor</a>)}
+  <input type='checkbox' onChange={this.handleCheckboxOnChange} style={{marginLeft: "0.5vw"}}/>
 </div>
     );
   }

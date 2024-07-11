@@ -1,12 +1,13 @@
 /* eslint-disable prettier/prettier */
 "use client";
-import React, { useState, useMemo } from "react";
-import { Card } from "@nextui-org/react";
+import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import Quill from "react-quill";
-
 import Lobby from "../MainPageComponent/Lobby";
 import CommentHandler from "../ChatComponent/CommentHandler";
+import { Card, Button } from "@nextui-org/react";
+
+
 
 interface Comment {
   key: number;
@@ -48,6 +49,22 @@ export default function EditorPage() {
   const [textSpecificComment, setTextSpecificComment] =
     useState<Comment | null>(null);
   const [editor, setEditor] = useState<Quill | null>(null);
+  const [selectedText, setSelectedText] = useState<string>("");
+  const [completeText, setCompleteText] = useState<string>("");
+  const [showAIChangesDiv, setShowAIChangesDiv] = useState<boolean>(false);
+  const [AIChanges, setAIChanges] = useState<string>("");
+  const [isChecked, setIsChecked] = useState<boolean>(true); 
+
+
+
+
+  useEffect(() => {
+    // If there is new MCP Response
+    if(AIChanges != ""){
+      setShowAIChangesDiv(true);
+    }
+  }, [AIChanges]);
+
 
   function handleSetRange(range: Range) {
     // for 'Show in Editor'-Button functionality
@@ -56,6 +73,21 @@ export default function EditorPage() {
       ?.getEditor()
       .root.scrollIntoView({ behavior: "smooth", block: "center" });
   }
+
+  function handleDiscardOnClick (){
+    setAIChanges("");
+    setShowAIChangesDiv(false);
+  }
+
+  function handleCheckboxOnChange (event: ChangeEvent<HTMLInputElement>){
+      // if checkbox is checked
+      if(event.target.checked){
+        setIsChecked(true);
+      }else{
+        setIsChecked(false);
+      }
+  }
+
 
   return (
     <>
@@ -68,6 +100,7 @@ export default function EditorPage() {
             room={currentRoom}
             setRange={handleSetRange}
             textSpecificComment={textSpecificComment}
+            setAIChanges={setAIChanges}
           />
         </Card>
 
@@ -78,7 +111,26 @@ export default function EditorPage() {
             setEditor={setEditor}
             setTextSpecificComment={setTextSpecificComment}
             userColor={userColor}
-          />
+            />
+            {/* Pop up card for MCP Changes */}
+            {showAIChangesDiv && (
+              <div style={{position: "absolute", left: "100px", top:"100px"}}>
+                <Card style={{ width: "40vw", padding: "1vw", backgroundColor: "#eee"}}>
+                  <p style={{fontWeight: "bold", marginBottom: "1vw"}}>Changes made by the AI according to selected Comments</p>
+                  <p style={{marginBottom: "1vw"}}>{AIChanges}</p>
+                  <div style={{display: "flex", marginBottom: "1vw"}}>
+                    <input type="checkbox" checked={isChecked} onChange={handleCheckboxOnChange} ></input>
+                    <p style={{marginLeft: "0.5vw"}}>Delete selected Comments</p>
+                  </div>
+                  <div style={{display: "flex"}}>                  
+                    <Button color="success">Accept changes</Button>
+                    <Button onClick={handleDiscardOnClick}>Discard</Button>
+                  </div>
+                </Card>
+              </div>
+            )}
+  
+          
         </Card>
         <Card style={{ width: "20%", padding: "10px" }}>
         </Card>
