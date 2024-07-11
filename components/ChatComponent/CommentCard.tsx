@@ -95,7 +95,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
   };
 
   return (
-    <div className={`card ${theme.palette.mode === 'dark' ? 'text-gray-300' : 'text-gray-700'} border border-gray-500 rounded-lg p-4 mb-4`}>
+    <div className={`card ${theme.palette.mode === 'dark' ? 'text-white' : 'text-gray-700'} border border-gray-500 rounded-lg p-4 mb-4`}>
 
       <div className="card-body">
         <div className='flex justify-between items-center mb-2'>
@@ -143,7 +143,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
               <button onClick={saveEdit} className="btn-save bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
                 Save
               </button>
-              <button onClick={cancelEdit} className="btn-cancel bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+              <button onClick={cancelEdit} className="btn-cancel bg-red-800 hover:bg-red-500 text-gray-800 font-bold py-2 px-4 rounded">
                 Cancel
               </button>
             </div>
