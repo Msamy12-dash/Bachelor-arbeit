@@ -1,4 +1,4 @@
-import React, { Component, ChangeEvent } from 'react';
+import React, { ChangeEvent } from 'react';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -7,7 +7,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ReplyIcon from '@mui/icons-material/Reply';
 import NewComment from './NewComment';
 import Quill from "react-quill";
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from 'next-themes';
 
 interface Comment {
   key: number;
@@ -27,7 +27,7 @@ interface Comment {
 
 interface CommentCardProps {
   comment: Comment;
-  editor: Quill|null;
+  editor: Quill | null;
   onEdit: (comment: Comment, newContent: string) => void;
   onDelete: (comment: Comment) => void;
   onIncrement: (comment: Comment) => void; 
@@ -35,17 +35,8 @@ interface CommentCardProps {
   onGetRange: (index: number, length: number) => void;
 }
 
-interface CommentCardState {
-  isEditing: boolean;
-  editContent: string;
-  oldContent: string;
-  showHistory: boolean;
-  showReplyTextarea: boolean;
-  parentKey: number | null;
-}
-
 const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDelete, onIncrement, addComment, onGetRange }) => {
-  const theme = useTheme();
+  const { theme } = useTheme();
 
   const [isEditing, setIsEditing] = React.useState(false);
   const [editContent, setEditContent] = React.useState(comment.content);
@@ -95,10 +86,17 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
   };
 
   return (
-    <div className={`card ${theme.palette.mode === 'dark' ? 'text-white' : 'text-gray-700'} border border-gray-500 rounded-lg p-4 mb-4`}>
+    <div className={`card ${theme === 'dark' ? 'text-white' : 'text-gray-700'} border border-gray-500 rounded-lg mb-4`}>
 
       <div className="card-body">
-        <div className='flex justify-between items-center mb-2'>
+        {comment.isTextSpecific && (
+          <div className={theme === 'dark' ? '' : 'bg-gray-100 rounded-t-lg'}>
+            <p className={`text-left ${theme === 'dark' ? 'text-white' : 'text-gray-600'} pl-2 pt-2 italic`}>Commented on:</p>
+            <p className={`text-center ${theme === 'dark' ? 'text-white' : 'text-gray-600'} p-2 italic`}>{comment.selectedText}</p>
+          </div>
+        )}
+
+        <div className='flex justify-between items-center p-4 rounded-t-lg'>
           <h5 className="card-title text-lg font-semibold">{comment.name}</h5>
 
           <div className="EditDeleteHistory">
@@ -128,10 +126,6 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
           </div>
         </div>
 
-        {comment.isTextSpecific && (
-          <p className='text-gray-600 italic mb-2'>Commented on {comment.selectedText}</p>
-        )}
-
         {isEditing ? (
           <div className="mb-2">
             <textarea
@@ -151,7 +145,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
         ) : (
           <div>
             <p className="card-text">{comment.content}</p>
-            <div className='flex justify-between items-center mt-2'>
+            <div className='flex justify-between items-center pb-2 mt-2'>
             </div>
           </div>
         )}
@@ -176,7 +170,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
       </div>
 
       {comment.isTextSpecific && (
-        <a onClick={handleOnClick} className='text-blue-500 hover:underline cursor-pointer block mt-2'>Show in Editor</a>
+        <a onClick={handleOnClick} className='text-blue-500 hover:underline cursor-pointer pb-2 block mt-1'>Show in Editor</a>
       )}
     </div>
   );

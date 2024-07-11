@@ -59,7 +59,7 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
         const { cancel } = this.props;
 
         return (
-            <div className="new-comment flex flex-col items-start p-4 bg-white rounded-lg shadow-md mt-2 mb-2">
+            <div className="new-comment flex flex-col items-start p-4 rounded-lg shadow-md mt-2 mb-2">
                 <textarea
                     ref={this.textareaRef}
                     value={this.state.content}
