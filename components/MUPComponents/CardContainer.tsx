@@ -90,8 +90,16 @@ export default function CardContainer({
     }
   };
 
+  const handleDiscardCard = (id: string) => {
+    const yarray = ydoc.getArray<CardData>("cards");
+    const index = yarray.toArray().findIndex((card) => card.id === id);
+    if (index !== -1) {
+      yarray.delete(index, 1);
+    }
+  };
+
   return (
-    <div className="flex flex-col bg-gradient-to-bfrom-gray-100 to-gray-200 rounded-lg shadow-lg overflow-hidden relative">
+    <div className="flex flex-col bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg shadow-lg overflow-hidden relative">
       <div className="flex flex-col items-center mb-2 mx-4">
         <Button
           className={`inline-flex items-center justify-center w-full m-6 px-6 py-6 text-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full ${
@@ -106,24 +114,21 @@ export default function CardContainer({
         </Button>
       </div>
       <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 px-2 pb-6"
-  style={{ maxHeight: "72vh", minHeight: "400px" }}>
-  <div className="flex flex-col space-y-6">
-    {cards.map((card) => (
-      <MUPCard
-        key={card.id}
-        cardData={card}
-        room={room}
-        onTextChange={handleCardTextChange}
-        onResponseChange={handleResponseChange}
-        onSubmittingChange={handleSubmittingChange}
-      />
-    ))}
-  </div>
-</div>
-
+        style={{ maxHeight: "72vh", minHeight: "400px" }}>
+        <div className="flex flex-col space-y-6">
+          {cards.map((card) => (
+            <MUPCard
+              key={card.id}
+              cardData={card}
+              room={room}
+              onTextChange={handleCardTextChange}
+              onResponseChange={handleResponseChange}
+              onSubmittingChange={handleSubmittingChange}
+              onDiscard={handleDiscardCard}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
-  
-  
-  
 }
