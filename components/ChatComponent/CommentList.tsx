@@ -32,7 +32,6 @@ interface CommentListProps {
   editComment: (comment: Comment, newContent: string) => void;
   getRange: (index: number, length: number) => void;
   setAIChanges: Function;
-  editor: Quill | null;
 }
 
 interface CommentListState {
@@ -47,7 +46,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
   state: CommentListState = {
     showTextarea: false,
     showSubcomments: true,
-    showAllSubcomments: true,,
+    showAllSubcomments: true,
     checkedKeys: [],
     loading: false
   };
@@ -163,42 +162,45 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     const { comments } = this.props;
     const { showTextarea, showAllSubcomments } = this.state;
     return (
-      <div className="comment-list-container h-[42vw] overflow-auto">
-        {comments.length > 0 && (
+      <div>
+        <div className="comment-list-container h-[35vw] overflow-auto">
+          {comments.length > 0 && (
           <button className="toggle-all-subcomments-btn mb-2" onClick={this.toggleAllSubcomments}>
             {showAllSubcomments ? 'Hide Subcomments' : 'Show All Subcomments'}
           </button>
-        )}
-        <div className="CommentListTextArea mb-2">
-          <IconButton onClick={this.toggleTextarea}>
-            <AddIcon />
-          </IconButton>
-        </div>
-        {showTextarea && (
-          <NewComment addComment={(comment: Comment) => this.handleAddComment(comment)} cancel={this.toggleTextarea} />
-        )}
-        <div className="comment-list">
-          {this.renderCommentsRecursive(comments)}
-        </div>
-      </div>
-      {/* <div style={{display: "flex", float: "right"}}>
-            <p>Select all</p>
-            <input type="checkbox" style={{marginLeft: "0.75vw", marginRight: "0.5vw"}}/>
-          </div> */}
-          <div style={{justifyContent: "center"}}>
-            <button onClick={this.handleSubmitOnClick} className="submitToAI-btn">
-                {this.state.loading ? (
-                  <div className="flex items-center justify-center space-x-2">
-                      <Spinner color="current" />
-                  <span className="font-semibold">Submitting...</span>
-                  </div>
-                  ) : (
-                  "Submit to AI"
-                )}
-            </button>
+          )}
+          <div className="CommentListTextArea mb-2">
+            <IconButton onClick={this.toggleTextarea}>
+              <AddIcon />
+            </IconButton>
           </div>
+          {showTextarea && (
+            <NewComment addComment={(comment: Comment) => this.handleAddComment(comment)} cancel={this.toggleTextarea} />
+          )}
+          <div className="comment-list">
+          { this.renderCommentsRecursive(comments)}
+          </div>
+      
+      
 
         </div>
+        {/* <div style={{display: "flex", float: "right"}}>
+              <p>Select all</p>
+              <input type="checkbox" style={{marginLeft: "0.75vw", marginRight: "0.5vw"}}/>
+            </div> */}
+        <div style={{justifyContent: "center"}}>
+          <button onClick={this.handleSubmitOnClick} className="submitToAI-btn">
+            {this.state.loading ? (
+              <div className="flex items-center justify-center space-x-2">
+                  <Spinner color="current" />
+              <span className="font-semibold">Submitting...</span>
+              </div>
+              ) : (
+              "Submit to AI"
+            )}
+          </button>
+        </div>
+    </div>
     );
   }
 }

@@ -256,7 +256,7 @@ export default function Editor({
         date: date,
         upvotes: 0,
         isTextSpecific: true,
-        selectedText: selectedText,
+        shortenedSelectedText: shortenedSelectedText,
         index: selectedRange!.index,
         length: selectedRange!.length,
         history: [],
