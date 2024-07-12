@@ -1,0 +1,30 @@
+Connecting to MongoDB and Accessing Collections
+To connect to the MongoDB database and access collections, you can use the clientPromise provided in the lib/mongodb.js file. This ensures that a single MongoDB client connection is reused across multiple API requests. Here’s how you can do it:
+
+Import clientPromise from lib/mongodb.js.
+Await clientPromise to get the connected MongoDB client.
+Use the client to access the desired database and collection.
+import clientPromise from '@/lib/mongodb';
+
+async function handler(req, res) {
+    try {
+        const client = await clientPromise;  // Reuse the MongoDB client connection
+        const db = client.db('mainText');    // Access the 'mainText' database
+        const collection = db.collection('text');  // Access the 'text' collection
+
+        // Example operation: Update a document
+        const result = await collection.updateOne(
+            { room: 'someRoom' },
+            { $set: { text: 'newText', updatedAt: new Date() } },
+            { upsert: true }
+        );
+
+        res.status(200).json({ message: 'Operation successful', result });
+    } catch (error) {
+        console.error('Operation failed:', error);
+        res.status(500).json({ error: 'Operation failed' });
+    }
+}
+
+export default handler;
+
