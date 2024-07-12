@@ -16,7 +16,7 @@ interface Comment {
   date: string; 
   upvotes: number;
   isTextSpecific: boolean;
-  selectedText: string;
+  shortenedSelectedText: string;
   index: number;
   length: number;
   history: string[]; 
@@ -33,6 +33,9 @@ interface CommentCardProps {
   onIncrement: (comment: Comment) => void; 
   addComment: (comment: Comment) => void;
   onGetRange: (index: number, length: number) => void;
+  newChecked: (key: number) => void;
+  unchecked: (key: number) => void;
+
 }
 
 const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDelete, onIncrement, addComment, onGetRange }) => {
@@ -75,15 +78,32 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
     setParentKey(comment.key);
   };
 
-  const handleOnClick = () => {
+  const handleShowInEditorOnClick  = () => {
+
     onGetRange(comment.index, comment.length);
-  };
+  }
 
   const handleAddReply = (comment: Comment) => {
     comment.parentKey = parentKey;
     addComment(comment);
     toggleReplyTextarea();
   };
+
+  const handleCheckboxOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+
+    // if checkbox is checked
+    if(event.target.checked){
+      newChecked(comment.key);
+    }else{
+      unchecked(comment.key);
+    }
+  }
+
+
+
+  render() {
+    const { comment, onDelete, onIncrement } = this.props;
+    const { isEditing, editContent, showHistory, showReplyTextarea, hasBeenEdited } = this.state;
 
   return (
     <div className={`card ${theme === 'dark' ? 'text-white' : 'text-gray-700'} border border-gray-500 rounded-lg mb-4`}>
@@ -169,10 +189,12 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
         )}
       </div>
 
-      {comment.isTextSpecific && (
-        <a onClick={handleOnClick} className='text-blue-500 hover:underline cursor-pointer pb-2 block mt-1'>Show in Editor</a>
+        {comment.isTextSpecific && (
+        <a onClick={handleShowInEditorOnClick } className='text-blue-500 hover:underline cursor-pointer pb-2 block mt-1'>Show in Editor</a>
       )}
-    </div>
+        </div>
+        <input type='checkbox' onChange={handleCheckboxOnChange} style={{marginLeft: "0.5vw"}}/>
+      </div>
   );
 };
 

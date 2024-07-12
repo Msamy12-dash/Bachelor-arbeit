@@ -32,6 +32,10 @@
   margin: 0;
 }
 
+.card-text{
+    text-align: left;
+}
+
 .comment-history {
   margin-top: 10px;
 }
@@ -214,8 +218,8 @@
 
 
 .commentsList{
-  overflow: auto;
-  height: 35vw;
+    overflow: auto;
+    height: 35vw;
 }
 
 .comment{
@@ -228,8 +232,8 @@
 }
 
 .comment-list {
-  max-height: 850px;
-  overflow-y: scroll;
+    height: 32vw;; 
+    overflow: auto;
 }
 
 .comment {

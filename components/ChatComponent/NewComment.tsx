@@ -10,19 +10,19 @@ interface NewCommentState {
 }
 
 interface Comment {
-    key: number;
-    name: string;
-    content: string;
-    date: string; 
-    upvotes: number;
-    isTextSpecific: boolean;
-    selectedText: string;
-    index: number;
-    length: number;
-    history: string[]; 
-    replies: Comment[];
-    parentKey: number | null;
-    canReply: boolean;
+  key: number;
+  name: string;
+  content: string;
+  date: string;
+  upvotes: number;
+  isTextSpecific: boolean;
+  shortenedSelectedText: string;
+  index: number;
+  length: number;
+  history: string[];
+  replies: Comment[];
+  parentKey: number | null;
+  canReply: boolean;
 }
 
 class NewComment extends Component<NewCommentProps, NewCommentState> {
@@ -42,18 +42,34 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
         });
     }
 
-    handleOnClick = () => {
-        const textarea = this.textareaRef.current;
-        if (textarea && textarea.value !== "") {
-            const { content } = this.state;
-            const name = "Name"; // Placeholder for the name
-            const date = new Date().toLocaleDateString();
-            const comment: Comment = {key: 0, name: name, content: content, date: date, upvotes: 0, isTextSpecific: false, selectedText: "", index: 0, length: 0, history: [], replies: [], parentKey: null, canReply: true};
-            this.props.addComment(comment);  // Nur den Hauptkommentar hinzufügen
-            textarea.value = "";
-            this.setState({ content: "" });
-        }
+  handleOnClick = () => {
+    const textarea = this.textareaRef.current;
+
+    if (textarea && textarea.value !== "") {
+      const { content } = this.state;
+      const name = "Name"; // Placeholder for the name
+      const date = new Date().toLocaleDateString();
+      const comment: Comment = {
+        key: 0,
+        name: name,
+        content: content,
+        date: date,
+        upvotes: 0,
+        isTextSpecific: false,
+        shortenedSelectedText: "",
+        index: 0,
+        length: 0,
+        history: [],
+        replies: [],
+        parentKey: null,
+        canReply: true,
+      };
+
+      this.props.addComment(comment); // Nur den Hauptkommentar hinzufügen
+      textarea.value = "";
+      this.setState({ content: "" });
     }
+  };
 
     render() {
         const { cancel } = this.props;
