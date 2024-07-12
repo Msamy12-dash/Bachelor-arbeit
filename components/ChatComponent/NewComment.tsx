@@ -72,21 +72,6 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
     }
   };
 
-  render() {
-    const { cancel } = this.props;
-
-    handleOnClick = () => {
-        const textarea = this.textareaRef.current;
-        if (textarea && textarea.value !== "") {
-            const { content } = this.state;
-            const name = "Name"; // Placeholder for the name
-            const date = new Date().toLocaleDateString();
-            const comment: Comment = {key: 0, name: name, content: content, date: date, upvotes: 0, isTextSpecific: false, selectedText: "", index: 0, length: 0, history: [], replies: [], parentKey: null, canReply: true};
-            this.props.addComment(comment);  // Nur den Hauptkommentar hinzufügen
-            textarea.value = "";
-            this.setState({ content: "" });
-        }
-    }
 
     render() {
         const { cancel } = this.props;
