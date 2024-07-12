@@ -40,8 +40,8 @@ interface CommentListState {
 class CommentList extends Component<CommentListProps, CommentListState> {
   state: CommentListState = {
     showTextarea: false,
-    showSubcomments: true, // Default to showing subcomments
-    showAllSubcomments: true, // Default to showing all subcomments
+    showSubcomments: true,
+    showAllSubcomments: true,
   };
 
   toggleTextarea = () => {
@@ -95,21 +95,22 @@ class CommentList extends Component<CommentListProps, CommentListState> {
     const { comments } = this.props;
     const { showTextarea, showAllSubcomments } = this.state;
     return (
-      <div className="comment-list max-h-[850px] overflow-y-scroll">
+      <div className="comment-list-container h-[42vw] overflow-auto">
         {comments.length > 0 && (
-          <button className="toggle-all-subcomments-btn" onClick={this.toggleAllSubcomments}>
+          <button className="toggle-all-subcomments-btn mb-2" onClick={this.toggleAllSubcomments}>
             {showAllSubcomments ? 'Hide Subcomments' : 'Show All Subcomments'}
           </button>
         )}
-        {this.renderCommentsRecursive(comments)}
-        <div className="CommentListTextArea">
-          {showTextarea ? (
-            <NewComment addComment={(comment: Comment) => this.handleAddComment(comment)} cancel={this.toggleTextarea} />
-          ) : (
-            <IconButton onClick={this.toggleTextarea}>
-              <AddIcon />
-            </IconButton>
-          )}
+        <div className="CommentListTextArea mb-2">
+          <IconButton onClick={this.toggleTextarea}>
+            <AddIcon />
+          </IconButton>
+        </div>
+        {showTextarea && (
+          <NewComment addComment={(comment: Comment) => this.handleAddComment(comment)} cancel={this.toggleTextarea} />
+        )}
+        <div className="comment-list">
+          {this.renderCommentsRecursive(comments)}
         </div>
       </div>
     );
@@ -117,4 +118,3 @@ class CommentList extends Component<CommentListProps, CommentListState> {
 }
 
 export default CommentList;
-

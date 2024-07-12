@@ -69,7 +69,7 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
                 />
                 <div className="new-comment-buttons flex space-x-2">
                     <button className="new-comment-btn bg-blue-500 text-white py-1 px-3 rounded hover:bg-cyan-500 transition-colors" onClick={this.handleOnClick}>Send</button>
-                    <button className="new-comment-close-btn bg-pink-500 text-white py-1 px-2 rounded hover:bg-yellow-500 transition-colors" onClick={cancel}>Cancel</button>
+                    <button className="new-comment-close-btn bg-red-500 text-white py-1 px-2 rounded hover:bg-red-200 transition-colors" onClick={cancel}>Cancel</button>
                 </div>
             </div>
         );

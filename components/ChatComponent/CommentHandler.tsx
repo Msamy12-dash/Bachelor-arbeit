@@ -302,7 +302,7 @@ export default function CommentHandler({
 
   return (
     <div className="comments text-center block">
-      <div className="Comment-font text-xl font-bold">Comments</div>
+      <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
       <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
         {showComments ? "Hide Comments" : "Show Comments"}
       </button>

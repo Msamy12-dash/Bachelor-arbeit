@@ -137,7 +137,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
               <button onClick={saveEdit} className="btn-save bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
                 Save
               </button>
-              <button onClick={cancelEdit} className="btn-cancel bg-red-800 hover:bg-red-500 text-gray-800 font-bold py-2 px-4 rounded">
+              <button onClick={cancelEdit} className="btn-cancel bg-red-500 hover:bg-red-800 text-white font-bold py-2 px-4 rounded">
                 Cancel
               </button>
             </div>
@@ -158,7 +158,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
         )}
 
         {showHistory && (
-          <div className="comment-history mt-2">
+          <div className="comment-history pb-2 mt-2 ">
             <h6 className="text-gray-800 font-semibold">History:</h6>
             <ul className="list-disc list-inside">
               {comment.history.map((item, index) => (
