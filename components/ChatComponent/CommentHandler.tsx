@@ -15,7 +15,7 @@ interface Comment {
   history: string[]; 
   replies: Comment[];
   parentKey: number | null;
-  canReply: boolean
+  canReply: boolean;
 }
 
 export default function CommentHandler({
@@ -26,20 +26,53 @@ export default function CommentHandler({
 }: Readonly<{
   room: string;
   textSpecificComment: Comment | null;
-  editor: Quill|null;
+  editor: Quill | null;
   setRange: Function;
 }>) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
-  const [key, setKey] = useState<number>(0); 
 
-  const getNewKey = (): number => {
-    const newKey = key;
-    setKey(key + 1);
+  const fetchCurrentKey = async (): Promise<number> => {
+    try {
+      const response = await fetch('/api/get-key');
+      if (!response.ok) {
+        throw new Error('Failed to fetch key');
+      }
+      const data = await response.json();
+      return data.currentKey;
+    } catch (error) {
+      console.error('Failed to fetch key:', error);
+      return 0;
+    }
+  };
+  
+  const updateKey = async (newKey: number) => {
+    try {
+      const response = await fetch('/api/update-key', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ currentKey: newKey }),
+      });      
+      if (!response.ok) {
+        throw new Error('Failed to update key');
+      }
+      const data = await response.json();
+      console.log('Key updated successfully:', data);
+    } catch (error) {
+      console.error('Failed to update key:', error);
+    }
+  };
+
+  const getNewKey = async (): Promise<number> => {
+    const currentKey = await fetchCurrentKey();
+    const newKey = currentKey + 1;
+    await updateKey(newKey);
     return newKey;
   };
 
-  // Funktion zum Speichern eines neuen Kommentars in der MongoDB
+  // Function to save a new comment in MongoDB
   const saveComment = async (comment: Comment) => {
     try {
       const response = await fetch('/api/save-comment', {
@@ -47,7 +80,7 @@ export default function CommentHandler({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ room, comment }),
+        body: JSON.stringify({ comment }),
       });
       if (!response.ok) {
         throw new Error('Failed to save comment');
@@ -59,14 +92,15 @@ export default function CommentHandler({
     }
   };
 
-  const addComment = (comment: Comment) => {
-    const newKey = getNewKey();
+  const addComment = async (comment: Comment) => {
+    const newKey = await getNewKey();
     let canReply = true;
 
-    //check if its a subsubcomment -> cant reply
+    // Check if it's a subsubcomment -> can't reply
     if (comment.parentKey !== null) {
       // Find the comment with the matching parentkey
-      const parentComment = comments.find(comment => comment.key === comment.parentKey);
+      const parentKey = comment.parentKey;
+      const parentComment = comments.find(comment => comment.key === parentKey);
       if (parentComment === undefined) {
         canReply = false;
       }
@@ -88,11 +122,13 @@ export default function CommentHandler({
       canReply: canReply
     };
 
+    // Save comment in Database
+    saveComment(newComment);
+
     if (comment.parentKey === null) {
       // If parentkey is null, add the new comment as a root comment
       setComments(prevComments => [...prevComments, newComment]);
-      // save only main comments
-      saveComment(newComment); // Speichert den Kommentar in der MongoDB
+      // Save only main comments
     } else {
       const addReplyToComment = (commentsArray: Comment[], keyToFind: number, replyToAdd: Comment): Comment[] => {
         return commentsArray.map(comment => {
@@ -100,7 +136,7 @@ export default function CommentHandler({
             // Add new comment as a reply to this comment
             return {
               ...comment,
-              replies: [...comment.replies, replyToAdd]
+              replies: [...comment.replies, replyToAdd],
             };
           } else if (comment.replies.length > 0) {
             // Recursively check in replies
@@ -112,10 +148,9 @@ export default function CommentHandler({
           return comment;
         });
       };
-  
       const updatedComments = addReplyToComment(comments, comment.parentKey, newComment);
       setComments(updatedComments);
-    }
+    } 
   };
 
   useEffect(() => {
@@ -128,9 +163,9 @@ export default function CommentHandler({
         }
         const data = await response.json();
         setComments(data);
-
+  
       } catch (error) {
-
+  
       }
     };
 
@@ -145,10 +180,10 @@ export default function CommentHandler({
   }, [textSpecificComment]);
 
 
-  const incrementUpvote = (key: number) => {
+  const incrementUpvote = async (IncrementComment: Comment) => {
     const updateUpvote = (comments: Comment[]): Comment[] => {
       return comments.map(comment => {
-        if (comment.key === key) {
+        if (comment.key === IncrementComment.key) {
           return {
             ...comment,
             upvotes: comment.upvotes + 1
@@ -162,13 +197,32 @@ export default function CommentHandler({
         return comment;
       });
     };
-    setComments(prevComments => updateUpvote(prevComments));
+    const updatedComments = updateUpvote(comments);
+    setComments(updatedComments);
+
+    try {
+      // API call to update the comment in MongoDB
+      const response = await fetch('/api/increment-comment', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ comment: IncrementComment }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update comment');
+      }
+      const data = await response.json();
+      console.log('Comment updated successfully:', data);
+    } catch (error) {
+      console.error('Failed to update comment:', error);
+    }
   };
 
-  const deleteComment = async (key: number, parentKey: number | null) => {
+  const deleteComment = async (DeleteComment: Comment) => {
     const removeComment = (comments: Comment[]): Comment[] => {
       return comments.reduce((acc, comment) => {
-        if (comment.key === key && comment.parentKey === parentKey) {
+        if (comment.key === DeleteComment.key && comment.parentKey === DeleteComment.parentKey) {
           return acc;
         } else {
           const updatedReplies = comment.replies.length > 0 ? removeComment(comment.replies) : [];
@@ -183,15 +237,15 @@ export default function CommentHandler({
   
     const updatedComments = removeComment(comments);
     setComments(updatedComments);
-
+    
     try {
-      // API-Aufruf zum Löschen des Kommentars in der MongoDB
+      // API call to delete the comment in MongoDB
       const response = await fetch('/api/delete-comment', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ room, key }),
+        body: JSON.stringify({ comment: DeleteComment }),
       });
       if (!response.ok) {
         throw new Error('Failed to delete comment');
@@ -203,10 +257,10 @@ export default function CommentHandler({
     }
   };
 
-  const editComment = async (key: number, newContent: string, parentKey: number | null) => {
+  const editComment = async (EditComment: Comment, newContent: string) => {
     const updateComment = (comments: Comment[]): Comment[] => {
       return comments.map((comment) => {
-        if (comment.key === key && comment.parentKey === parentKey) {
+        if (comment.key === EditComment.key && comment.parentKey === EditComment.parentKey) {
           return { ...comment, history: [...comment.history, comment.content], content: newContent };
         }
         if (comment.replies.length > 0) {
@@ -216,16 +270,17 @@ export default function CommentHandler({
       });
     };
 
-    setComments(prevComments => updateComment(prevComments));
+    const updatedComments = updateComment(comments);
+    setComments(updatedComments);  
 
     try {
-      // API-Aufruf zum Aktualisieren des Kommentars in der MongoDB
+      // API call to update the comment in MongoDB
       const response = await fetch('/api/update-comment', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ room, key, content: newContent }),
+        body: JSON.stringify({ comment: EditComment, content: newContent }),
       });
       if (!response.ok) {
         throw new Error('Failed to update comment');
@@ -246,21 +301,23 @@ export default function CommentHandler({
   
 
   return (
-    <div className="comments">
-      <div className="Comment-font">Comments</div>
-      <button onClick={() => setShowComments(!showComments)} className="HideShowComments">
+    <div className="comments text-center block">
+      <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
+      <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
         {showComments ? "Hide Comments" : "Show Comments"}
       </button>
       {showComments && (
-        <CommentList
-          addComment={addComment}
-          incrementUpvote={incrementUpvote}
-          deleteComment={deleteComment}
-          editComment={editComment}
-          getRange={getRange}
-          comments={comments}
-          editor={editor}
-        />
+        <div className="mt-8">
+          <CommentList
+            comments={comments}
+            incrementUpvote={incrementUpvote}
+            deleteComment={deleteComment}
+            editComment={editComment}
+            addComment={addComment}
+            editor={editor}
+            getRange={getRange}
+          />
+        </div>
       )}
     </div>
   );
