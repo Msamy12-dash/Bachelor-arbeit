@@ -3,16 +3,15 @@ import { MongoClient } from 'mongodb';
 
 interface Comment {
   key: number;
-  content: string;
-  history: string[]; 
-  replies: Comment[];
+  upvotes: number;
   parentKey: number | null;
-  canReply: boolean
+  canReply: boolean;
+  replies: Comment[];
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
-    const { comment, content }: { comment: Comment; content: string } = req.body;
+    const { comment }: { comment: Comment } = req.body;
 
     const client = new MongoClient('mongodb+srv://inlp:INLP123@cluster0.vpm9s6o.mongodb.net/mainText?retryWrites=true&w=majority&appName=Cluster0');
 
@@ -21,27 +20,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const db = client.db('mainText');
       let result;
 
-      const updatedHistory = [...comment.history, comment.content];
-
       //if comment is main comment
       if (comment.parentKey === null) {
         result = await db.collection('comments').updateOne(
           { key: comment.key },
-          { $set: { 
-              content,
-              history: updatedHistory,
-            }
-          }
+          { $inc: { upvotes: 1} }
         );
 
       //if comment is subcomment
       } else if (comment.canReply === true) {
         result = await db.collection('comments').updateOne(
           { key: comment.parentKey, 'replies.key': comment.key },
-          { $set: { 
-            "replies.$.content": content, 
-            "replies.$.history": updatedHistory
-          } 
+          { $inc: { "replies.$.upvotes": 1 } 
         });
 
       //if comment is subsubcomment
@@ -54,9 +44,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               result = await db.collection('comments').updateOne(
                 { key: currentComment.key, "replies.replies.key": comment.key },
                 {
-                  $set: {
-                    "replies.$[outer].replies.$[inner].content": content,
-                    "replies.$[outer].replies.$[inner].history": updatedHistory
+                  $inc: {
+                    "replies.$[outer].replies.$[inner].upvotes": 1
                   }
                 },
                 {
@@ -71,10 +60,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         }
       }
-      res.status(200).json({ message: 'Comment updated successfully', result });
+
+      res.status(200).json({ message: 'Upvotes updated successfully', result });
     } catch (error) {
-      console.error('Failed to update comment:', error);
-      res.status(500).json({ error: 'Failed to update comment' });
+      console.error('Failed to update upvotes:', error);
+      res.status(500).json({ error: 'Failed to update upvotes' });
     } finally {
       await client.close();
     }
