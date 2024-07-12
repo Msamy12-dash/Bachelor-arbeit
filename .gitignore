@@ -7,6 +7,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+nextjs.log
+partykit.log
+llama3.log
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 

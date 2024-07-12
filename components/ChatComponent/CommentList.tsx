@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component, useEffect } from "react";
 import CommentCard from "./CommentCard";
 import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
@@ -14,7 +14,7 @@ interface Comment {
   date: string; 
   upvotes: number;
   isTextSpecific: boolean;
-  selectedText: string;
+  shortenedSelectedText: string;
   index: number;
   length: number;
   history: string[]; 
@@ -25,13 +25,13 @@ interface Comment {
 
 interface CommentListProps {
   comments: Comment[];
-  editor: Quill|null;
   addComment: (comment: Comment) => void;
   incrementUpvote: (key: number) => void;
   deleteComment: (key: number, parentKey: number | null) => void
   editComment: (key: number, newContent: string, parentKey: number | null) => void;
   getRange: (index: number, length: number) => void;
   setAIChanges: Function;
+  editor: Quill | null;
 }
 
 interface CommentListState {
@@ -42,7 +42,7 @@ interface CommentListState {
   loading: boolean;
 }
 
-class CommentList extends Component<CommentListProps, CommentListState> {
+class CommentList extends Component<CommentListProps, CommentListState>  {
   state: CommentListState = {
     showTextarea: false,
     index: 0,
@@ -50,6 +50,8 @@ class CommentList extends Component<CommentListProps, CommentListState> {
     checkedKeys: [],
     loading: false
   };
+
+  
 
   toggleTextarea = () => {
     this.setState((prevState) => ({ showTextarea: !prevState.showTextarea }));
@@ -138,6 +140,11 @@ class CommentList extends Component<CommentListProps, CommentListState> {
       );
     });
   };
+
+
+  
+
+
 
   render() {
     const { comments } = this.props;

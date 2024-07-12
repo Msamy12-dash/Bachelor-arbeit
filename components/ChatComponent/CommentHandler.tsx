@@ -9,7 +9,7 @@ interface Comment {
   date: string; 
   upvotes: number;
   isTextSpecific: boolean;
-  selectedText: string;
+  shortenedSelectedText: string;
   index: number;
   length: number;
   history: string[]; 
@@ -21,8 +21,8 @@ interface Comment {
 export default function CommentHandler({
   room,
   textSpecificComment,
-  editor,
   setRange,
+  editor,
   setAIChanges
 }: Readonly<{
   room: string;
@@ -81,7 +81,7 @@ export default function CommentHandler({
       date: comment.date,
       upvotes: 0,
       isTextSpecific: comment.isTextSpecific,
-      selectedText: comment.selectedText,
+      shortenedSelectedText: comment.shortenedSelectedText,
       index: comment.index,
       length: comment.length,
       history: [],

@@ -30,6 +30,10 @@
     margin: 0;
 }
 
+.card-text{
+    text-align: left;
+}
+
 .comment-history {
     margin-top: 10px;
 }
@@ -216,7 +220,7 @@
 /*
 .commentsList{
     overflow: auto;
-    height: 35vw;
+    height: 32vw;
 }
 
 .comment{

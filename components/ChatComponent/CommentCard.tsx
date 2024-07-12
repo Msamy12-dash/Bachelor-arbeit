@@ -15,7 +15,7 @@ interface Comment {
   date: string; 
   upvotes: number;
   isTextSpecific: boolean;
-  selectedText: string;
+  shortenedSelectedText: string;
   index: number;
   length: number;
   history: string[]; 
@@ -156,7 +156,7 @@ class CommentCard extends Component<CommentCardProps, CommentCardState> {
         </div>
       </div>
 
-      {comment.isTextSpecific && (<p className='commentedOn'>Commented on {comment.selectedText}</p>)}
+      {comment.isTextSpecific && (<p className='commentedOn'>Commented on {comment.shortenedSelectedText}</p>)}
 
       {isEditing ? (
         <div>

@@ -17,7 +17,7 @@ interface Comment {
   date: string;
   upvotes: number;
   isTextSpecific: boolean;
-  selectedText: string;
+  shortenedSelectedText: string;
   index: number;
   length: number;
   history: string[];
@@ -57,7 +57,7 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
         date: date,
         upvotes: 0,
         isTextSpecific: false,
-        selectedText: "",
+        shortenedSelectedText: "",
         index: 0,
         length: 0,
         history: [],

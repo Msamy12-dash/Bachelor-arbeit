@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import Quill from "react-quill";
 import Lobby from "../MainPageComponent/Lobby";
+import LobbyTop from "../MainPageComponent/LobbyTop";
 import CommentHandler from "../ChatComponent/CommentHandler";
 import { Card, Button } from "@nextui-org/react";
 
@@ -16,7 +17,7 @@ interface Comment {
   date: string;
   upvotes: number;
   isTextSpecific: boolean;
-  selectedText: string;
+  shortenedSelectedText: string;
   index: number;
   length: number;
   history: string[];
@@ -91,7 +92,7 @@ export default function EditorPage() {
 
   return (
     <>
-          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
+          <LobbyTop currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
       <div style={{ display: "flex", height: "100vh" }}>
         <Card style={{ width: "20%", padding: "10px" }}>
           {/*<PollMaker >**/}
@@ -105,13 +106,7 @@ export default function EditorPage() {
         </Card>
 
         <Card style={{ width: "60%", padding: "20px" }}>
-          <Editor
-            key={currentRoom}
-            room={currentRoom}
-            setEditor={setEditor}
-            setTextSpecificComment={setTextSpecificComment}
-            userColor={userColor}
-            />
+        <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor} selectedText={selectedText} setSelectedText={setSelectedText} setCompleteText={setCompleteText}/>
             {/* Pop up card for MCP Changes */}
             {showAIChangesDiv && (
               <div style={{position: "absolute", left: "100px", top:"100px"}}>
@@ -132,7 +127,8 @@ export default function EditorPage() {
   
           
         </Card>
-        <Card style={{ width: "20%", padding: "10px" }}>
+        <Card style={{ width: "20%" }}>
+          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} selectedText={selectedText} completeText={completeText}/>
         </Card>
       </div>
     </>
