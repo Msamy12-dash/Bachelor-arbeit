@@ -32,11 +32,17 @@ export default function Editor({
   userColor,
   setTextSpecificComment,
   setEditor,
+  selectedText,
+  setSelectedText,
+  setCompleteText
 }: Readonly<{
   room: string;
   userColor: string;
   setTextSpecificComment: Function;
   setEditor: Function;
+  selectedText: string;
+  setSelectedText: (text: string) => void;
+  setCompleteText: (text: string) => void;
 }>) {
 
   const [text, setText] = useState("");
@@ -45,7 +51,7 @@ export default function Editor({
   const [showButton, setShowButton] = useState(false);
   const [textareaPosition, setTextareaPosition] = useState<Position>();
   const [showTextarea, setShowTextarea] = useState(false);
-  const [selectedText, setSelectedText] = useState("");
+  const [shortenedSelectedText, setShortenedSelectedText] = useState("");
   const [commentContent, setCommentContent] = useState("");
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipPosition, setTooltipPosition] = useState<{
@@ -108,9 +114,11 @@ export default function Editor({
 
       return () => {
         binding.destroy();
+        editor.off("selection-change", handleSelectionChange);
       };
     }
   }, [userColor, provider]);
+
   const saveTextToBackend = async () => {
     try {
       const response = await fetch("/api/saveMainText", {
@@ -145,6 +153,10 @@ export default function Editor({
 
       setSelectedRange(selection);
 
+      // Update selectedText
+      const getText = quill.current!.getEditor().getText(range.index, range.length);
+      setSelectedText(getText);
+
       // Get positions of Editor itself and selected range (in pixels)
       const bounds = quill.current!.getEditor().getBounds(selection!.index);
 
@@ -153,7 +165,9 @@ export default function Editor({
 
       setShowButton(true);
       //console.log(buttonPosition);
-    } else {
+
+    }else{
+      setSelectedText("");
       setShowButton(false);
     }
   }
@@ -198,13 +212,11 @@ export default function Editor({
 
     // Shorten text if too long
     const threshold = 25;
-
-    if (gettext.length > threshold) {
-      const shortenedText = gettext.substring(0, threshold) + "...";
-
-      setSelectedText(shortenedText);
-    } else {
-      setSelectedText(gettext);
+    if (gettext.length > threshold){
+      const shortenedText = gettext.substring(0,threshold) + "...";
+      setShortenedSelectedText(shortenedText);
+    }else{
+      setShortenedSelectedText(gettext);
     }
 
     const bounds = quill.current!.getEditor().getBounds(selectedRange!.index);
@@ -244,7 +256,7 @@ export default function Editor({
         date: date,
         upvotes: 0,
         isTextSpecific: true,
-        selectedText: selectedText,
+        shortenedSelectedText: shortenedSelectedText,
         index: selectedRange!.index,
         length: selectedRange!.length,
         history: [],
@@ -256,6 +268,8 @@ export default function Editor({
       setShowTextarea(false);
     }
   }
+  
+
 
   return (
     <div>

@@ -9,10 +9,34 @@
 - [Framer Motion](https://www.framer.com/motion)
 - [next-themes](https://github.com/pacocoursey/next-themes)
 - [PartyKit](https://partykit.io)
+- [Ollama](https://ollama.com/)
 
 ## How to Use
 
 pull the branch 
+
+### Install Ollama once per PC
+
+https://ollama.com/
+
+
+### (Unix script for executing everything down below) (Outdated for Commenticons and server configuration)
+
+#### Only once per PC:
+
+```bash
+chmod +x start-dev.sh
+```
+
+#### Starting dev server:
+
+```bash
+./start-dev.sh
+```
+
+#### Terminating dev server:
+
+Press `Ctrl + C` in bash.
 
 
 ### Install dependencies
@@ -37,6 +61,14 @@ cp .env.example .env
 ```bash
 npm run dev
 ```
+
+### To preload AI functionality
+
+```bash
+ollama run llama3
+```
+
+
 ### Run partykit only 
 
 ```bash

@@ -16,7 +16,7 @@ interface Comment {
   date: string; 
   upvotes: number;
   isTextSpecific: boolean;
-  selectedText: string;
+  shortenedSelectedText: string;
   index: number;
   length: number;
   history: string[]; 
@@ -33,9 +33,12 @@ interface CommentCardProps {
   onIncrement: (comment: Comment) => void; 
   addComment: (comment: Comment) => void;
   onGetRange: (index: number, length: number) => void;
+  newChecked: (key: number) => void;
+  unchecked: (key: number) => void;
+
 }
 
-const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDelete, onIncrement, addComment, onGetRange }) => {
+const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDelete, onIncrement, addComment, onGetRange, newChecked, unchecked }) => {
   const { theme } = useTheme();
 
   const [isEditing, setIsEditing] = React.useState(false);
@@ -75,9 +78,10 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
     setParentKey(comment.key);
   };
 
-  const handleOnClick = () => {
+  const handleShowInEditorOnClick  = () => {
+
     onGetRange(comment.index, comment.length);
-  };
+  }
 
   const handleAddReply = (comment: Comment) => {
     comment.parentKey = parentKey;
@@ -85,21 +89,34 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
     toggleReplyTextarea();
   };
 
+  const handleCheckboxOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+
+    // if checkbox is checked
+    if(event.target.checked){
+      newChecked(comment.key);
+    }else{
+      unchecked(comment.key);
+    }
+  }
+
+
+
   return (
-    <div className={`card ${theme === 'dark' ? 'text-white' : 'text-gray-700'} border border-gray-500 rounded-lg mb-4`}>
+    <div style={{display: "flex", padding: "1vw", justifyContent: "space-between"}}>
+      <div className={`card ${theme === 'dark' ? 'text-white' : 'text-gray-700'} border border-gray-500 rounded-lg mb-4`} style={{width: "32vw"}}>
 
-      <div className="card-body">
-        {comment.isTextSpecific && (
-          <div className={theme === 'dark' ? '' : 'bg-gray-100 rounded-t-lg'}>
-            <p className={`text-left ${theme === 'dark' ? 'text-white' : 'text-gray-600'} pl-2 pt-2 italic`}>Commented on:</p>
-            <p className={`text-center ${theme === 'dark' ? 'text-white' : 'text-gray-600'} p-2 italic`}>{comment.selectedText}</p>
-          </div>
-        )}
+        <div className="card-body">
+          {comment.isTextSpecific && (
+            <div className={theme === 'dark' ? '' : 'bg-gray-100 rounded-t-lg'}>
+              <p className={`text-left ${theme === 'dark' ? 'text-white' : 'text-gray-600'} pl-2 pt-2 italic`}>Commented on:</p>
+              <p className={`text-center ${theme === 'dark' ? 'text-white' : 'text-gray-600'} p-2 italic`}>{comment.shortenedSelectedText}</p>
+            </div>
+          )}
 
-        <div className='flex justify-between items-center p-4 rounded-t-lg'>
-          <h5 className="card-title text-lg font-semibold">{comment.name}</h5>
+          <div className='flex justify-between items-center p-4 rounded-t-lg'>
+            <h5 className="card-title text-lg font-semibold">{comment.name}</h5>
 
-          <div className="EditDeleteHistory">
+            <div className="EditDeleteHistory">
             {!isEditing && (
               <>
                 <IconButton onClick={enableEditMode} className="text-gray-500 hover:text-gray-700">
@@ -167,13 +184,15 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
             </ul>
           </div>
         )}
+        {comment.isTextSpecific && (
+        <a onClick={handleShowInEditorOnClick} className='text-blue-500 hover:underline cursor-pointer pb-2 block mt-1'>Show in Editor</a>
+        )}
+        </div>      
       </div>
-
-      {comment.isTextSpecific && (
-        <a onClick={handleOnClick} className='text-blue-500 hover:underline cursor-pointer pb-2 block mt-1'>Show in Editor</a>
-      )}
+      <input type='checkbox' onChange={handleCheckboxOnChange} style={{marginLeft: "0.5vw", float: "right"}}/>
     </div>
   );
 };
+
 
 export default CommentCard;

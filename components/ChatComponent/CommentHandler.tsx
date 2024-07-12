@@ -9,7 +9,7 @@ interface Comment {
   date: string; 
   upvotes: number;
   isTextSpecific: boolean;
-  selectedText: string;
+  shortenedSelectedText: string;
   index: number;
   length: number;
   history: string[]; 
@@ -21,13 +21,15 @@ interface Comment {
 export default function CommentHandler({
   room,
   textSpecificComment,
+  setRange,
   editor,
-  setRange
+  setAIChanges
 }: Readonly<{
   room: string;
   textSpecificComment: Comment | null;
   editor: Quill | null;
   setRange: Function;
+  setAIChanges: Function;
 }>) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
@@ -113,7 +115,7 @@ export default function CommentHandler({
       date: comment.date,
       upvotes: 0,
       isTextSpecific: comment.isTextSpecific,
-      selectedText: comment.selectedText,
+      shortenedSelectedText: comment.shortenedSelectedText,
       index: comment.index,
       length: comment.length,
       history: [],
@@ -316,7 +318,8 @@ export default function CommentHandler({
             addComment={addComment}
             editor={editor}
             getRange={getRange}
-          />
+            setAIChanges={setAIChanges}
+        />
         </div>
       )}
     </div>

@@ -1,0 +1,18 @@
+{
+    "type": "module",
+    "dependencies": {
+      "@next-auth/prisma-adapter": "^1.0.7",
+      "ollama": "^0.5.2",
+      "yjs": "^13.6.18"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.24.7",
+      "@babel/preset-env": "^7.24.7",
+      "babel-jest": "^29.7.0",
+      "jest": "^29.7.0"
+    },
+    "scripts": {
+      "test": "jest"
+    }
+  }
+  
