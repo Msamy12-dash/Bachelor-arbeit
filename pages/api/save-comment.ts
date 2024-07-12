@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
+import clientPromise from '@/lib/mongodb';
 
 interface Comment {
   key: number;
@@ -21,7 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     const { comment }: { room: string; comment: Comment } = req.body;
 
-    const client = new MongoClient('mongodb+srv://inlp:INLP123@cluster0.vpm9s6o.mongodb.net/mainText?retryWrites=true&w=majority&appName=Cluster0');
+    const client = await clientPromise;
+
 
     try {
       await client.connect();

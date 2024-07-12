@@ -1,11 +1,13 @@
 import { MongoClient } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
+import clientPromise from '../../lib/mongodb'
 
-const client = new MongoClient('mongodb+srv://inlp:INLP123@cluster0.vpm9s6o.mongodb.net/mainText?retryWrites=true&w=majority&appName=Cluster0');
+
 async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'GET') {
         try {
 
+            const client = await clientPromise;
             const db = client.db('mainText');
             const comments = await db.collection('comments').find({}).toArray();
 
