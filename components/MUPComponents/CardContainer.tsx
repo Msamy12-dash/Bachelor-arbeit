@@ -4,6 +4,8 @@ import useYProvider from "y-partykit/react";
 import MUPCard from "./MUPCard";
 import { Button } from "@nextui-org/react";
 import Quill from "react-quill";
+import colors from "../../highlightColors.js"
+
 
 
 interface CardData {
@@ -26,7 +28,7 @@ export default function CardContainer({
   room: string;
   completeText: string;
   editor: Quill & {
-    highlightText: (index: number, length: number) => void;
+    highlightText: (index: number, length: number, color: string) => void;
     removeHighlight: (index: number, length: number) => void;
     getSelection: () => { index: number; length: number } | null;
   } | null;
@@ -70,7 +72,9 @@ export default function CardContainer({
         range: selection
       };
       yarray.push([newCard]);
-      editor?.highlightText(selection.index, selection.length);
+
+
+      editor?.highlightText(selection.index, selection.length, colors.currentMUPSectionDYellow);
     }
   };
 

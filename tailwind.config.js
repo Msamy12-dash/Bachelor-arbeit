@@ -1,4 +1,5 @@
 import {nextui} from '@nextui-org/react'
+import colors from './highlightColors.js'
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -10,12 +11,10 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {
-        prevMUPSectionLYellow: '#FFFFCC',
-        currentMUPSectionDYellow: '#FFD700',
-      },
+      colors: colors
     },
   },
+
   darkMode: "class",
   plugins: [nextui()],
 }

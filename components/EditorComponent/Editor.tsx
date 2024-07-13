@@ -274,8 +274,8 @@ export default function Editor({
     }
   }
 
-  function highlightText(index: number, length: number) {
-    quill.current?.getEditor().formatText(index, length, { background: 'yellow' });
+  function highlightText(index: number, length: number, color: string ) {
+    quill.current?.getEditor().formatText(index, length, { background: color });
   }
   
   function removeHighlight(index: number, length: number) {

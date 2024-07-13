@@ -21,7 +21,7 @@ export default function Lobby({
   selectedText: string;
   completeText: string;
   editor: Quill & {
-    highlightText: (index: number, length: number) => void;
+    highlightText: (index: number, length: number, color: string) => void;
     removeHighlight: (index: number, length: number) => void;
     getSelection: () => { index: number; length: number } | null;
   } | null;
