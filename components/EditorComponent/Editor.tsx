@@ -96,14 +96,19 @@ export default function Editor({
   }, [room, provider]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const ytext = provider.doc.getText("quill");
+  if (typeof window !== "undefined") {
+    const ytext = provider.doc.getText("quill");
 
-      const editor = quill.current!.getEditor();
+    const editor = quill.current!.getEditor();
 
-      if (quill.current) {
-        setEditor(quill.current);
-      }
+    if (quill.current) {
+      setEditor({
+        ...quill.current,
+        highlightText,
+        removeHighlight,
+        getSelection: () => editor.getSelection()
+      });
+    }
       editor.on("selection-change", handleSelectionChange);
       const binding = new QuillBinding(ytext, editor, provider.awareness);
 
@@ -267,6 +272,14 @@ export default function Editor({
 
       setShowTextarea(false);
     }
+  }
+
+  function highlightText(index: number, length: number) {
+    quill.current?.getEditor().formatText(index, length, { background: 'yellow' });
+  }
+  
+  function removeHighlight(index: number, length: number) {
+    quill.current?.getEditor().formatText(index, length, { background: false });
   }
   
 

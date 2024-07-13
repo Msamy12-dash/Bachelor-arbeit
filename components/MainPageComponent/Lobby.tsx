@@ -6,17 +6,25 @@ import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
 import CardContainer from "../MUPComponents/CardContainer";
 import { Button } from "@nextui-org/react";
 import { PARTYKIT_HOST } from "@/pages/env";
+import Quill from "react-quill";
+
 
 export default function Lobby({
   currentRoom,
   setCurrentRoom,
   selectedText,
-  completeText
+  completeText,
+  editor
 }: {
   currentRoom: string;
   setCurrentRoom: (room: string) => void;
   selectedText: string;
   completeText: string;
+  editor: Quill & {
+    highlightText: (index: number, length: number) => void;
+    removeHighlight: (index: number, length: number) => void;
+    getSelection: () => { index: number; length: number } | null;
+  } | null;
 }) {
   const [rooms, setRooms] = useState<Rooms>({});
   const [nextRoomId, setNextRoomId] = useState<number>(1);
@@ -89,6 +97,7 @@ export default function Lobby({
             selectedText={selectedText}
             room={currentRoom}
             completeText={completeText}
+            editor={editor}
           />
         </div>
       )}

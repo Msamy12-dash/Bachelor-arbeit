@@ -3,6 +3,8 @@ import * as Y from "yjs";
 import useYProvider from "y-partykit/react";
 import MUPCard from "./MUPCard";
 import { Button } from "@nextui-org/react";
+import Quill from "react-quill";
+
 
 interface CardData {
   id: string;
@@ -11,16 +13,23 @@ interface CardData {
   promptText: string;
   responseText: string;
   submitting: boolean;
+  range: { index: number; length: number };
 }
 
 export default function CardContainer({
   selectedText,
   room,
   completeText,
+  editor
 }: Readonly<{
   selectedText: string;
   room: string;
   completeText: string;
+  editor: Quill & {
+    highlightText: (index: number, length: number) => void;
+    removeHighlight: (index: number, length: number) => void;
+    getSelection: () => { index: number; length: number } | null;
+  } | null;
 }>) {
   const ydoc = useRef(new Y.Doc()).current;
   const [cards, setCards] = useState<CardData[]>([]);
@@ -49,15 +58,20 @@ export default function CardContainer({
 
   const handleAddCard = () => {
     const yarray = ydoc.getArray<CardData>("cards");
-    const newCard = {
-      id: Math.random().toString(36).substring(2, 8),
-      completeText,
-      selectedTextOnMUPCard: selectedText,
-      promptText: "",
-      responseText: "",
-      submitting: false,
-    };
-    yarray.push([newCard]);
+    const selection = editor?.getSelection();
+    if (selection) {
+      const newCard = {
+        id: Math.random().toString(36).substring(2, 8),
+        completeText,
+        selectedTextOnMUPCard: selectedText,
+        promptText: "",
+        responseText: "",
+        submitting: false,
+        range: selection
+      };
+      yarray.push([newCard]);
+      editor?.highlightText(selection.index, selection.length);
+    }
   };
 
   const handleCardTextChange = (id: string, newText: string) => {
@@ -94,6 +108,8 @@ export default function CardContainer({
     const yarray = ydoc.getArray<CardData>("cards");
     const index = yarray.toArray().findIndex((card) => card.id === id);
     if (index !== -1) {
+      const card = yarray.get(index);
+      editor?.removeHighlight(card.range.index, card.range.length);
       yarray.delete(index, 1);
     }
   };

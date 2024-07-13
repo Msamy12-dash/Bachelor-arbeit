@@ -9,6 +9,7 @@ interface CardData {
   promptText: string;
   responseText: string;
   submitting: boolean;
+  range: { index: number; length: number };
 }
 
 export default function MUPCard({
