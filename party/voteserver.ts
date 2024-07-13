@@ -12,18 +12,25 @@ export default class VoteServer implements Party.Server {
   async onRequest(req: Party.Request) {
     if (req.method === "POST") {
       const poll = (await req.json()) as Poll;
-
-      console.log(poll);
-      
+      console.log("recived post")
       this.poll = { ...poll, votes: poll.options.map(() => 0) };
       this.savePoll();
     }
 
     if (this.poll) {
+      console.log("recived post is pool")
+
       return new Response(JSON.stringify(this.poll), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
+
+    }
+    if (req.method === "GET") {
+      const poll = (await req.json()) as Poll;
+      console.log("recived post")
+      this.poll = { ...poll, votes: poll.options.map(() => 0) };
+      this.savePoll();
     }
 
     return new Response("Not found", { status: 404 });
@@ -38,9 +45,6 @@ export default class VoteServer implements Party.Server {
       this.poll.votes![event.option] += 1;
       this.party.broadcast(JSON.stringify(this.poll));
       this.savePoll();
-      console.log("On message");
-      console.log(this.poll);
-
     }
   }
 
@@ -55,3 +59,4 @@ export default class VoteServer implements Party.Server {
   }
 }
 
+VoteServer satisfies Party.Worker;

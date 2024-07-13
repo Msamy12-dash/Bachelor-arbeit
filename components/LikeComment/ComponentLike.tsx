@@ -4,12 +4,10 @@
 import { useState } from "react";
 import usePartySocket from "partysocket/react";
 
-const reactionTypes = ["clap", "thumbsup", "heart", "party"] as const;
+const reactionTypes = ["thumbsup", "heart"] as const;
 const reactionEmoji = {
-  clap: "👏",
   heart: "❤️",
   thumbsup: "👍",
-  party: "🎉",
 };
 
 type ReactionsProps = {
@@ -24,7 +22,7 @@ export const Reactions = (props: ReactionsProps) => {
 
   // update state when new reactions come in
   const socket = usePartySocket({
-    host: props.roomHost,
+    party:"likeserver",
     room: props.roomId,
     onMessage: (event) => {
       const message = JSON.parse(event.data);

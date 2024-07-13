@@ -14,7 +14,8 @@ const json = (response: string) =>
 export default class LikeServer implements Party.Server {
   options: Party.ServerOptions = { hibernate: true };
   constructor(readonly room: Party.Room) {}
-  reactions: Record<string, number> = {};
+  reactions: Record<string, number> = {"heart": 0,
+        "thumbsup": 0};
 
   async onStart() {
     // load reactions from storage on startup

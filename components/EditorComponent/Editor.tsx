@@ -6,14 +6,15 @@ import { QuillBinding } from "y-quill";
 import useYProvider from "y-partykit/react";
 import "react-quill/dist/quill.snow.css";
 import QuillCursors from "quill-cursors";
-import * as Y from "yjs";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import React from "react";
+import * as Y from 'yjs'
 
-import { SINGLETON_ROOM_ID } from "@/party/types";
-import { PARTYKIT_HOST } from "@/pages/env";
 import Tooltip from "../ToolTipsComponets/ToolTip";
+
+import { PARTYKIT_HOST } from "@/pages/env";
+
 
 interface Range {
   index: number;
@@ -256,6 +257,7 @@ export default function Editor({
       setShowTextarea(false);
     }
   }
+
 
   return (
     <div>

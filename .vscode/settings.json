@@ -6,6 +6,8 @@
     "Componets",
     "Editorinterface",
     "editorserver",
+    "likeserver",
+    "likesserver",
     "nextui",
     "partykit",
     "partysocket",
@@ -13,7 +15,9 @@
     "quillrea",
     "roominfo",
     "roomserver",
+    "sendvote",
     "userlogin",
+    "voteserver",
     "ytext"
   ]
 }

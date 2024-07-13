@@ -5,7 +5,6 @@ import React from "react";
 import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 
 import CustomMenu from "./AIInteractionComponent";
-import PollUI from "../voteComponent/VoteComponent";
 
 interface TooltipProps {
   show: boolean;
@@ -43,7 +42,6 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position }) => {
       className="max-w-xs"
       label="new changes"
     />
-        <PollUI id={"1"} options={[text]} />
           <p>Selected text: {text}</p>
           <div className="flex flex-wrap gap-4 items-center">
             <CustomMenu  />
