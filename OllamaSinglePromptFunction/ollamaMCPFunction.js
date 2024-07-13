@@ -71,4 +71,21 @@ ${tone}`;
       return error;
     }
   }
+
   
+  // request a summary on what AI has changed based on the selected comments
+  export async function requestChangesSummaryForMCP(prevText, newText){
+    // build prompt
+    let task = "I will give you two versions of a text and I want you to give a short summary on what has changed from the first (Text 1) to the second text (Text 2). Thank you \n \n";
+
+    let text1 = `Text 1: \n ${prevText}\n \n`;
+    let text2 = `Text 2: \n ${newText}\n \n`;
+
+    let prompt = task + text1 + text2;
+    try {
+      return await getLLMResponse(prompt);  
+    } catch (error) {
+      console.error('Error:', error.message || error);
+      return error;
+    }
+  }

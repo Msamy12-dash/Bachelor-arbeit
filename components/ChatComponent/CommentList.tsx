@@ -5,7 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
 import { Spinner } from "@nextui-org/react";
-import {requestResponseForMCP} from "../../OllamaSinglePromptFunction/ollamaMCPFunction"
+import {requestResponseForMCP, requestChangesSummaryForMCP} from "../../OllamaSinglePromptFunction/ollamaMCPFunction"
 
 interface Comment {
   key: number;
@@ -114,8 +114,13 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
         index += 1;
       }
       const response = await requestResponseForMCP(completeText, userComments, userCommentsContext);
-      // const response = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
-      this.props.setAIChanges(response);
+      //const response = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
+
+      const currentText = completeText;
+      // Get summary from AI on what the AI has changed
+      const summary = await requestChangesSummaryForMCP(currentText, response);
+      this.props.setAIChanges(summary);
+      console.log(response);
 
       this.setState({loading: false});
     }
