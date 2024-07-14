@@ -1,17 +1,22 @@
+/* eslint-disable prettier/prettier */
 "use client";
 import { useState } from "react";
 import usePartySocket from "partysocket/react";
-
 import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
+import TextArea from "../common/textArea";
+import Button from "../common/button";
 
 export default function Lobby({
   currentRoom,
   setCurrentRoom,
+  setPrompts,
 }: Readonly<{
   currentRoom: string;
   setCurrentRoom: (room: string) => void;
+  setPrompts: (room: string[]) => void;
 }>) {
   const [rooms, setRooms] = useState<Rooms>({});
+  const [inputText, setInputText] = useState<string>("");
 
   usePartySocket({
     party: "roomserver",
@@ -24,6 +29,21 @@ export default function Lobby({
       }
     },
   });
+
+  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputText(event.target.value);
+  };
+
+  const handleSave = () => {
+    const savedPrompts = JSON.parse(
+      localStorage.getItem("savedPrompts") || "[]"
+    );
+    const updatedPrompts = [...savedPrompts, inputText];
+
+    localStorage.setItem("savedPrompts", JSON.stringify(updatedPrompts));
+    setPrompts(updatedPrompts);
+    setInputText("");
+  };
 
   return (
     <div>
@@ -53,6 +73,14 @@ export default function Lobby({
           New Room
         </button>
       }
+
+      {/**
+       * Prompt save
+       */}
+      <div style={{ display: "flex" }}>
+        <TextArea value={inputText} onChange={handleTextChange} />
+        <Button onClick={handleSave}>Save</Button>
+      </div>
     </div>
   );
 }
