@@ -10,7 +10,7 @@ import * as Y from "yjs";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import React from "react";
-
+import YPartykitProvider from "y-partykit/provider"
 import { SINGLETON_ROOM_ID } from "@/party/types";
 import { PARTYKIT_HOST } from "@/pages/env";
 import Tooltip from "../ToolTipsComponets/ToolTip";
@@ -63,67 +63,94 @@ export default function Editor({
   const textareaRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   const quill = useRef<ReactQuill>(null);
 
-  const provider = useYProvider({
-    room: room,
-    party: "editorserver",
-    host: PARTYKIT_HOST,
-  });
-
+  const providerRef = useRef<YPartykitProvider | null>(null);
 
   useEffect(() => {
-    const fetchInitialText = async () => {
-      try {
-        console.log(`Fetching initial text for room: ${room}`);
-        const response = await fetch(`/api/getInitialText?room=${room}`);
-        const data = await response.json();
-
-        if (response.ok) {
-          const ytext = provider.doc.getText("quill");
-
-          ytext.delete(0, ytext.length); // Clear existing content
-          ytext.insert(0, data.text); // Insert fetched text
-          setText(data.text); // Update local state
-          console.log(data.text);
-        } else {
-          console.error("Failed to fetch initial text:", data.error);
-        }
-      } catch (error) {
-        console.error("Failed to fetch initial text:", error);
+    // Cleanup function to disconnect the previous provider
+    return () => {
+      if (providerRef.current) {
+        providerRef.current.disconnect();
+        providerRef.current = null;
       }
     };
+  }, [room]);
 
-    fetchInitialText();
-  }, [room, provider]);
+
+  const provider = useYProvider({
+    //host: PARTYKIT_HOST,
+    host: "localhost:1999",
+    room: room,
+    party: "editorserver", //correct?
+    options: {
+      connect: true,
+    }
+  });
+  
+  // Assign the new provider to the ref
+  providerRef.current = provider;
+
+
+  // useEffect(() => {
+  //   const fetchInitialText = async () => {
+  //     try {
+  //       console.log(`Fetching initial text for room: ${room}`);
+  //       const response = await fetch(`/api/getInitialText?room=${room}`);
+  //       const data = await response.json();
+
+  //       if (response.ok) {
+  //         const ytext = provider.doc.getText("quill");
+
+  //         ytext.delete(0, ytext.length); // Clear existing content
+  //         ytext.insert(0, data.text); // Insert fetched text
+  //         setText(data.text); // Update local state
+  //         console.log(data.text);
+  //       } else {
+  //         console.error("Failed to fetch initial text:", data.error);
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to fetch initial text:", error);
+  //     }
+  //   };
+
+  //   fetchInitialText();
+  // }, [room, provider]);
 
   useEffect(() => {
-  if (typeof window !== "undefined") {
     const ytext = provider.doc.getText("quill");
-
-    const editor = quill.current!.getEditor();
-
-    if (quill.current) {
+  
+    if (typeof window !== "undefined" && quill.current) {
+      const editor = quill.current.getEditor();
+  
+      // Set editor methods and state in the parent component
       setEditor({
         ...quill.current,
         highlightText,
         removeHighlight,
         getSelection: () => editor.getSelection()
       });
-    }
+  
+      // Handle selection change in the Quill editor
       editor.on("selection-change", handleSelectionChange);
+  
+      // Create a binding between Yjs and the Quill editor
       const binding = new QuillBinding(ytext, editor, provider.awareness);
-
+  
+      // Set local user state in Yjs awareness system
       provider.awareness.setLocalStateField("user", {
         name: "Typing...",
         color: userColor,
       });
-
+  
+      // Clean up function
       return () => {
-        binding.destroy();
-        editor.off("selection-change", handleSelectionChange);
+        binding.destroy(); // Destroy the binding when component unmounts
+        editor.off("selection-change", handleSelectionChange); // Remove event listener
       };
     }
   }, [userColor, provider]);
+  
 
+/*
   const saveTextToBackend = async () => {
     try {
       const response = await fetch("/api/saveMainText", {
@@ -149,6 +176,7 @@ export default function Editor({
 
     return () => clearInterval(interval);
   }, [text, room]);
+*/
 
   function handleSelectionChange(range: Range) {
     // If text is selected
@@ -176,6 +204,7 @@ export default function Editor({
       setShowButton(false);
     }
   }
+
   useEffect(() => {
     if (quill.current) {
       const editor = quill.current.getEditor();

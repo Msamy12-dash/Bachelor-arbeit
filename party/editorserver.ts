@@ -7,12 +7,16 @@ import { Doc } from "yjs";
 import { SINGLETON_ROOM_ID } from "./types";
 
 export default class EditorServer implements Party.Server {
-  yjsOptions: YPartyKitOptions = {
-    persist: { mode: "snapshot" },
-    
-   
-  };
   constructor(public room: Party.Room) {}
+  yjsOptions: YPartyKitOptions = {
+    persist: { mode: "snapshot" }, 
+  };
+
+  async onConnect(conn: Party.Connection) {
+    await this.updateCount();
+
+    return onConnect(conn, this.room, this.getOpts());
+  }
 
   getOpts() {
     // options must match when calling unstable_getYDoc and onConnect
@@ -26,11 +30,7 @@ export default class EditorServer implements Party.Server {
     return opts;
   }
 
-  async onConnect(conn: Party.Connection) {
-    await this.updateCount();
-
-    return onConnect(conn, this.room, this.getOpts());
-  }
+  
 
   async onClose(_: Party.Connection) {
     await this.updateCount();
