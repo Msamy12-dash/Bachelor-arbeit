@@ -9,10 +9,34 @@
 - [Framer Motion](https://www.framer.com/motion)
 - [next-themes](https://github.com/pacocoursey/next-themes)
 - [PartyKit](https://partykit.io)
+- [Ollama](https://ollama.com/)
 
 ## How to Use
 
 pull the branch 
+
+### Install Ollama once per PC
+
+https://ollama.com/
+
+
+### (Unix script for executing everything down below) (Outdated for Commenticons and server configuration)
+
+#### Only once per PC:
+
+```bash
+chmod +x start-dev.sh
+```
+
+#### Starting dev server:
+
+```bash
+./start-dev.sh
+```
+
+#### Terminating dev server:
+
+Press `Ctrl + C` in bash.
 
 
 ### Install dependencies
@@ -26,17 +50,36 @@ npm install
 install for the Commenticons:
 npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 
-### Run partykit
+## server configuration
+
+```bash
+
+cp .env.example .env
+```
+### run server and party kit together 
+
+```bash
+npm run dev
+```
+
+### To preload AI functionality
+
+```bash
+ollama run llama3
+```
+
+
+### Run partykit only 
 
 ```bash
 npx partykit dev
 ```
 
 
-### Run Next js
+### Run Next js only 
 
 ```bash
-npm run dev
+npm run dev1
 ```
 
 ## License

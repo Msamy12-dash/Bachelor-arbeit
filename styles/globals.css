@@ -1,227 +1,221 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-.comments {
-    text-align: center;
-    display: block;
+/* Verwenden der CSS-Variablen */
+/*.comments {
+  text-align: center;
+  display: block;
 }
 
-.card-top{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    width: 100%;
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  width: 100%;
 }
 
-.NameDate{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 40%;
-}
-
-.card-bottom{
-    display: flex;
-    align-items: center;
-    gap: 2vh;
-    margin-top: 10px;
+.card-bottom {
+  display: flex;
+  align-items: center;
+  gap: 2vh;
+  margin-top: 10px;
 }
 
 .card-title {
-    font-size: 1.2rem;
-    margin: 0;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.card-text{
+    text-align: left;
 }
 
 .comment-history {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .upvotes {
-    font-size: 0.9rem;
-    color: #666;
-    margin-left: 5px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-left: 5px;
 }
 
 .edit-textarea {
-    width: 100%;
-    min-height: 100px;
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    resize: vertical;
-}
-
-.comment-date {
-    font-size: 0.9rem;
-    color: #666;
-    margin: 0;
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
 }
 
 .Comment-font {
-    font-size: 1.8em; 
-    font-weight: bold; 
-    color: #333; 
-    text-align: center; 
-    font-family: 'Arial', sans-serif; 
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
 }
 
 .card {
-    width: 100%;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin-top: 8px;
-    margin-bottom: 20px;
-    padding: 15px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+  padding: 15px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-foreground);
 }
-  
-.card-body {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+
+.card-body, .new-comment {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
-  
+
 .new-comment-name {
-    font-size: 1.2em;
-    margin-bottom: 10px;
-    color: #333;
-    font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: var(--color-violet);
+  font-weight: bold;
 }
 
 .new-comment-input {
-    width: 100%;
-    min-height: 80px;
-    padding: 10px;
-    margin-bottom: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1em;
-    resize: vertical;
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  margin-bottom: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  resize: vertical;
 }
-  
+
 .new-comment-btn {
-    background-color: #007bff;
-    color: white;
-    padding: 5px 12px;
-    margin-right: 10px;
-    margin-bottom: 5px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  background-color: var(--color-blue);
+  color: white;
+  padding: 5px 12px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
-  
+
 .new-comment-btn:hover {
-    background-color: #2c92ff;
+  background-color: var(--color-cyan);
 }
-  
-  
+
 .new-comment-close-btn {
-    background-color: #f44336;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  background-color: var(--color-pink);
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
-  
+
 .new-comment-close-btn:hover {
-    background-color: #e53935;
+  background-color: var(--color-yellow);
 }
 
 .btn-save, .btn-cancel {
-    margin-top: 5px;
-    padding: 4px 13px;
-    font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: #fff;
+  margin-top: 5px;
+  padding: 4px 13px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  color: white;
 }
 
 .btn-save {
-    background-color: #007bff;
-    margin-right: 10px;
+  background-color: var(--color-blue);
+  margin-right: 10px;
 }
 
 .btn-cancel {
-    background-color: #dc3545;
+  background-color: var(--color-pink);
 }
 
 .comment-history h6 {
-    margin-top: 0;
-    font-size: 18px;
+  margin-top: 0;
+  font-size: 18px;
 }
 
 .comment-history ul {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 .comment-history li {
-    font-size: 15px;
-    color: #666;
-    margin-bottom: 0px;
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 0px;
 }
 
-.commentedOn{
-    opacity: 80%;
-    font-size: small;
-  }
-
-.showInEditor{
-    font-size: small;
-    text-decoration: underline;
+.commentedOn {
+  opacity: 80%;
+  font-size: small;
 }
 
-.newTextComment-body{
-    background-color: #eee;
-    padding: 1vw;
-    border-radius: 25px;
-    display: block;
-    height: 12vw;
+.showInEditor {
+  font-size: small;
+  text-decoration: underline;
 }
 
-.newTextComment-top{
-    display: flex;
-    justify-content: space-between;
+.newTextComment-body {
+  background-color: #eee;
+  padding: 1vw;
+  border-radius: 25px;
+  display: block;
+  height: 12vw;
 }
 
-.newTextComment-textarea{
-    height: 6vw;
-    width: 15vw;
-    font-size: medium;
-    display: block;
+.newTextComment-top {
+  display: flex;
+  justify-content: space-between;
 }
 
-.newTextComment-send{
-    display: block;
-    float: right;
-    margin-top: 12px;
-    padding: 4px 13px;
-    font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: #fff;
-    transition: background-color 0.3s;
+.newTextComment-textarea {
+  height: 6vw;
+  width: 15vw;
+  font-size: medium;
+  display: block;
+}
 
+.newTextComment-send {
+  display: block;
+  float: right;
+  margin-top: 12px;
+  padding: 4px 13px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--color-blue);
+  color: #fff;
+  transition: background-color 0.3s;
 }
 
 .newTextComment-send:hover {
-    background-color: #2c92ff;
+  background-color: var(--color-cyan);
 }
 
-.quill{
-    height: 30vw;
+.quill {
+  height: 30vw;
 }
+
 
 .commentsList{
     overflow: auto;
@@ -229,59 +223,92 @@
 }
 
 .comment{
-    padding: 20px;
+  padding: 20px;
 }
 
+
+.HideShowComments {
+  margin-bottom: 5px;
+}
+
+.comment-list {
+    height: 32vw;; 
+    overflow: auto;
+}
+
+.comment {
+  text-align: center;
+  display: block;
+}
+
+.replies {
+  margin-left: 20px; 
+}
+*/
+/*
 .ls-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f3f3f3; /* Optional: Light background for contrast */
-  }
-  
-  .ls-form-box {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 300px; /* Set a fixed width for the box */
-  }
-  
-  .ls-form-title {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  .ls-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .ls-input-field,
-  .ls-select-field {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 100%; 
-  }
-  
-  .ls-submit-button {
-    padding: 10px;
-    font-size: 16px;
-    background-color: #2e5886;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    align-self: center;
-    width: auto; 
-  }
-  
-  .ls-submit-button:hover {
-    background-color: #0056b3;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f3f3f3; /* Optional: Light background for contrast 
+}
+
+.ls-form-box {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 300px; /* Set a fixed width for the box 
+}
+
+.ls-form-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.ls-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ls-input-field,
+.ls-select-field {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.ls-submit-button {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #2e5886;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  align-self: center;
+  width: auto;
+}
+
+.ls-submit-button:hover {
+  background-color: #0056b3;
+}
+*/
+
+.submitToAI-btn{
+  margin-top: 18px;
+  padding: 8px 16px;
+  font-size: medium;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  background-color: #007bff;
+  color: #fff;
+  transition: background-color 0.3s;
+
+}

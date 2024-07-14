@@ -1,31 +1,44 @@
 /* eslint-disable prettier/prettier */
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import usePartySocket from "partysocket/react";
 import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
 import TextArea from "../common/textArea";
 import Button from "../common/button";
+import CardContainer from "../MUPComponents/CardContainer";
+import { PARTYKIT_HOST } from "@/pages/env";
 
 export default function Lobby({
   currentRoom,
   setCurrentRoom,
-  setPrompts,
-}: Readonly<{
+  selectedText,
+  completeText,
+  setPrompts
+}: {
   currentRoom: string;
   setCurrentRoom: (room: string) => void;
-  setPrompts: (room: string[]) => void;
-}>) {
+  selectedText: string;
+  completeText: string;
+  setPrompts: Function
+}) {
   const [rooms, setRooms] = useState<Rooms>({});
-  const [inputText, setInputText] = useState<string>("");
+  const [nextRoomId, setNextRoomId] = useState<number>(1);
+  const [inputText, setInputText] = useState('')
 
   usePartySocket({
-    party: "roomserver",
+    // host: props.host, -- defaults to window.location.host if not set
+    host: PARTYKIT_HOST,
+
+    party: "rooms",
     room: SINGLETON_ROOM_ID,
     onMessage(evt) {
       const data = JSON.parse(evt.data);
 
       if (data.type === "rooms") {
-        setRooms(data.rooms as Rooms);
+        setRooms((prevRooms) => ({
+          ...prevRooms,
+          ...data.rooms,
+        }));
       }
     },
   });
@@ -45,34 +58,48 @@ export default function Lobby({
     setInputText("");
   };
 
-  return (
-    <div>
-      <h3>All Rooms</h3>
-      <ul>
-        {Object.entries(rooms).map(([room, count]) => {
-          const isCurrent = room === currentRoom;
 
-          return (
-            <li key={room}>
-              <button disabled={isCurrent} onClick={() => setCurrentRoom(room)}>
-                Room #{room}
-              </button>
-              <span>
-                Present <span>{count}</span>
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-      {
-        <button
-          onClick={() =>
-            setCurrentRoom(Math.random().toString(36).substring(2, 8))
-          }
+  const handleNewRoom = () => {
+    const newRoom = nextRoomId.toString().padStart(1, "0"); // Converts the number to a string with leading zeros
+
+    setRooms((prevRooms) => ({
+      ...prevRooms,
+      [newRoom]: 1, // Assuming the new room starts with 1 present user
+    }));
+    setCurrentRoom(newRoom);
+    setNextRoomId(nextRoomId + 1); // Increment the next room ID
+  };
+
+  return (
+    <div className="flex flex-col w-full h-screen bg-gradient-to-b from-gray-100 to-gray-200">
+      {/* Top Section */}
+      <div className="top-section p-4 bg-white rounded-lg">
+        <h3 className="text-2xl font-bold mb-4">All Rooms</h3>
+        <ul className="flex flex-col space-y-4 mb-6">
+          {Object.entries(rooms).map(([room, count]) => {
+            return (
+              //Need to add: show Present: {count} next to each room
+              <li key={room} className="flex items-center justify-between p-4 bg-white rounded shadow">
+                <Button
+                  onClick={() => setCurrentRoom(room)}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600"
+                >
+                  Room #{room}
+                </Button>
+                <span>
+                  Present <span className="font-bold">{count}</span>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+        <Button
+          onClick={() => setCurrentRoom(Math.random().toString(36).substring(2, 8))}
+          className="bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 mb-6"
         >
           New Room
-        </button>
-      }
+        </Button>
+      
 
       {/**
        * Prompt save
@@ -81,6 +108,20 @@ export default function Lobby({
         <TextArea value={inputText} onChange={handleTextChange} />
         <Button onClick={handleSave}>Save</Button>
       </div>
+      </div>
+  
+      {/* Card Container Section */}
+      {currentRoom && (
+        <div className="card-container flex-1 overflow-hidden">
+          <CardContainer
+            key={currentRoom}
+            selectedText={selectedText}
+            room={currentRoom}
+            completeText={completeText}
+          />
+        </div>
+      )}
     </div>
   );
+  
 }

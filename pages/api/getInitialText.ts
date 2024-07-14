@@ -1,3 +1,4 @@
+import clientPromise from '@/lib/mongodb';
 import { MongoClient } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
@@ -9,10 +10,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             return res.status(400).json({ error: 'Room is required' });
         }
 
-        const client = new MongoClient('mongodb+srv://inlp:INLP123@cluster0.vpm9s6o.mongodb.net/mainText?retryWrites=true&w=majority&appName=Cluster0');
-
         try {
-            await client.connect();
+            const client = await clientPromise;
             const db = client.db('mainText');
             const document = await db.collection('text').findOne({ room });
 
@@ -24,8 +23,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         } catch (error) {
             console.error('Failed to fetch text:', error);
             res.status(500).json({ error: 'Failed to fetch text' });
-        } finally {
-            await client.close();
         }
     } else {
         res.setHeader('Allow', ['GET']);
