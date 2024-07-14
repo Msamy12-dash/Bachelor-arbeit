@@ -6,7 +6,7 @@ import { SINGLETON_ROOM_ID } from "./types";
 import { Buffer } from 'buffer'; // Import Buffer
 
 
-export default class EditorServer implements Party.Server {
+export default class editorserver implements Party.Server {
   constructor(public room: Party.Room) {}
   yjsOptions: YPartyKitOptions = {
     persist: { mode: "snapshot" }, 
@@ -29,8 +29,6 @@ export default class EditorServer implements Party.Server {
     return opts;
   }
 
-  
-
   async onClose(_: Party.Connection) {
     await this.updateCount();
   }
@@ -43,6 +41,7 @@ export default class EditorServer implements Party.Server {
     const base64State = Buffer.from(update).toString('base64');
 
     try {
+      console.log('Saving state to database...');
       const response = await fetch('http://localhost:3000/api/saveMainText2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -52,6 +51,8 @@ export default class EditorServer implements Party.Server {
       if (!response.ok) {
         throw new Error('Failed to save state');
       }
+
+      console.log('State saved successfully in Partykit.');
     } catch (error) {
       console.error('Error saving state:', error);
     }

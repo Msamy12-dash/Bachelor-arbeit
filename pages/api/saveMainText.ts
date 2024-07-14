@@ -12,9 +12,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
         const plainText = htmlToText(text);
 
-        const client = await clientPromise;
-
-
         try {
             const client = await clientPromise;
 

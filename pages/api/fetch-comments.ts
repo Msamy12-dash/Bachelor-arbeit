@@ -11,7 +11,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             const db = client.db('mainText');
             const comments = await db.collection('comments').find({}).toArray();
 
-            console.log('Fetched comments:', comments);
+            //console.log('Fetched comments:', comments);
             res.status(200).json(comments);
         } catch (error) {
             console.error('Failed to fetch comments:', error);
