@@ -126,6 +126,8 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
   renderCommentsRecursive = (comments: Comment[], level = 0) => {
     const { showSubcomments, showAllSubcomments } = this.state;
 
+    comments.sort((a, b) => b.key - a.key);
+
     return comments.map((comment) => {
       const classNames = `comment comment-level-${level} text-center block`;
       const showSubs = showSubcomments && comment.replies.length > 0 && showAllSubcomments;
