@@ -1,32 +1,49 @@
-/* eslint-disable prettier/prettier */
 import type * as Party from "partykit/server";
 import { onConnect, type YPartyKitOptions } from "y-partykit";
 import * as Y from "yjs";
 import { SINGLETON_ROOM_ID } from "./types";
-import { Buffer } from 'buffer'; // Import Buffer
+import { Buffer } from 'buffer';
 
-
-export default class editorserver implements Party.Server {
+export default class EditorServer implements Party.Server {
   constructor(public room: Party.Room) {}
+
   yjsOptions: YPartyKitOptions = {
-    persist: { mode: "snapshot" }, 
+    persist: { mode: "snapshot" },
   };
 
   async onConnect(conn: Party.Connection) {
     await this.updateCount();
 
-    return onConnect(conn, this.room, this.getOpts());
+    return onConnect(conn, this.room, {
+      load: async () => this.handleLoadFromDB(),
+      callback: { 
+        handler: (doc) => this.handleYDocChange(doc), 
+        debounceWait: 10000,
+        debounceMaxWait: 20000,
+        timeout: 5000
+      }
+    });
   }
 
-  getOpts() {
-    // options must match when calling unstable_getYDoc and onConnect
-    const opts: YPartyKitOptions = {
-      callback: { handler: (doc) => this.handleYDocChange(doc), 
-        debounceWait: 10000, // default: 2000 ms
-        debounceMaxWait: 20000, // default: 10000 ms
-        timeout: 5000}
-    };
-    return opts;
+  async handleLoadFromDB() {
+    try {
+      const response = await fetch(`http://localhost:3000/api/getMainText?room=${this.room.id}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const { state } = await response.json();
+      if (state) {
+        const uint8Array = Buffer.from(state, 'base64');
+        const yDoc = new Y.Doc();
+        Y.applyUpdate(yDoc, uint8Array);
+        return yDoc;
+      }
+    } catch (error) {
+      console.error('Error loading from DB:', error);
+    }
+    return new Y.Doc();
   }
 
   async onClose(_: Party.Connection) {
@@ -34,41 +51,43 @@ export default class editorserver implements Party.Server {
   }
 
   async handleYDocChange(doc: Y.Doc) {
-    // Encode the entire state of the Y.doc
     const update = Y.encodeStateAsUpdate(doc);
-    
-    // Convert the Uint8Array to a Base64 string for easier storage
     const base64State = Buffer.from(update).toString('base64');
 
     try {
       console.log('Saving state to database...');
-      const response = await fetch('http://localhost:3000/api/saveMainText2', {
+      const response = await fetch('http://localhost:3000/api/setMainText', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ state: base64State, room: this.room.id }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save state');
+        const errorText = await response.text();
+        throw new Error(`Failed to save state. Status: ${response.status}, Response: ${errorText}`);
       }
 
       console.log('State saved successfully in Partykit.');
     } catch (error) {
       console.error('Error saving state:', error);
+      // Rethrow the error if you want it to be handled by the caller
+      throw error;
     }
   }
 
   async updateCount() {
-    // Count the number of live connections
     const count = [...this.room.getConnections()].length;
-
-    // Send the count to the 'rooms' party using HTTP POST
-    await this.room.context.parties.rooms.get(SINGLETON_ROOM_ID).fetch({
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ room: this.room.id, count }),
-    });
+    try {
+      const response = await this.room.context.parties.rooms.get(SINGLETON_ROOM_ID).fetch({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ room: this.room.id, count }),
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to update count. Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error updating count:', error);
+    }
   }
-
-
 }
