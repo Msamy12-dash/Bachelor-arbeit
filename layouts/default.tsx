@@ -1,16 +1,22 @@
+import { useState } from "react";
 import { Head } from "./head";
 
 import { Navbar } from "@/components/MainPageComponent/navbar";
 
 export default function DefaultLayout({
   children,
+  currentRoom,
+  setCurrentRoom
 }: {
   children: React.ReactNode;
+  currentRoom: string;
+  setCurrentRoom: React.Dispatch<React.SetStateAction<string>>
 }) {
+
   return (
     <div className="relative flex flex-col h-screen">
       <Head />
-      <Navbar />
+      <Navbar currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
       <main className="container mx-auto max-w-full px-3 flex-grow pt-8 ">
         {children}
       </main>
@@ -18,3 +24,4 @@ export default function DefaultLayout({
     </div>
   );
 }
+

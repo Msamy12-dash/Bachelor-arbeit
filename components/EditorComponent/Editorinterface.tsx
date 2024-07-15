@@ -4,7 +4,6 @@ import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import Quill from "react-quill";
 import Lobby from "../MainPageComponent/Lobby";
-import LobbyTop from "../MainPageComponent/LobbyTop";
 import CommentHandler from "../ChatComponent/CommentHandler";
 import { Card, Button } from "@nextui-org/react";
 
@@ -38,8 +37,13 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-export default function EditorPage() {
-  const [currentRoom, setCurrentRoom] = useState("default");
+export default function EditorPage({ 
+  currentRoom, 
+  setCurrentRoom 
+}: { 
+  currentRoom: string, 
+  setCurrentRoom: React.Dispatch<React.SetStateAction<string>> 
+}) {
   const userColor = useMemo(() => getRandomColor(), []);
   const Editor = useMemo(() => {
     return dynamic(() => import("@/components/EditorComponent/Editor"), {
@@ -97,7 +101,6 @@ export default function EditorPage() {
 
   return (
     <>
-          <LobbyTop currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
       <div style={{ display: "flex", height: "100vh" }}>
         <Card style={{ width: "20%", padding: "10px" }}>
           {/*<PollMaker >**/}
@@ -132,10 +135,11 @@ export default function EditorPage() {
   
           
         </Card>
-        <Card style={{ width: "20%" }}>
+        <Card className="w-1/5 p-4 overflow-y-auto">
           <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} selectedText={selectedText} completeText={completeText} editor={editor}/>
         </Card>
       </div>
     </>
   );
 }
+
