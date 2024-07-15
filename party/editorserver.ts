@@ -17,7 +17,9 @@ export default class EditorServer implements Party.Server {
     return onConnect(conn, this.room, {
       load: async () => this.handleLoadFromDB(),
       callback: { 
-        handler: (doc) => this.handleYDocChange(doc), 
+        handler: (doc) => {
+          this.handleYDocChange(doc)
+        }, 
         debounceWait: 10000,
         debounceMaxWait: 20000,
         timeout: 5000
@@ -51,6 +53,10 @@ export default class EditorServer implements Party.Server {
   }
 
   async handleYDocChange(doc: Y.Doc) {
+    console.log("first phase of the handler:")
+    console.log("is this ydoc cardconatiner? ", doc.getText('cardcontainer').toString())
+    console.log("is this ydoc editor? ", doc.getText('editor').toString())
+
     const update = Y.encodeStateAsUpdate(doc);
     const base64State = Buffer.from(update).toString('base64');
 
