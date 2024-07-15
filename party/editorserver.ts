@@ -59,7 +59,6 @@ export default class EditorServer implements Party.Server {
     const base64State = Buffer.from(update).toString('base64');
 
     try {
-      console.log('Saving state to database...');
       const response = await fetch('http://localhost:3000/api/setYDocForRoom', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -71,7 +70,6 @@ export default class EditorServer implements Party.Server {
         throw new Error(`Failed to save state. Status: ${response.status}, Response: ${errorText}`);
       }
 
-      console.log('State saved successfully in Partykit.');
     } catch (error) {
       console.error('Error saving state:', error);
       // Rethrow the error if you want it to be handled by the caller

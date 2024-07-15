@@ -14,14 +14,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         try {
             const time = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }); 
 
-            console.log('Saving state to database at: ', time);
+            console.log('Saving YDoc state to database.', time);
             const client = await clientPromise;
             const db = client.db('partykit');
             const result = await db.collection('roomStates').updateOne(
                 { room },
                 { 
                     $set: { 
-                        state: state, // This is now a Base64 encoded string
+                        state: state,
                         updatedAt: time
                     } 
                 },
@@ -29,7 +29,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             );
             res.status(200).json({ message: 'State saved successfully', result });
             const newTime = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' });
-            console.log('State saved successfully in Node:', state, " ", newTime);
+            console.log('State saved successfully.(', state.slice(0, 5), ")", newTime);
         } catch (error) {
             console.error('Failed to save state:', error);
             res.status(500).json({ error: 'Failed to save state' });
