@@ -119,8 +119,8 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
       const currentText = completeText;
       // Get summary from AI on what the AI has changed
       const summary = await requestChangesSummaryForMCP(currentText, response);
-      this.props.setAIChanges(summary);
-      console.log(response);
+      // Send to editor
+      this.props.setAIChanges({summary: summary, changes: response});
 
       this.setState({loading: false});
     }

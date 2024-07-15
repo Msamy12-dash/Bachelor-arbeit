@@ -31,6 +31,11 @@ interface Range {
   length: number;
 }
 
+interface MCP_AI_responses{
+  summary: string;
+  changes: string;
+}
+
 function getRandomColor() {
   const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
 
@@ -53,7 +58,7 @@ export default function EditorPage() {
   const [selectedText, setSelectedText] = useState<string>("");
   const [completeText, setCompleteText] = useState<string>("");
   const [showAIChangesDiv, setShowAIChangesDiv] = useState<boolean>(false);
-  const [AIChanges, setAIChanges] = useState<string>("");
+  const [AIChanges, setAIChanges] = useState<MCP_AI_responses | null>();
   const [isChecked, setIsChecked] = useState<boolean>(true); 
 
 
@@ -61,7 +66,7 @@ export default function EditorPage() {
 
   useEffect(() => {
     // If there is new MCP Response
-    if(AIChanges != ""){
+    if(AIChanges != null){
       setShowAIChangesDiv(true);
     }
   }, [AIChanges]);
@@ -76,7 +81,13 @@ export default function EditorPage() {
   }
 
   function handleDiscardOnClick (){
-    setAIChanges("");
+    setAIChanges(null);
+    setShowAIChangesDiv(false);
+  }
+
+  function handleAcceptOnClick(){
+    editor?.getEditor().setText(AIChanges!.changes);
+    setAIChanges(null);
     setShowAIChangesDiv(false);
   }
 
@@ -112,13 +123,13 @@ export default function EditorPage() {
               <div style={{position: "absolute", left: "100px", top:"100px"}}>
                 <Card style={{ width: "40vw", padding: "1vw", backgroundColor: "#eee"}}>
                   <p style={{fontWeight: "bold", marginBottom: "1vw"}}>Changes made by the AI according to selected Comments</p>
-                  <p style={{marginBottom: "1vw"}}>{AIChanges}</p>
+                  <p style={{marginBottom: "1vw"}}>{AIChanges?.summary}</p>
                   <div style={{display: "flex", marginBottom: "1vw"}}>
                     <input type="checkbox" checked={isChecked} onChange={handleCheckboxOnChange} ></input>
                     <p style={{marginLeft: "0.5vw"}}>Delete selected Comments</p>
                   </div>
                   <div style={{display: "flex"}}>                  
-                    <Button color="success">Accept changes</Button>
+                    <Button color="success" onClick={handleAcceptOnClick}>Accept changes</Button>
                     <Button onClick={handleDiscardOnClick}>Discard</Button>
                   </div>
                 </Card>
