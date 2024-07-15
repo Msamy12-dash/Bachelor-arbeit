@@ -10,6 +10,7 @@ import { Card, Button } from "@nextui-org/react";
 
 
 
+
 interface Comment {
   key: number;
   name: string;
@@ -49,7 +50,11 @@ export default function EditorPage() {
 
   const [textSpecificComment, setTextSpecificComment] =
     useState<Comment | null>(null);
-  const [editor, setEditor] = useState<Quill | null>(null);
+    const [editor, setEditor] = useState<(Quill & {
+      highlightText: (index: number, length: number, color: string) => void;
+      removeHighlight: (index: number, length: number) => void;
+      getSelection: () => { index: number; length: number } | null;
+    }) | null>(null);
   const [selectedText, setSelectedText] = useState<string>("");
   const [completeText, setCompleteText] = useState<string>("");
   const [showAIChangesDiv, setShowAIChangesDiv] = useState<boolean>(false);
@@ -128,7 +133,7 @@ export default function EditorPage() {
           
         </Card>
         <Card style={{ width: "20%" }}>
-          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} selectedText={selectedText} completeText={completeText}/>
+          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} selectedText={selectedText} completeText={completeText} editor={editor}/>
         </Card>
       </div>
     </>
