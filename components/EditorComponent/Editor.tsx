@@ -81,12 +81,12 @@ export default function Editor({
     const ydoc = provider.doc;
     const ytext = ydoc.getText("quill");
   
-    if (typeof window !== "undefined" && quill.current) {
-      const editor = quill.current.getEditor();
+    if (typeof window !== "undefined" && quillRef.current) {
+      const editor = quillRef.current.getEditor();
   
       // Set editor methods and state in the parent component
       setEditor({
-        ...quill.current,
+        ...quillRef.current,
         highlightText,
         removeHighlight,
         getSelection: () => editor.getSelection()
