@@ -118,9 +118,6 @@ export default function Editor({
   useEffect(() => {
     const ydoc = provider.doc;
     const ytext = ydoc.getText("quill");
-    if (ydoc.getText("editor").toString() === "") {
-      ydoc.getText("editor").insert(0, "yes, this is the editor ydoc.")
-    }
   
     if (typeof window !== "undefined" && quill.current) {
       const editor = quill.current.getEditor();

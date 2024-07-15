@@ -53,9 +53,7 @@ export default function CardContainer({
       setIsLoading(false);
       const ydoc = provider.doc;
       
-      if (ydoc.getText("cardcontainer").toString() === "") {
-        ydoc.getText("cardcontainer").insert(0, "yes, this is the cardcontainer ydoc.")
-      }
+      
 
       const yarray = ydoc.getArray<CardData>("cards");
 
