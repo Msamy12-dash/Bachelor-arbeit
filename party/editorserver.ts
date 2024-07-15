@@ -20,7 +20,7 @@ export default class EditorServer implements Party.Server {
         handler: (doc) => {
           this.handleYDocChange(doc)
         }, 
-        debounceWait: 10000,
+        debounceWait: 5000, //set this back to 10000
         debounceMaxWait: 20000,
         timeout: 5000
       }
@@ -29,7 +29,7 @@ export default class EditorServer implements Party.Server {
 
   async handleLoadFromDB() {
     try {
-      const response = await fetch(`http://localhost:3000/api/getMainText?room=${this.room.id}`);
+      const response = await fetch(`http://localhost:3000/api/getYDocForRoom?room=${this.room.id}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -60,7 +60,7 @@ export default class EditorServer implements Party.Server {
 
     try {
       console.log('Saving state to database...');
-      const response = await fetch('http://localhost:3000/api/setMainText', {
+      const response = await fetch('http://localhost:3000/api/setYDocForRoom', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ state: base64State, room: this.room.id }),
