@@ -4,7 +4,7 @@ import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
-import { Spinner } from "@nextui-org/react";
+import { Spinner, Button } from "@nextui-org/react";
 import {requestResponseForMCP, requestChangesSummaryForMCP} from "../../OllamaSinglePromptFunction/ollamaMCPFunction"
 
 interface Comment {
@@ -32,6 +32,7 @@ interface CommentListProps {
   editComment: (comment: Comment, newContent: string) => void;
   getRange: (index: number, length: number) => void;
   setAIChanges: Function;
+  setCheckedKeys: Function;
 }
 
 interface CommentListState {
@@ -76,6 +77,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     const currentKeys = this.state.checkedKeys;
     currentKeys.push(key);
     this.setState({checkedKeys: currentKeys});
+    this.props.setCheckedKeys(currentKeys);
   }
 
   unchecked = (key: number) => {
@@ -84,6 +86,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     // remove key from checkedKeys
     currentKeys = currentKeys.filter(number => number !== key);
     this.setState({checkedKeys:currentKeys});
+    this.props.setCheckedKeys(currentKeys);
 
   }
 
@@ -194,7 +197,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
               <input type="checkbox" style={{marginLeft: "0.75vw", marginRight: "0.5vw"}}/>
             </div> */}
         <div style={{justifyContent: "center"}}>
-          <button onClick={this.handleSubmitOnClick} className="submitToAI-btn">
+          <Button style={{marginTop: "1vw"}} color="primary" onClick={this.handleSubmitOnClick} className="submitToAI-btn">
             {this.state.loading ? (
               <div className="flex items-center justify-center space-x-2">
                   <Spinner color="current" />
@@ -203,7 +206,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
               ) : (
               "Submit to AI"
             )}
-          </button>
+          </Button>
         </div>
     </div>
     );

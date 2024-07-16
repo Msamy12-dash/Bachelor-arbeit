@@ -23,16 +23,22 @@ export default function CommentHandler({
   textSpecificComment,
   setRange,
   editor,
-  setAIChanges
+  setAIChanges,
+  deleteSelectedComments,
+  setDeleteSelectedComments
 }: Readonly<{
   room: string;
   textSpecificComment: Comment | null;
   editor: Quill | null;
   setRange: Function;
   setAIChanges: Function;
+  deleteSelectedComments: boolean;
+  setDeleteSelectedComments: Function;
 }>) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
+  const [checkedKeys, setCheckedKeys] = useState<number[]>([]);
+  
 
   const fetchCurrentKey = async (): Promise<number> => {
     try {
@@ -181,6 +187,15 @@ export default function CommentHandler({
     }
   }, [textSpecificComment]);
 
+  useEffect(() => {
+    console.log("test");
+    if(deleteSelectedComments){
+      for (let key of checkedKeys){
+        console.log(key);
+      }
+    }
+  }, [deleteSelectedComments])
+
 
   const incrementUpvote = async (IncrementComment: Comment) => {
     const updateUpvote = (comments: Comment[]): Comment[] => {
@@ -239,7 +254,8 @@ export default function CommentHandler({
   
     const updatedComments = removeComment(comments);
     setComments(updatedComments);
-    
+    setDeleteSelectedComments(false);
+
     try {
       // API call to delete the comment in MongoDB
       const response = await fetch('/api/delete-comment', {
@@ -319,6 +335,7 @@ export default function CommentHandler({
             editor={editor}
             getRange={getRange}
             setAIChanges={setAIChanges}
+            setCheckedKeys={setCheckedKeys}
         />
         </div>
       )}

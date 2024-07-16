@@ -60,7 +60,7 @@ export default function EditorPage() {
   const [showAIChangesDiv, setShowAIChangesDiv] = useState<boolean>(false);
   const [AIChanges, setAIChanges] = useState<MCP_AI_responses | null>();
   const [isChecked, setIsChecked] = useState<boolean>(true); 
-
+  const [deleteSelectedComments, setDeleteSelectedComments] = useState<boolean>(false);
 
 
 
@@ -89,6 +89,12 @@ export default function EditorPage() {
     editor?.getEditor().setText(AIChanges!.changes);
     setAIChanges(null);
     setShowAIChangesDiv(false);
+
+    // When user wants selected comments to be deleted
+    if(isChecked){
+      setDeleteSelectedComments(true);
+      console.log(deleteSelectedComments);
+    }
   }
 
   function handleCheckboxOnChange (event: ChangeEvent<HTMLInputElement>){
@@ -113,6 +119,8 @@ export default function EditorPage() {
             setRange={handleSetRange}
             textSpecificComment={textSpecificComment}
             setAIChanges={setAIChanges}
+            deleteSelectedComments={deleteSelectedComments}
+            setDeleteSelectedComments={setDeleteSelectedComments}
           />
         </Card>
 
