@@ -18,13 +18,13 @@ interface CardData {
 }
 
 export default function CardContainer({
+  currentRoom,
   selectedText,
-  room,
   completeText,
   editor,
 }: Readonly<{
+  currentRoom: string;
   selectedText: string;
-  room: string;
   completeText: string;
   editor:
     | (Quill & {
@@ -41,7 +41,7 @@ export default function CardContainer({
 
   const provider = useYProvider({
     host: PARTYKIT_HOST,
-    room: room,
+    room: currentRoom,
     party: "editorserver",
     options: { connect: true },
   });
@@ -55,7 +55,7 @@ export default function CardContainer({
         providerRef.current = null;
       }
     };
-  }, [room, provider]);
+  }, [currentRoom, provider]);
 
   useEffect(() => {
     if (!provider.doc) return;
@@ -141,42 +141,40 @@ export default function CardContainer({
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg shadow-lg overflow-y-auto relative h-full">
-      <div className="flex flex-col items-center mb-2 mx-4">
-        <Button
-          className={`inline-flex items-center justify-center w-full m-6 px-6 py-6 text-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full ${
-            selectedText
-              ? "hover:from-blue-600 hover:to-indigo-600"
-              : "opacity-60 cursor-not-allowed"
-          } transition-all duration-300`}
-          onClick={handleAddCard}
-          disabled={!selectedText}
-          style={{
-            minWidth: "200px",
-            maxWidth: "100%",
-            wordWrap: "break-word",
-          }}
-        >
-          Add Card with Selected Text
-        </Button>
-      </div>
-      <div
-        className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 px-2 pb-6"
-      >
-        <div className="flex flex-col space-y-6">
-          {cards.map((card) => (
-            <MUPCard
-              key={card.id}
-              cardData={card}
-              room={room}
-              onTextChange={handleCardTextChange}
-              onResponseChange={handleResponseChange}
-              onSubmittingChange={handleSubmittingChange}
-              onDiscard={handleDiscardCard}
-            />
-          ))}
+        <div className="flex flex-col bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg shadow-lg overflow-y-auto relative h-full">
+          <div className="flex flex-col items-center mb-2 mx-4">
+            <Button
+              className={`inline-flex items-center justify-center w-full m-6 px-6 py-6 text-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full ${
+                selectedText
+                  ? "hover:from-blue-600 hover:to-indigo-600"
+                  : "opacity-60 cursor-not-allowed"
+              } transition-all duration-300`}
+              onClick={handleAddCard}
+              disabled={!selectedText}
+              style={{
+                minWidth: "200px",
+                maxWidth: "100%",
+                wordWrap: "break-word",
+              }}
+            >
+              Add Card with Selected Text
+            </Button>
+          </div>
+          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 px-2 pb-6">
+            <div className="flex flex-col space-y-6">
+              {cards.map((card) => (
+                <MUPCard
+                  key={card.id}
+                  cardData={card}
+                  room={currentRoom}
+                  onTextChange={handleCardTextChange}
+                  onResponseChange={handleResponseChange}
+                  onSubmittingChange={handleSubmittingChange}
+                  onDiscard={handleDiscardCard}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
   );
 }

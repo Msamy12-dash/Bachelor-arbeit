@@ -1,21 +1,28 @@
-import React, { useState, useCallback } from 'react';
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
+import React, { useState, useCallback } from "react";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Button,
+} from "@nextui-org/react";
 import usePartySocket from "partysocket/react";
-import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
+import { Rooms } from "@/party/types";
 import { PARTYKIT_HOST } from "@/pages/env";
 
-export default function RoomDropdown({ 
-    currentRoom, 
-    setCurrentRoom 
-  }: { 
-    currentRoom: string, 
-    setCurrentRoom: React.Dispatch<React.SetStateAction<string>> 
-  }) {
+export default function RoomDropdown({
+  currentRoom,
+  setCurrentRoom,
+}: {
+  currentRoom: string;
+  setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  //maybe do room ids as incrementing integers instead of random strings   
   const [rooms, setRooms] = useState<Rooms>({});
   const socket = usePartySocket({
     host: PARTYKIT_HOST,
     party: "rooms",
-    room: SINGLETON_ROOM_ID,
+    room: currentRoom,
     onMessage(evt) {
       const data = JSON.parse(evt.data);
       if (data.type === "rooms") {
@@ -39,7 +46,7 @@ export default function RoomDropdown({
         {`Room #${room} (Present: ${count})`}
       </DropdownItem>
     ));
-    
+
     items.push(
       <DropdownItem key="newRoom" onPress={createNewRoom}>
         New Room

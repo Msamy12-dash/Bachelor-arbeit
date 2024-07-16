@@ -44,6 +44,6 @@ export type Poll = {
 export type Rooms = {
   [key: string]: number;
 };
-export const SINGLETON_ROOM_ID = "index";
+//export const SINGLETON_ROOM_ID = "index";
 export const LOCAL_HOST = "http://localhost:1999";
 
