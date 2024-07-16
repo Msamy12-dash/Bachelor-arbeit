@@ -7,11 +7,8 @@ import { PARTYKIT_HOST } from "./env";
 export default function IndexPage() {
   const [currentRoom, setCurrentRoom] = useState("default");
   return (
-    <DefaultLayout
-      currentRoom={currentRoom}
-      setCurrentRoom={setCurrentRoom}
-    >
-      <EditorPage currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} roomCounts={roomCounts} />
+    <DefaultLayout currentRoom={currentRoom} setCurrentRoom={setCurrentRoom}>
+      <EditorPage currentRoom={currentRoom} />
     </DefaultLayout>
   );
 }

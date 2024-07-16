@@ -36,10 +36,8 @@ function getRandomColor() {
 
 export default function EditorPage({
   currentRoom,
-  setCurrentRoom,
 }: {
   currentRoom: string;
-  setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const userColor = useMemo(() => getRandomColor(), []);
   const Editor = useMemo(() => {

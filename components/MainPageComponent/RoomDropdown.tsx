@@ -14,34 +14,20 @@ import { PARTYKIT_HOST } from "@/pages/env";
 export default function RoomDropdown({
   currentRoom,
   setCurrentRoom,
-  //roomServerSocket,
 }: {
   currentRoom: string;
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
-  //roomServerSocket: PartySocket;
 }) {
   //maybe do room ids as incrementing integers instead of random strings later
   const [roomCounts, setRoomCounts] = useState<Record<string, number>>({});
   
   const socket = usePartySocket({
     host: PARTYKIT_HOST,
-    party: "rooms",
-    room: currentRoom,
+    party: "roomserver",
+    room: "active-connections",
     onMessage(evt) {
       const data = JSON.parse(evt.data);
-      if (data.type === "rooms") {
-        setRooms((prevRooms) => ({
-          ...prevRooms,
-          ...data.rooms,
-        }));
-      } else if (data.type === "newRoomCreated") {
-        setCurrentRoom(data.roomId);
-      } else if (data.type === "userCount") {
-        setRoomCounts(prev => ({
-          ...prev,
-          [data.roomId]: data.count
-        }));
-      }
+      setRoomCounts(data);
     },
   });
 
@@ -55,8 +41,9 @@ export default function RoomDropdown({
   }, [currentRoom]);
 
   const createNewRoom = useCallback(() => {
-    socket.send(JSON.stringify({ type: "createNewRoom" }));
-  }, [socket]);
+    const newRoomId = Math.random().toString(36).substring(2, 8);
+    setCurrentRoom(newRoomId);
+  }, [setCurrentRoom]);
 
   const renderDropdownItems = () => {
     const items = Object.entries(roomCounts).map(([roomId, count]) => (

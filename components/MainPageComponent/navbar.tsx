@@ -17,13 +17,9 @@ import PartySocket from "partysocket";
 export const Navbar = ({ 
   currentRoom, 
   setCurrentRoom,
-  roomCounts
-  //roomServerSocket,
 }: { 
   currentRoom: string, 
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>,
-  roomCounts: Record<string, number>,
-  //</React.SetStateAction>roomServerSocket: PartySocket,
 }) => {
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
@@ -48,7 +44,7 @@ export const Navbar = ({
 
       <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="center">
         <NavbarItem>
-          <RoomDropdown currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} roomCounts={roomCounts} />
+          <RoomDropdown currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
         </NavbarItem>
       </NavbarContent>
 

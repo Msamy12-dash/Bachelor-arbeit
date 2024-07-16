@@ -1,27 +1,41 @@
 import type * as Party from "partykit/server";
-import { Rooms } from "./types";
+
+interface ConnectionUpdate {
+  type: "connect" | "disconnect";
+  connectionId: string;
+  roomId: string;
+}
 
 export default class RoomServer implements Party.Server {
-  constructor(public room: Party.Room) {}
+  connections: Record<string, number> | undefined;
+  constructor(readonly room: Party.Room) {}
 
-  async onMessage(message: string, sender: Party.Connection) {
-    const data = JSON.parse(message);
+  async onRequest(request: Party.Request) {
+    // Read from storage
+    this.connections = this.connections ?? (await this.room.storage.get("connections")) ?? {};
+    
+    // Update connection count
+    if (request.method === "POST") {
+      const update: ConnectionUpdate = await request.json();
+      const count = this.connections[update.roomId] ?? 0;
+      if (update.type === "connect")
+        this.connections[update.roomId] = count + 1;
+      if (update.type === "disconnect")
+        this.connections[update.roomId] = Math.max(0, count - 1);
 
-    if (data.type === "createNewRoom") {
-      const newRoomId = this.generateUniqueRoomId();
+      // Notify any connected listeners
+      this.room.broadcast(JSON.stringify(this.connections));
 
-      // Notify the requester about the new room creation
-      sender.send(
-        JSON.stringify({ type: "newRoomCreated", roomId: newRoomId })
-      );
+      // Save to storage
+      await this.room.storage.put("connections", this.connections);
     }
+
+    // Send connection counts to requester
+    return new Response(JSON.stringify(this.connections));
   }
 
-  generateUniqueRoomId(): string {
-    let roomId;
-    do {
-      roomId = Math.random().toString(36).substring(2, 8);
-    } while (roomId in this.rooms);
-    return roomId;
+  async onConnect(connection: Party.Connection) {
+    // Send current connections to the new connection
+    connection.send(JSON.stringify(this.connections));
   }
 }

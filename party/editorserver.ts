@@ -3,6 +3,12 @@ import { onConnect, type YPartyKitOptions } from "y-partykit";
 import * as Y from "yjs";
 import { Buffer } from 'buffer';
 
+interface ConnectionUpdate {
+  type: "connect" | "disconnect";
+  connectionId: string;
+  roomId: string;
+}
+
 export default class EditorServer implements Party.Server {
   constructor(public room: Party.Room) {}
 
@@ -11,6 +17,7 @@ export default class EditorServer implements Party.Server {
   };
 
   async onConnect(conn: Party.Connection) {
+    await this.updateConnections("connect", conn);
     await this.broadcastUserCount();
 
 
@@ -27,8 +34,24 @@ export default class EditorServer implements Party.Server {
     });
   }
 
-  async onClose() {
+  async onClose(conn: Party.Connection) {
+    await this.updateConnections("disconnect", conn);
     await this.broadcastUserCount();
+  }
+
+  async updateConnections(type: "connect" | "disconnect", connection: Party.Connection) {
+    const connectionsParty = this.room.context.parties.roomserver; //ok?
+    const connectionsRoomId = "active-connections";
+    const connectionsRoom = connectionsParty.get(connectionsRoomId);
+
+    await connectionsRoom.fetch({
+      method: "POST",
+      body: JSON.stringify({
+        type,
+        connectionId: connection.id,
+        roomId: this.room.id
+      } as ConnectionUpdate)
+    });
   }
 
   async broadcastUserCount() {

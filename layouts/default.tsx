@@ -8,20 +8,17 @@ export default function DefaultLayout({
   children,
   currentRoom,
   setCurrentRoom,
-  roomCounts,
   //roomServerSocket,
 }: {
   children: React.ReactNode;
   currentRoom: string;
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>
-  roomCounts: Record<string, number>;
-  //roomServerSocket: PartySocket,
 }) {
 
   return (
     <div className="relative flex flex-col h-screen">
       <Head />
-      <Navbar currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} roomCounts={roomCounts} />
+      <Navbar currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
       <main className="container mx-auto max-w-full px-3 flex-grow pt-8 ">
         {children}
       </main>
