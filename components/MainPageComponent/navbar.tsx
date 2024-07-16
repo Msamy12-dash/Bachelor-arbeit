@@ -12,13 +12,18 @@ import RoomDropdown from "./RoomDropdown";  // Import the new RoomDropdown compo
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/MainPageComponent/theme-switch";
+import PartySocket from "partysocket";
 
 export const Navbar = ({ 
   currentRoom, 
-  setCurrentRoom 
+  setCurrentRoom,
+  roomCounts
+  //roomServerSocket,
 }: { 
   currentRoom: string, 
-  setCurrentRoom: React.Dispatch<React.SetStateAction<string>> 
+  setCurrentRoom: React.Dispatch<React.SetStateAction<string>>,
+  roomCounts: Record<string, number>,
+  //</React.SetStateAction>roomServerSocket: PartySocket,
 }) => {
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
@@ -43,7 +48,7 @@ export const Navbar = ({
 
       <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="center">
         <NavbarItem>
-          <RoomDropdown currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
+          <RoomDropdown currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} roomCounts={roomCounts} />
         </NavbarItem>
       </NavbarContent>
 
