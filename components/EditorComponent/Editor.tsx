@@ -61,7 +61,7 @@ export default function Editor({
   const providerRef = useRef<YPartykitProvider | null>(null);
 
   const provider = useYProvider({
-    host: "localhost:1999",
+    host: PARTYKIT_HOST,
     room: room,
     party: "editorserver",
     options: { connect: true }

@@ -8,7 +8,17 @@ interface ConnectionUpdate {
 
 export default class RoomServer implements Party.Server {
   connections: Record<string, number> | undefined;
-  constructor(readonly room: Party.Room) {}
+  
+  constructor(readonly room: Party.Room) {
+    this.initialize();
+  }
+
+  async initialize() {
+    // Clear connections on server start
+    await this.room.storage.delete("connections");
+    this.connections = {};
+    console.log("Connections reset on server start");
+  }
 
   async onRequest(request: Party.Request) {
     // Read from storage

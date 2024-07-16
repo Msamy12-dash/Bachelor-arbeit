@@ -18,7 +18,6 @@ export default function RoomDropdown({
   currentRoom: string;
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  //maybe do room ids as incrementing integers instead of random strings later
   const [roomCounts, setRoomCounts] = useState<Record<string, number>>({});
   
   const socket = usePartySocket({
@@ -26,19 +25,35 @@ export default function RoomDropdown({
     party: "roomserver",
     room: "active-connections",
     onMessage(evt) {
-      const data = JSON.parse(evt.data);
-      setRoomCounts(data);
+      try {
+        const data = JSON.parse(evt.data);
+        if (typeof data === "object" && data !== null) {
+          setRoomCounts(prevCounts => ({...prevCounts, ...data}));
+        }
+      } catch (error) {
+        console.error("Error parsing message:", error);
+      }
     },
   });
 
   useEffect(() => {
-    if (currentRoom) {
-      const editorSocket = new WebSocket(`wss://${PARTYKIT_HOST}/${currentRoom}`);
-      return () => {
-        editorSocket.close();
-      };
-    }
-  }, [currentRoom]);
+    // Initial fetch of room counts
+    const fetchRoomCounts = async () => {
+      try {
+        const response = await fetch(`${PARTYKIT_HOST}/parties/roomserver/active-connections`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setRoomCounts(data);
+      } catch (error) {
+        console.error("Error fetching room counts:", error);
+      }
+    };
+
+    fetchRoomCounts();
+  }, []);
+
 
   const createNewRoom = useCallback(() => {
     const newRoomId = Math.random().toString(36).substring(2, 8);
@@ -47,7 +62,10 @@ export default function RoomDropdown({
 
   const renderDropdownItems = () => {
     const items = Object.entries(roomCounts).map(([roomId, count]) => (
-      <DropdownItem key={roomId}>
+      <DropdownItem 
+        key={roomId} 
+        className={currentRoom === roomId ? "bg-primary-100" : ""}
+      >
         {`Room ${roomId} (${count} user${count !== 1 ? "s" : ""})`}
       </DropdownItem>
     ));
@@ -75,6 +93,8 @@ export default function RoomDropdown({
       <DropdownMenu
         aria-label="Room selection"
         onAction={(key) => key !== "new-room" && setCurrentRoom(key.toString())}
+        selectionMode="single"
+        selectedKeys={currentRoom ? [currentRoom] : []}
       >
         {renderDropdownItems()}
       </DropdownMenu>
