@@ -2,8 +2,6 @@
 import type * as Party from "partykit/server";
 
 import { createUpdateMessage } from "@/party/types";
-
-
 const json = (response: string) =>
   new Response(response, {
     headers: {
@@ -11,11 +9,12 @@ const json = (response: string) =>
     },
   });
 
-export default class LikeServer implements Party.Server {
+export default class ReactionServer implements Party.Server {
   options: Party.ServerOptions = { hibernate: true };
-  constructor(readonly room: Party.Room) {}
-  reactions: Record<string, number> = {"heart": 0,
-        "thumbsup": 0};
+  constructor(readonly room: Party.Room) {
+    
+  }
+  reactions: Record<string, number> = {};
 
   async onStart() {
     // load reactions from storage on startup
@@ -32,19 +31,22 @@ export default class LikeServer implements Party.Server {
     conn.send(createUpdateMessage(this.reactions));
   }
 
-  onMessage(_message: string, _sender: Party.Connection) {
+  onMessage(message: string) {
     // rate limit incoming messages
-    
+  
+      // client sends WebSocket message: update reaction count
+      this.updateAndBroadcastReactions(message);
+   
   }
 
   updateAndBroadcastReactions(kind: string) {
     // update stored reaction counts
-    this.reactions[kind] = (this.reactions[kind] ?? 0) + 1;
     // send updated counts to all connected listeners
     this.room.broadcast(createUpdateMessage(this.reactions));
     // save reactions to disk (fire and forget)
     this.room.storage.put("reactions", this.reactions);
-  } 
+  }
 }
 
-LikeServer satisfies Party.Worker;
+ReactionServer satisfies Party.Worker;
+

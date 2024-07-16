@@ -16,6 +16,7 @@
     "roominfo",
     "roomserver",
     "sendvote",
+    "thumbsup",
     "userlogin",
     "voteserver",
     "ytext"

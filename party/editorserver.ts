@@ -4,15 +4,15 @@ import type * as Party from "partykit/server";
 import { onConnect, type YPartyKitOptions } from "y-partykit";
 import { Doc } from "yjs";
 import * as Y from 'yjs'
+import * as awarenessProtocol from 'y-protocols/awareness.js'
 
 import { SINGLETON_ROOM_ID } from "./types";
 import { PARTYKIT_HOST } from "@/pages/env";
 import PartySocket from "partysocket";
-
+import { Room } from "partykit/server";
 export default class EditorServer implements Party.Server {
   yjsOptions: YPartyKitOptions = {
     persist: { mode: "snapshot" },
-    
    
   };
   constructor(public room: Party.Room) {}
@@ -45,16 +45,9 @@ export default class EditorServer implements Party.Server {
    
    
     const text=_.getText('quill')
+    console.log(_.clientID)
 
-    console.log()
 
-    if (text._length>10){
-      _.getText('quill').delete(1,1)
-    }
-  
-    const relPos = Y.createRelativePositionFromTypeIndex(_.getText("quill"), 2)
-
-    
 
   }
 

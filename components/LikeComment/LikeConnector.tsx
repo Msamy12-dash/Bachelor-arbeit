@@ -7,18 +7,17 @@ import { Reactions } from "./ComponentLike";
 import { PARTYKIT_HOST, PARTYKIT_URL } from "@/pages/env";
 
 
-const ROOM_ID = "1";
 
 export default function LikeConnector() {
   const [reactions, setReactions] = useState({ });
-  const roomId = ROOM_ID;
-  const roomHost = PARTYKIT_HOST+"/parties/likeserver";
+  const roomId = "1";
+  const roomHost = PARTYKIT_URL+"/parties/ReactionServer";
 
   useEffect(() => {
     async function fetchReactions() {
       try {
         
-        const req = await fetch(`/parties/likeserver/${ROOM_ID}`, {
+        const req = await fetch(roomHost+"/1", {
           method: "GET",
           next: { revalidate: 0 },
         });

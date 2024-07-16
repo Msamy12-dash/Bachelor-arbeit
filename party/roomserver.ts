@@ -12,10 +12,12 @@ export default class RoomServer implements Party.Server {
    }
  
    onConnect(connection: Party.Connection) {
+    
+
      connection.send(JSON.stringify({ type: "rooms", rooms: this.rooms }));
    }
- 
    async onRequest(req: Party.Request) {
+  
      if (req.method === "GET") {
        return new Response(
          `Hi! This is party '${this.room.name}' and room '${this.room.id}'!`
@@ -34,5 +36,6 @@ export default class RoomServer implements Party.Server {
      // Always return a Response
      return Response.json({ error: "Method not allowed" }, { status: 405 });
    }
+   
  }
  
