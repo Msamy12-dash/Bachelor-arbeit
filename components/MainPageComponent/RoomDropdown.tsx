@@ -36,9 +36,23 @@ export default function RoomDropdown({
         }));
       } else if (data.type === "newRoomCreated") {
         setCurrentRoom(data.roomId);
+      } else if (data.type === "userCount") {
+        setRoomCounts(prev => ({
+          ...prev,
+          [data.roomId]: data.count
+        }));
       }
     },
   });
+
+  useEffect(() => {
+    if (currentRoom) {
+      const editorSocket = new WebSocket(`wss://${PARTYKIT_HOST}/${currentRoom}`);
+      return () => {
+        editorSocket.close();
+      };
+    }
+  }, [currentRoom]);
 
   const createNewRoom = useCallback(() => {
     socket.send(JSON.stringify({ type: "createNewRoom" }));
