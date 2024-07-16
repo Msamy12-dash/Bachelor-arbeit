@@ -181,18 +181,26 @@ export default function CommentHandler({
   }, []);
 
 
+
   useEffect(() => {
     if (textSpecificComment != null) {
       addComment(textSpecificComment);
     }
   }, [textSpecificComment]);
 
+
+
   useEffect(() => {
-    console.log("test");
+
     if(deleteSelectedComments){
+      console.log("true");
       for (let key of checkedKeys){
         console.log(key);
+        let comment = comments.find(comment => comment.key === key);
+        deleteComment(comment!);
       }
+
+      setDeleteSelectedComments(false);
     }
   }, [deleteSelectedComments])
 
@@ -254,7 +262,7 @@ export default function CommentHandler({
   
     const updatedComments = removeComment(comments);
     setComments(updatedComments);
-    setDeleteSelectedComments(false);
+    
 
     try {
       // API call to delete the comment in MongoDB

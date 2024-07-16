@@ -98,12 +98,13 @@ export default function EditorPage() {
   }
 
   function handleCheckboxOnChange (event: ChangeEvent<HTMLInputElement>){
-      // if checkbox is checked
-      if(event.target.checked){
-        setIsChecked(true);
-      }else{
-        setIsChecked(false);
-      }
+
+    // if checkbox is checked
+    if(event.target.checked){
+      setIsChecked(true);
+    }else{
+      setIsChecked(false);
+    }
   }
 
 
@@ -133,7 +134,7 @@ export default function EditorPage() {
                   <p style={{fontWeight: "bold", marginBottom: "1vw"}}>Changes made by the AI according to selected Comments</p>
                   <p style={{marginBottom: "1vw"}}>{AIChanges?.summary}</p>
                   <div style={{display: "flex", marginBottom: "1vw"}}>
-                    <input type="checkbox" checked={isChecked} onChange={handleCheckboxOnChange} ></input>
+                    <input type="checkbox" onChange={handleCheckboxOnChange} ></input>
                     <p style={{marginLeft: "0.5vw"}}>Delete selected Comments</p>
                   </div>
                   <div style={{display: "flex"}}>                  
