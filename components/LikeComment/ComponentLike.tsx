@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import usePartySocket from "partysocket/react";
+import PartySocket from "partysocket";
 
 const reactionTypes = ["clap", "thumbsup", "heart", "party"] as const;
 const reactionEmoji = {
@@ -32,6 +33,15 @@ export const Reactions = (props: ReactionsProps) => {
       setReactions(message.reactions);
     },
   });
+
+  useEffect(() => {
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, [props.roomId]);
+
 
   // render buttons with reaction counts
   return (

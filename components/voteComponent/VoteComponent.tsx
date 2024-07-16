@@ -2,11 +2,12 @@
 "use client";
 
 import usePartySocket from "partysocket/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import PollOptions from "./VoteOptions";
 
 import { Poll } from "@/party/types";
+import PartySocket from "partysocket";
 
 
 
@@ -21,7 +22,7 @@ export default function PollUI({
 }) {
   const [votes, setVotes] = useState<number[]>(initialVotes ?? []);
   const [vote, setVote] = useState<number | null>(null);
-
+  
   const socket = usePartySocket({
     room: "1",
     debug : true,

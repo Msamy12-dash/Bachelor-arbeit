@@ -17,10 +17,15 @@ export default class EditorServer implements Party.Server {
   };
 
   async onConnect(conn: Party.Connection) {
-    await this.updateConnections("connect", conn);
-    await this.broadcastUserCount();
-
-
+    // Check if the client already exists
+    const existingConnections = this.room.getConnections();
+    const clientAlreadyConnected = [...existingConnections].some(c => c.id === conn.id);
+    
+    if (!clientAlreadyConnected) {
+        await this.updateConnections("connect", conn);
+        await this.broadcastUserCount();
+    }
+    
     return onConnect(conn, this.room, {
       load: async () => this.handleLoadFromDB(),
       callback: { 
