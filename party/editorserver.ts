@@ -11,7 +11,8 @@ export default class EditorServer implements Party.Server {
   };
 
   async onConnect(conn: Party.Connection) {
-    await this.updateCount();
+    await this.broadcastUserCount();
+
 
     return onConnect(conn, this.room, {
       load: async () => this.handleLoadFromDB(),
@@ -24,6 +25,16 @@ export default class EditorServer implements Party.Server {
         timeout: 5000
       }
     });
+  }
+
+  async onClose() {
+    await this.broadcastUserCount();
+  }
+
+  async broadcastUserCount() {
+    const connections = this.room.getConnections();
+    const count = connections instanceof Set ? connections.size : [...connections].length;
+    this.room.broadcast(JSON.stringify({ type: "userCount", count, roomId: this.room.id }));
   }
 
   async handleLoadFromDB() {
@@ -45,10 +56,6 @@ export default class EditorServer implements Party.Server {
       console.error('Error loading from DB:', error);
     }
     return new Y.Doc();
-  }
-
-  async onClose(_: Party.Connection) {
-    await this.updateCount();
   }
 
   async handleYDocChange(doc: Y.Doc) {
@@ -73,22 +80,6 @@ export default class EditorServer implements Party.Server {
       console.error('Error saving state:', error);
       // Rethrow the error if you want it to be handled by the caller
       throw error;
-    }
-  }
-
-  async updateCount() {
-    const count = [...this.room.getConnections()].length;
-    try {
-      const response = await this.room.context.parties.rooms.get(this.room.id).fetch({
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ room: this.room.id, count }),
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to update count. Status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('Error updating count:', error);
     }
   }
 }
