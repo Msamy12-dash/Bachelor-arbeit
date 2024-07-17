@@ -2,6 +2,7 @@ import type * as Party from "partykit/server";
 import { onConnect, type YPartyKitOptions } from "y-partykit";
 import * as Y from "yjs";
 import { Buffer } from 'buffer';
+import { connect } from "http2";
 
 interface ConnectionUpdate {
   type: "connect" | "disconnect";
@@ -10,7 +11,15 @@ interface ConnectionUpdate {
 }
 
 export default class EditorServer implements Party.Server {
-  constructor(public room: Party.Room) {}
+  constructor(public room: Party.Room) {
+    const existingConnections = room.getConnections();
+    console.log('Connections on editorserver start:', [...existingConnections].length);
+  }
+
+  //only for debugging:
+  async onStart() {
+
+  }
 
   yjsOptions: YPartyKitOptions = {
     persist: { mode: "snapshot" },
@@ -18,14 +27,16 @@ export default class EditorServer implements Party.Server {
 
   async onConnect(conn: Party.Connection) {
     // Check if the client already exists
+    console.log('Connection id:', conn.id);
     const existingConnections = this.room.getConnections();
+    console.log('1. Connections on editorserver connect:', [...existingConnections].length); //log
     const clientAlreadyConnected = [...existingConnections].some(c => c.id === conn.id);
+    console.log('New connection established. Client already connected:', clientAlreadyConnected);
+    const existingConnections2 = this.room.getConnections();
+    console.log('1. Connections on editorserver connect:', [...existingConnections2].length); //log
     
-    if (!clientAlreadyConnected) {
         await this.updateConnections("connect", conn);
-        await this.broadcastUserCount();
-    }
-    
+
     return onConnect(conn, this.room, {
       load: async () => this.handleLoadFromDB(),
       callback: { 
@@ -41,7 +52,6 @@ export default class EditorServer implements Party.Server {
 
   async onClose(conn: Party.Connection) {
     await this.updateConnections("disconnect", conn);
-    await this.broadcastUserCount();
   }
 
   async updateConnections(type: "connect" | "disconnect", connection: Party.Connection) {
@@ -57,12 +67,6 @@ export default class EditorServer implements Party.Server {
         roomId: this.room.id
       } as ConnectionUpdate)
     });
-  }
-
-  async broadcastUserCount() {
-    const connections = this.room.getConnections();
-    const count = connections instanceof Set ? connections.size : [...connections].length;
-    this.room.broadcast(JSON.stringify({ type: "userCount", count, roomId: this.room.id }));
   }
 
   async handleLoadFromDB() {

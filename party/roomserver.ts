@@ -33,15 +33,15 @@ export default class RoomServer implements Party.Server {
       if (update.type === "disconnect")
         this.connections[update.roomId] = Math.max(0, count - 1);
 
+      // Save to storage
+      await this.room.storage.put("connections", this.connections);
+      
       // Notify any connected listeners
       this.room.broadcast(JSON.stringify(this.connections));
 
-      // Save to storage
-      await this.room.storage.put("connections", this.connections);
+      return new Response("OK");
     }
-
-    // Send connection counts to requester
-    return new Response(JSON.stringify(this.connections));
+    return new Response("NOK");
   }
 
   async onConnect(connection: Party.Connection) {
