@@ -40,7 +40,6 @@ function getRandomColor() {
 
 export default function EditorPage() {
   const [currentRoom, setCurrentRoom] = useState("default");
-  const [prompts, setPrompts] = useState<string[]>([]);
   const userColor = useMemo(() => getRandomColor(), []);
   const Editor = useMemo(() => {
     return dynamic(() => import("@/components/EditorComponent/Editor"), {
@@ -108,7 +107,6 @@ export default function EditorPage() {
             setRange={handleSetRange}
             textSpecificComment={textSpecificComment}
             setAIChanges={setAIChanges}
-            promptList={prompts}
           />
         </Card>
 
@@ -135,9 +133,7 @@ export default function EditorPage() {
           
         </Card>
         <Card style={{ width: "20%" }}>
-          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} selectedText={selectedText} completeText={completeText}
-          setPrompts={setPrompts}
-          />
+          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} selectedText={selectedText} completeText={completeText} editor={editor}/>
         </Card>
       </div>
     </>
