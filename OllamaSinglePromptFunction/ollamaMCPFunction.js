@@ -76,7 +76,8 @@ ${tone}`;
   // request a summary on what AI has changed based on the selected comments
   export async function requestChangesSummaryForMCP(prevText, newText){
     // build prompt
-    let task = "I will give you two versions of a text and I want you to give a short summary on what has changed from the first (Text 1) to the second text (Text 2). Thank you \n \n";
+    
+    let task = "You are an expert for analyzing changes within two versions of the same text. I will give you two versions of the same text. The old version is 'Text 1'. The new version is 'Text 2'. Your Task is to give me an overview what has changed between the two texts. Respond in a short form where you summarize the biggest changes in a maximum of 10 sentences."
 
     let text1 = `Text 1: \n ${prevText}\n \n`;
     let text2 = `Text 2: \n ${newText}\n \n`;
