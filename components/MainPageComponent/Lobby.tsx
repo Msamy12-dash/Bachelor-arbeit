@@ -7,19 +7,27 @@ import TextArea from "../common/textArea";
 import Button from "../common/button";
 import CardContainer from "../MUPComponents/CardContainer";
 import { PARTYKIT_HOST } from "@/pages/env";
+import Quill from "react-quill";
+
 
 export default function Lobby({
   currentRoom,
   setCurrentRoom,
   selectedText,
   completeText,
-  setPrompts
+  setPrompts,
+  editor
 }: {
   currentRoom: string;
   setCurrentRoom: (room: string) => void;
   selectedText: string;
   completeText: string;
   setPrompts: Function
+  editor: Quill & {
+    highlightText: (index: number, length: number, color: string) => void;
+    removeHighlight: (index: number, length: number) => void;
+    getSelection: () => { index: number; length: number } | null;
+  } | null;
 }) {
   const [rooms, setRooms] = useState<Rooms>({});
   const [nextRoomId, setNextRoomId] = useState<number>(1);
@@ -118,6 +126,7 @@ export default function Lobby({
             selectedText={selectedText}
             room={currentRoom}
             completeText={completeText}
+            editor={editor}
           />
         </div>
       )}
