@@ -8,7 +8,8 @@ import Button from "../common/button";
 import CardContainer from "../MUPComponents/CardContainer";
 import { PARTYKIT_HOST } from "@/pages/env";
 import Quill from "react-quill";
-
+import * as Y from "yjs";
+import useYProvider from "y-partykit/react";
 
 export default function Lobby({
   currentRoom,
@@ -32,6 +33,13 @@ export default function Lobby({
   const [rooms, setRooms] = useState<Rooms>({});
   const [nextRoomId, setNextRoomId] = useState<number>(1);
   const [inputText, setInputText] = useState('')
+  const ydoc = new Y.Doc();
+  const provider = useYProvider({
+    host: "localhost:1999", // optional, defaults to window.location.host
+    party: "editorserver",
+    room: SINGLETON_ROOM_ID,
+    doc: ydoc,
+  });
 
   usePartySocket({
     // host: props.host, -- defaults to window.location.host if not set
@@ -63,6 +71,9 @@ export default function Lobby({
 
     localStorage.setItem("savedPrompts", JSON.stringify(updatedPrompts));
     setPrompts(updatedPrompts);
+    const ytext = provider.doc.getText("promptList");
+      ytext.setAttribute("savePrompt", JSON.stringify(updatedPrompts));
+      console.log("🚀 ~ handleSave ~ ytext:", ytext.getAttribute("savePrompt"));
     setInputText("");
   };
 
@@ -101,12 +112,12 @@ export default function Lobby({
             );
           })}
         </ul>
-        <Button
+        {/* <Button
           onClick={() => setCurrentRoom(Math.random().toString(36).substring(2, 8))}
           className="bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 mb-6"
         >
           New Room
-        </Button>
+        </Button> */}
       
 
       {/**

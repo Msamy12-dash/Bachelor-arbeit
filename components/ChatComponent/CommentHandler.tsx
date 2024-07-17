@@ -363,7 +363,7 @@ export default function CommentHandler({
               )}
             </div>
           </TabPanel>
-          <TabPanel value="2">
+          <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
             <PromptList promptList={promptList} />
           </TabPanel>
         </TabContext>
