@@ -1,18 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import CommentList from './CommentList';
+import React, { useState, useEffect } from "react";
+import CommentList from "./CommentList";
 import Quill from "react-quill";
+import PromptList from "./PromptList";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import TabContext from "@material-ui/lab/TabContext";
+import TabList from "@material-ui/lab/TabList";
+import TabPanel from "@material-ui/lab/TabPanel";
 
 interface Comment {
   key: number;
   name: string;
   content: string;
-  date: string; 
+  date: string;
   upvotes: number;
   isTextSpecific: boolean;
   shortenedSelectedText: string;
   index: number;
   length: number;
-  history: string[]; 
+  history: string[];
   replies: Comment[];
   parentKey: number | null;
   canReply: boolean;
@@ -23,16 +29,24 @@ export default function CommentHandler({
   textSpecificComment,
   setRange,
   editor,
+  
+  promptList,
   setAIChanges
 }: Readonly<{
   room: string;
   textSpecificComment: Comment | null;
   editor: Quill | null;
   setRange: Function;
+  promptList: string[];
   setAIChanges: Function;
 }>) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
+  const [value, setValue] = React.useState("1");
+
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue);
+  };
 
   const fetchCurrentKey = async (): Promise<number> => {
     try {
@@ -159,9 +173,9 @@ export default function CommentHandler({
     // Fetch comments from the API when the component mounts
     const fetchComments = async () => {
       try {
-        const response = await fetch('/api/fetch-comments');
+        const response = await fetch("/api/fetch-comments");
         if (!response.ok) {
-          throw new Error('Failed to fetch comments');
+          throw new Error("Failed to fetch comments");
         }
         const data = await response.json();
         setComments(data);
@@ -173,7 +187,6 @@ export default function CommentHandler({
 
     fetchComments();
   }, []);
-
 
   useEffect(() => {
     if (textSpecificComment != null) {
@@ -245,17 +258,17 @@ export default function CommentHandler({
       const response = await fetch('/api/delete-comment', {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ comment: DeleteComment }),
       });
       if (!response.ok) {
-        throw new Error('Failed to delete comment');
+        throw new Error("Failed to delete comment");
       }
       const data = await response.json();
-      console.log('Comment deleted successfully:', data);
+      console.log("Comment deleted successfully:", data);
     } catch (error) {
-      console.error('Failed to delete comment:', error);
+      console.error("Failed to delete comment:", error);
     }
   };
 
@@ -280,50 +293,81 @@ export default function CommentHandler({
       const response = await fetch('/api/update-comment', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ comment: EditComment, content: newContent }),
       });
       if (!response.ok) {
-        throw new Error('Failed to update comment');
+        throw new Error("Failed to update comment");
       }
       const data = await response.json();
-      console.log('Comment updated successfully:', data);
+      console.log("Comment updated successfully:", data);
     } catch (error) {
-      console.error('Failed to update comment:', error);
+      console.error("Failed to update comment:", error);
     }
   };
 
-
   const getRange = (index: number, length: number) => {
     console.log(index, length);
-    setRange({index: index, length: length});
+    setRange({ index: index, length: length });
   };
 
-  
+  // Funktion zum Speichern eines neuen Kommentars in der MongoDB
+  // const saveComment = async (comment: Comment) => {
+  //   try {
+  //     const response = await fetch("/api/save-comment", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ room, comment }),
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("Failed to save comment");
+  //     }
+  //     const data = await response.json();
+  //     console.log("Comment saved successfully:", data);
+  //   } catch (error) {
+  //     console.error("Failed to save comment:", error);
+  //   }
+  // };
 
   return (
-    <div className="comments text-center block">
-      <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
-      <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
-        {showComments ? "Hide Comments" : "Show Comments"}
-      </button>
-      {showComments && (
-        <div className="mt-8">
-          <CommentList
-            comments={comments}
-            incrementUpvote={incrementUpvote}
-            deleteComment={deleteComment}
-            editComment={editComment}
-            addComment={addComment}
-            editor={editor}
-            getRange={getRange}
-            setAIChanges={setAIChanges}
-        />
-        </div>
-      )}
+    <div className="comments">
+      <Box sx={{ width: "100%", typography: "body1" }}>
+        <TabContext value={value}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <TabList onChange={handleChange} aria-label="lab API tabs example">
+              <Tab label="Comment" value="1" />
+              <Tab label="Prompt List" value="2" />
+            </TabList>
+          </Box>
+          <TabPanel value="1">
+            <div>
+              <div className="Comment-font">Comments</div>
+              <button onClick={() => setShowComments(!showComments)}>
+                {showComments ? "Hide Comments" : "Show Comments"}
+              </button>
+              {showComments && (
+                <CommentList
+                  addComment={addComment}
+                  deleteComment={deleteComment}
+                  editComment={editComment}
+                  getRange={getRange}
+                  comments={comments}
+                  editor={editor}
+
+                  incrementUpvote={incrementUpvote}
+                  setAIChanges={setAIChanges}
+                />
+              )}
+            </div>
+          </TabPanel>
+          <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
+            <PromptList promptList={promptList} />
+          </TabPanel>
+        </TabContext>
+      </Box>
     </div>
   );
 }
-
-

@@ -1,0 +1,46 @@
+.scrollableList {
+    max-height: 35vw;
+    overflow-y: auto;
+  }
+  
+   .card {
+    display: flex;
+    width: 100%;
+  }
+  
+  .cardBody {
+    flex: 1;
+  }
+  
+  .cardTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .nameDate {
+    flex: 1;
+    word-wrap: break-word;
+  }
+  
+  .editDeleteHistory {
+    display: flex;
+    flex-direction: column;
+    margin-left: 5px;
+  }
+  
+  .editTextarea {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .btnSave,
+  .btnCancel {
+    margin: 5px;
+  }
+  
+  .textWrap {
+    word-break: break-word;
+    text-align: center;
+  }

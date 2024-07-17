@@ -3,23 +3,27 @@
 import { useEffect, useState } from "react";
 import usePartySocket from "partysocket/react";
 import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
+import TextArea from "../common/textArea";
+import Button from "../common/button";
 import CardContainer from "../MUPComponents/CardContainer";
-import { Button } from "@nextui-org/react";
 import { PARTYKIT_HOST } from "@/pages/env";
 import Quill from "react-quill";
-
+import * as Y from "yjs";
+import useYProvider from "y-partykit/react";
 
 export default function Lobby({
   currentRoom,
   setCurrentRoom,
   selectedText,
   completeText,
+  setPrompts,
   editor
 }: {
   currentRoom: string;
   setCurrentRoom: (room: string) => void;
   selectedText: string;
   completeText: string;
+  setPrompts: Function
   editor: Quill & {
     highlightText: (index: number, length: number, color: string) => void;
     removeHighlight: (index: number, length: number) => void;
@@ -28,6 +32,14 @@ export default function Lobby({
 }) {
   const [rooms, setRooms] = useState<Rooms>({});
   const [nextRoomId, setNextRoomId] = useState<number>(1);
+  const [inputText, setInputText] = useState('')
+  const ydoc = new Y.Doc();
+  const provider = useYProvider({
+    host: "localhost:1999", // optional, defaults to window.location.host
+    party: "editorserver",
+    room: SINGLETON_ROOM_ID,
+    doc: ydoc,
+  });
 
   usePartySocket({
     // host: props.host, -- defaults to window.location.host if not set
@@ -46,6 +58,25 @@ export default function Lobby({
       }
     },
   });
+
+  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputText(event.target.value);
+  };
+
+  const handleSave = () => {
+    const savedPrompts = JSON.parse(
+      localStorage.getItem("savedPrompts") || "[]"
+    );
+    const updatedPrompts = [...savedPrompts, inputText];
+
+    localStorage.setItem("savedPrompts", JSON.stringify(updatedPrompts));
+    setPrompts(updatedPrompts);
+    const ytext = provider.doc.getText("promptList");
+      ytext.setAttribute("savePrompt", JSON.stringify(updatedPrompts));
+      console.log("🚀 ~ handleSave ~ ytext:", ytext.getAttribute("savePrompt"));
+    setInputText("");
+  };
+
 
   const handleNewRoom = () => {
     const newRoom = nextRoomId.toString().padStart(1, "0"); // Converts the number to a string with leading zeros
@@ -81,12 +112,21 @@ export default function Lobby({
             );
           })}
         </ul>
-        <Button
+        {/* <Button
           onClick={() => setCurrentRoom(Math.random().toString(36).substring(2, 8))}
           className="bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 mb-6"
         >
           New Room
-        </Button>
+        </Button> */}
+      
+
+      {/**
+       * Prompt save
+       */}
+      <div style={{ display: "flex" }}>
+        <TextArea value={inputText} onChange={handleTextChange} />
+        <Button onClick={handleSave}>Save</Button>
+      </div>
       </div>
   
       {/* Card Container Section */}
