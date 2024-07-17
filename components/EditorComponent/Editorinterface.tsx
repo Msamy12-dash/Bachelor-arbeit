@@ -93,7 +93,6 @@ export default function EditorPage() {
     // When user wants selected comments to be deleted
     if(isChecked){
       setDeleteSelectedComments(true);
-      console.log(deleteSelectedComments);
     }
   }
 

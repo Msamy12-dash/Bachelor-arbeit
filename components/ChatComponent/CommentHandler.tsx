@@ -193,9 +193,8 @@ export default function CommentHandler({
   useEffect(() => {
 
     if(deleteSelectedComments){
-      console.log("true");
       for (let key of checkedKeys){
-        console.log(key);
+        //console.log(key);
         let comment = comments.find(comment => comment.key === key);
         deleteComment(comment!);
       }
