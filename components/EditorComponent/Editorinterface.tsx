@@ -110,16 +110,17 @@ export default function EditorPage({
         </Card>
 
         <Card style={{ width: "60%", padding: "20px" }}>
-          {/* <Editor
+          <Editor
             key={currentRoom}
             currentRoom={currentRoom}
+            yProvider={yProvider}
             userColor={userColor}
             setTextSpecificComment={setTextSpecificComment}
             setEditor={setEditor}
             selectedText={selectedText}
             setSelectedText={setSelectedText}
             setCompleteText={setCompleteText}
-          /> */}
+          />
           {/* Pop up card for MCP Changes */}
           {showAIChangesDiv && (
             <div style={{ position: "absolute", left: "100px", top: "100px" }}>

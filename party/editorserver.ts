@@ -22,12 +22,13 @@ export default class EditorServer implements Party.Server {
   }
 
   yjsOptions: YPartyKitOptions = {
-    persist: { mode: "snapshot" },
+    //persist: { mode: "snapshot" },
   };
 
   async onConnect(conn: Party.Connection) {
     // Check if the client already exists
     console.log('Connection id:', conn.uri);
+    console.log('Connection context:', this.room.context, conn.url, conn.state);
     const existingConnections = this.room.getConnections();
     console.log('Connections on editorserver connect:', [...existingConnections].length); //log
     const clientAlreadyConnected = [...existingConnections].some(c => c.id === conn.id);
@@ -49,6 +50,10 @@ export default class EditorServer implements Party.Server {
   }
 
   async onClose(conn: Party.Connection) {
+    console.log('Connection id:', conn.uri);
+    const existingConnections = this.room.getConnections();
+    console.log('Connections on editorserver close:', [...existingConnections].length); //log
+    
     await this.updateConnections("disconnect", conn);
     console.log('Close connection id:', conn.uri);
   }

@@ -44,7 +44,7 @@ export const Navbar = ({
 
       <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="center">
         <NavbarItem>
-          <RoomDropdown currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
+          {/* <RoomDropdown currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} /> */}
         </NavbarItem>
       </NavbarContent>
 
@@ -53,7 +53,7 @@ export const Navbar = ({
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem>
-          <UserAvatar />
+          {/* <UserAvatar /> */}
         </NavbarItem>
       </NavbarContent>
     </NextUINavbar>

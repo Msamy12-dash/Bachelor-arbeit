@@ -24,6 +24,7 @@ Quill.register("modules/cursors", QuillCursors);
 
 export default function Editor({
   currentRoom,
+  yProvider,
   userColor,
   setTextSpecificComment,
   setEditor,
@@ -32,6 +33,7 @@ export default function Editor({
   setCompleteText
 }: Readonly<{
   currentRoom: string;
+  yProvider: YPartykitProvider;
   userColor: string;
   setTextSpecificComment: Function;
   setEditor: Function;
@@ -58,68 +60,42 @@ export default function Editor({
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const quillRef = useRef<ReactQuill>(null);
-  const providerRef = useRef<YPartykitProvider | null>(null);
 
-    useEffect(() => {
-      console.log('Effect running, provider:', provider);
-      if (!provider || providerRef.current === provider) return;
+  useEffect(() => {
+    if (!yProvider) return;
+    const ydoc = yProvider.doc;
+    const ytext = ydoc.getText("quill");
   
-      // Disconnect the previous provider if it exists
-      if (providerRef.current) {
-        console.log('Disconnecting previous provider');
-        providerRef.current.disconnect();
-      }
+    if (typeof window !== "undefined" && quillRef.current) {
+      const editor = quillRef.current.getEditor();
   
-      // Assign the new provider
-      providerRef.current = provider;
-      console.log('Provider ref:', providerRef.current);
+      // Set editor methods and state in the parent component
+      setEditor({
+        ...quillRef.current,
+        highlightText,
+        removeHighlight,
+        getSelection: () => editor.getSelection()
+      });
   
-      // Cleanup function
+      // Handle selection change in the Quill editor
+      editor.on("selection-change", handleSelectionChange);
+  
+      // Create a binding between Yjs and the Quill editor
+      const binding = new QuillBinding(ytext, editor, yProvider.awareness);
+  
+      // Set local user state in Yjs awareness system
+      yProvider.awareness.setLocalStateField("user", {
+        name: "Typing...",
+        color: userColor,
+      });
+  
+      // Clean up function
       return () => {
-        // Only disconnect if the provider in the ref is still the same as when this effect ran
-        if (providerRef.current === provider) {
-          console.log('Disconnecting provider on unmount');
-          providerRef.current.disconnect();
-          providerRef.current = null;
-        }
+        binding.destroy(); // Destroy the binding when component unmounts
+        editor.off("selection-change", handleSelectionChange); // Remove event listener
       };
-    }, [provider, currentRoom]);
-
-  // useEffect(() => {
-  //   if (!provider) return;
-  //   const ydoc = provider.doc;
-  //   const ytext = ydoc.getText("quill");
-  
-  //   if (typeof window !== "undefined" && quillRef.current) {
-  //     const editor = quillRef.current.getEditor();
-  
-  //     // Set editor methods and state in the parent component
-  //     setEditor({
-  //       ...quillRef.current,
-  //       highlightText,
-  //       removeHighlight,
-  //       getSelection: () => editor.getSelection()
-  //     });
-  
-  //     // Handle selection change in the Quill editor
-  //     editor.on("selection-change", handleSelectionChange);
-  
-  //     // Create a binding between Yjs and the Quill editor
-  //     const binding = new QuillBinding(ytext, editor, provider.awareness);
-  
-  //     // Set local user state in Yjs awareness system
-  //     provider.awareness.setLocalStateField("user", {
-  //       name: "Typing...",
-  //       color: userColor,
-  //     });
-  
-  //     // Clean up function
-  //     return () => {
-  //       binding.destroy(); // Destroy the binding when component unmounts
-  //       editor.off("selection-change", handleSelectionChange); // Remove event listener
-  //     };
-  //   }
-  // }, [userColor, provider]);
+    }
+  }, [userColor, yProvider]);
 
   function handleSelectionChange(range: Range) {
     // If text is selected
