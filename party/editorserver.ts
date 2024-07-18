@@ -27,13 +27,11 @@ export default class EditorServer implements Party.Server {
 
   async onConnect(conn: Party.Connection) {
     // Check if the client already exists
-    console.log('Connection id:', conn.id);
+    console.log('Connection id:', conn.uri);
     const existingConnections = this.room.getConnections();
-    console.log('1. Connections on editorserver connect:', [...existingConnections].length); //log
+    console.log('Connections on editorserver connect:', [...existingConnections].length); //log
     const clientAlreadyConnected = [...existingConnections].some(c => c.id === conn.id);
     console.log('New connection established. Client already connected:', clientAlreadyConnected);
-    const existingConnections2 = this.room.getConnections();
-    console.log('1. Connections on editorserver connect:', [...existingConnections2].length); //log
     
         await this.updateConnections("connect", conn);
 
@@ -52,6 +50,7 @@ export default class EditorServer implements Party.Server {
 
   async onClose(conn: Party.Connection) {
     await this.updateConnections("disconnect", conn);
+    console.log('Close connection id:', conn.uri);
   }
 
   async updateConnections(type: "connect" | "disconnect", connection: Party.Connection) {

@@ -6,6 +6,7 @@ import Quill from "react-quill";
 import CommentHandler from "../ChatComponent/CommentHandler";
 import { Card, Button } from "@nextui-org/react";
 import CardContainer from "../MUPComponents/CardContainer";
+import YPartyKitProvider from "y-partykit/provider";
 
 interface Comment {
   key: number;
@@ -36,8 +37,10 @@ function getRandomColor() {
 
 export default function EditorPage({
   currentRoom,
+  yProvider
 }: {
   currentRoom: string;
+  yProvider: YPartyKitProvider;
 }) {
   const userColor = useMemo(() => getRandomColor(), []);
   const Editor = useMemo(() => {
@@ -107,16 +110,16 @@ export default function EditorPage({
         </Card>
 
         <Card style={{ width: "60%", padding: "20px" }}>
-          <Editor
+          {/* <Editor
             key={currentRoom}
-            room={currentRoom}
+            currentRoom={currentRoom}
             userColor={userColor}
             setTextSpecificComment={setTextSpecificComment}
             setEditor={setEditor}
             selectedText={selectedText}
             setSelectedText={setSelectedText}
             setCompleteText={setCompleteText}
-          />
+          /> */}
           {/* Pop up card for MCP Changes */}
           {showAIChangesDiv && (
             <div style={{ position: "absolute", left: "100px", top: "100px" }}>
@@ -150,13 +153,14 @@ export default function EditorPage({
           )}
         </Card>
         <Card className="w-1/5 p-4 overflow-y-auto">
-          <CardContainer
+          {/* <CardContainer
             key={currentRoom}
             currentRoom={currentRoom}
+            yProvider={yProvider}
             selectedText={selectedText}
             completeText={completeText}
             editor={editor}
-          />
+          /> */}
         </Card>
       </div>
     </>

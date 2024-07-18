@@ -19,11 +19,13 @@ interface CardData {
 
 export default function CardContainer({
   currentRoom,
+  yProvider,
   selectedText,
   completeText,
   editor,
 }: Readonly<{
   currentRoom: string;
+  yProvider: YPartyKitProvider;
   selectedText: string;
   completeText: string;
   editor:
@@ -37,31 +39,11 @@ export default function CardContainer({
   const [cards, setCards] = useState<CardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const providerRef = useRef<YPartyKitProvider | null>(null);
-
-  const provider = useYProvider({
-    host: PARTYKIT_HOST,
-    room: currentRoom,
-    party: "editorserver",
-    options: { connect: true },
-  });
-
   useEffect(() => {
-    providerRef.current = provider;
-    // Cleanup function to disconnect the previous provider
-    return () => {
-      if (providerRef.current) {
-        providerRef.current.disconnect();
-        providerRef.current = null;
-      }
-    };
-  }, [currentRoom, provider]);
-
-  useEffect(() => {
-    if (!provider.doc) return;
+    if (!yProvider.doc) return;
 
     setIsLoading(false);
-    const ydoc = provider.doc;
+    const ydoc = yProvider.doc;
     const yarray = ydoc.getArray<CardData>("cards");
 
     const updateCards = () => setCards(yarray.toArray());
@@ -70,12 +52,12 @@ export default function CardContainer({
     updateCards();
 
     return () => yarray.unobserve(updateCards);
-  }, [provider.doc]);
+  }, [yProvider.doc]);
 
   const handleAddCard = () => {
-    if (!provider.doc || !editor || !editor.getSelection()) return;
+    if (!yProvider.doc || !editor || !editor.getSelection()) return;
 
-    const yarray = provider.doc.getArray<CardData>("cards");
+    const yarray = yProvider.doc.getArray<CardData>("cards");
     const selection = editor.getSelection();
 
     if (selection) {
@@ -99,7 +81,7 @@ export default function CardContainer({
   };
 
   const handleCardTextChange = (id: string, newText: string) => {
-    const yarray = provider.doc.getArray<CardData>("cards");
+    const yarray = yProvider.doc.getArray<CardData>("cards");
     const index = yarray.toArray().findIndex((card) => card.id === id);
     if (index !== -1) {
       const updatedCard = { ...yarray.get(index), promptText: newText };
@@ -109,7 +91,7 @@ export default function CardContainer({
   };
 
   const handleResponseChange = (id: string, newResponse: string) => {
-    const yarray = provider.doc.getArray<CardData>("cards");
+    const yarray = yProvider.doc.getArray<CardData>("cards");
     const index = yarray.toArray().findIndex((card) => card.id === id);
     if (index !== -1) {
       const updatedCard = { ...yarray.get(index), responseText: newResponse };
@@ -119,7 +101,7 @@ export default function CardContainer({
   };
 
   const handleSubmittingChange = (id: string, isSubmitting: boolean) => {
-    const yarray = provider.doc.getArray<CardData>("cards");
+    const yarray = yProvider.doc.getArray<CardData>("cards");
     const index = yarray.toArray().findIndex((card) => card.id === id);
     if (index !== -1) {
       const updatedCard = { ...yarray.get(index), submitting: isSubmitting };
@@ -129,7 +111,7 @@ export default function CardContainer({
   };
 
   const handleDiscardCard = (id: string) => {
-    const yarray = provider.doc.getArray<CardData>("cards");
+    const yarray = yProvider.doc.getArray<CardData>("cards");
     const index = yarray.toArray().findIndex((card) => card.id === id);
     if (index !== -1) {
       const card = yarray.get(index);

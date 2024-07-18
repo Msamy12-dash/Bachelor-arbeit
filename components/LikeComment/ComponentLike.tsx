@@ -24,15 +24,15 @@ export const Reactions = (props: ReactionsProps) => {
   const [reactions, setReactions] = useState(props.initialData);
 
   // update state when new reactions come in
-  const socket = usePartySocket({
-    host: props.roomHost,
-    room: props.roomId,
-    onMessage: (event) => {
-      const message = JSON.parse(event.data);
+  // const socket = usePartySocket({
+  //   host: props.roomHost,
+  //   room: props.roomId,
+  //   onMessage: (event) => {
+  //     const message = JSON.parse(event.data);
 
-      setReactions(message.reactions);
-    },
-  });
+  //     setReactions(message.reactions);
+  //   },
+  // });
 
   useEffect(() => {
     return () => {

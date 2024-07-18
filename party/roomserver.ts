@@ -45,6 +45,9 @@ export default class RoomServer implements Party.Server {
   }
 
   async onConnect(connection: Party.Connection) {
+    const existingConnections = this.room.getConnections();
+    console.log('Connections on ROOMserver current:', [...existingConnections].length);
+
     // Send current connections to the new connection
     connection.send(JSON.stringify(this.connections));
   }

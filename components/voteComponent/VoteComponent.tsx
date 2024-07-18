@@ -23,17 +23,17 @@ export default function PollUI({
   const [votes, setVotes] = useState<number[]>(initialVotes ?? []);
   const [vote, setVote] = useState<number | null>(null);
   
-  const socket = usePartySocket({
-    room: "1",
-    debug : true,
-    onMessage(event) {
-      const message = JSON.parse(event.data) as Poll;
+  // const socket = usePartySocket({
+  //   room: "1",
+  //   debug : true,
+  //   onMessage(event) {
+  //     const message = JSON.parse(event.data) as Poll;
 
-      if (message.votes) {
-        setVotes(message.votes);
-      }
-    },
-  });
+  //     if (message.votes) {
+  //       setVotes(message.votes);
+  //     }
+  //   },
+  // });
 
   socket.send(JSON.stringify({ type: "vote", options }));
   
