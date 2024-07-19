@@ -128,20 +128,20 @@ export default function EditorPage() {
         <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor} selectedText={selectedText} setSelectedText={setSelectedText} setCompleteText={setCompleteText}/>
             {/* Pop up card for MCP Changes */}
             {showAIChangesDiv && (
-              <div style={{position: "absolute", left: "100px", top:"100px"}}>
-                <Card style={{ width: "40vw", padding: "1vw", backgroundColor: "#eee"}}>
-                  <p style={{fontWeight: "bold", marginBottom: "1vw"}}>Changes made by the AI according to selected Comments</p>
+              <Card style={{position: "absolute", left: "100px", top:"100px", border: "1px solid grey", borderRadius: "25px"}}>
+                <div style={{ width: "40vw", padding: "1.5vw", backgroundColor: "#f0f0f0"}}>
+                  <p style={{fontWeight: "bold", marginBottom: "1vw", fontSize:"1.1rem"}}>Changes made by the AI according to selected Comments</p>
                   <p style={{marginBottom: "1vw"}}>{AIChanges?.summary}</p>
                   <div style={{display: "flex", marginBottom: "1vw"}}>
                     <input type="checkbox" onChange={handleCheckboxOnChange} ></input>
-                    <p style={{marginLeft: "0.5vw"}}>Delete selected Comments</p>
+                    <p style={{marginLeft: "0.5vw"}}>Delete selected comment(s)</p>
                   </div>
                   <div style={{display: "flex"}}>                  
-                    <Button color="success" onClick={handleAcceptOnClick}>Accept changes</Button>
-                    <Button onClick={handleDiscardOnClick}>Discard</Button>
+                    <Button style={{color: "white", paddingLeft: "1vw", paddingRight: "1vw"}} color="success" onClick={handleAcceptOnClick}>Accept changes</Button>
+                    <Button onClick={handleDiscardOnClick} className="ml-5">Discard</Button>
                   </div>
-                </Card>
-              </div>
+                </div>
+              </Card>
             )}
   
           
