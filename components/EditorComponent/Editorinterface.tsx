@@ -79,10 +79,8 @@ export default function EditorPage() {
 
   function handleSetRange(range: Range) {
     // for 'Show in Editor'-Button functionality
-    editor?.getEditor().setSelection(range);
-    editor
-      ?.getEditor()
-      .root.scrollIntoView({ behavior: "smooth", block: "center" });
+    editor?.editor?.setSelection(range);
+    editor?.editor?.root.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   function handleDiscardOnClick (){
@@ -91,7 +89,7 @@ export default function EditorPage() {
   }
 
   function handleAcceptOnClick(){
-    editor?.getEditor().setText(AIChanges!.changes);
+    editor?.editor?.setText(AIChanges!.changes);
     setAIChanges(null);
     setShowAIChangesDiv(false);
 

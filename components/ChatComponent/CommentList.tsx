@@ -97,7 +97,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
       this.setState({loading: true});
 
       // Create prompt for the AI
-      const completeText = this.props.editor?.getEditor().getText();
+      const completeText = this.props.editor?.editor!.getText();
       let userComments = [];
       let userCommentsContext = [];
       let index = 0;
@@ -108,7 +108,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
           userComments.push(comment[0].content);
 
           if(comment[0].isTextSpecific){
-            const selectedText = this.props.editor?.getEditor().getText(comment[0].index, comment[0].length);
+            const selectedText = this.props.editor?.editor?.getText(comment[0].index, comment[0].length);
             userCommentsContext.push(selectedText);
           }else{
             userCommentsContext.push("");

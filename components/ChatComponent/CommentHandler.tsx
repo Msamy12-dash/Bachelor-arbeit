@@ -196,7 +196,9 @@ export default function CommentHandler({
       for (let key of checkedKeys){
         //console.log(key);
         let comment = comments.find(comment => comment.key === key);
-        deleteComment(comment!);
+        if(comment){
+          deleteComment(comment!);
+        }
       }
 
       setDeleteSelectedComments(false);
