@@ -71,4 +71,22 @@ ${tone}`;
       return error;
     }
   }
+
   
+  // request a summary on what AI has changed based on the selected comments
+  export async function requestChangesSummaryForMCP(prevText, newText){
+    // build prompt
+    
+    let task = "You are an expert for analyzing changes within two versions of the same text. I will give you two versions of the same text. The old version is 'Text 1'. The new version is 'Text 2'. Your Task is to give me an overview what has changed between the two texts. Respond in a short form where you summarize the biggest changes in a maximum of 10 sentences."
+
+    let text1 = `Text 1: \n ${prevText}\n \n`;
+    let text2 = `Text 2: \n ${newText}\n \n`;
+
+    let prompt = task + text1 + text2;
+    try {
+      return await getLLMResponse(prompt);  
+    } catch (error) {
+      console.error('Error:', error.message || error);
+      return error;
+    }
+  }
