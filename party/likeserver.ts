@@ -1,14 +1,6 @@
 import type * as Party from "partykit/server";
 
-import { createUpdateMessage, DeleteReaction, parseReactionMessage } from "./types";
-
-const json = (response: string) =>
-  new Response(response, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
+import { createUpdateMessage, DeleteReaction, parseReactionMessage ,json} from "./types";
 export default class likelerver implements Party.Server {
   options: Party.ServerOptions = { hibernate: true };
   constructor(readonly room: Party.Room) {
