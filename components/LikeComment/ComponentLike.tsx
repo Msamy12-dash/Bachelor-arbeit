@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import usePartySocket from "partysocket/react";
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 import { PARTYKIT_HOST } from "@/pages/env";
+import { IconButton } from "@mui/material";
 
 const reactionTypes = ["thumbsup", "heart"] as const;
 const reactionEmoji = {
@@ -18,12 +20,9 @@ type ReactionsProps = {
 };
 
 export const Reactions = (props: ReactionsProps) => {
-  // use server-rendered initial data
   const [reactions, setReactions] = useState(props.initialData);
-  // state to track if user has reacted
   const [hasReacted, setHasReacted] = useState(false);
-
-  // update state when new reactions come in    
+  const [isHovering, setIsHovering] = useState(false);
 
   const socket = usePartySocket({
     host: PARTYKIT_HOST,
@@ -32,12 +31,10 @@ export const Reactions = (props: ReactionsProps) => {
     onMessage: (event) => {
       console.log(event.data);
       const message = JSON.parse(event.data);
-
       setReactions(message.reactions);
     },
   });
 
-  // handle reaction click
   const handleReaction = (kind: (typeof reactionTypes)[number]) => {
     if (!hasReacted) {
       socket.send(JSON.stringify({ type: "reaction", kind }));
@@ -45,20 +42,31 @@ export const Reactions = (props: ReactionsProps) => {
     }
   };
 
-  // render buttons with reaction counts
   return (
-    <div className="flex">
-      {reactionTypes.map((kind) => (
-        <button
-          key={kind}
-          className={`m-2 p-2 border border-white flex space-x-2 hover:bg-gray-800 ${hasReacted ? "cursor-not-allowed opacity-50" : ""}`}
-          disabled={hasReacted}
-          onClick={() => handleReaction(kind)}
-        >
-          <span>{reactionEmoji[kind]}</span>
-          <span>{reactions[kind] ?? 0}</span>
-        </button>
-      ))}
+    <div
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      className="relative"
+    >
+      <IconButton disabled={hasReacted}>
+        <ThumbUpIcon />
+      </IconButton>
+      
+      {isHovering && (
+        <div className="flex absolute">
+          {reactionTypes.map((kind) => (
+            <button
+              key={kind}
+              className={`m-2 p-2 border border-white flex space-x-2 hover:bg-gray-800 ${hasReacted ? "cursor-not-allowed opacity-50" : ""}`}
+              onClick={() => handleReaction(kind)}
+              disabled={hasReacted}
+            >
+              <span className="text-sm">{reactionEmoji[kind]}</span>
+              <span className="text-sm">{reactions[kind] ?? 0}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

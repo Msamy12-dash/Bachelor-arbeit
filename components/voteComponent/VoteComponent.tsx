@@ -1,9 +1,5 @@
-/* eslint-disable prettier/prettier */
-"use client";
-
 import { useEffect, useState } from "react";
 import usePartySocket from "partysocket/react";
-
 
 import PollOptions from "./VoteOptions";
 
@@ -21,28 +17,28 @@ export default function PollUI({
 }) {
   const [votes, setVotes] = useState<number[]>(initialVotes ?? []);
   const [vote, setVote] = useState<number | null>(null);
+  const [messages, setMessages] = useState<string[]>([]);  // Manage a list of messages
 
   const socket = usePartySocket({
     host: PARTYKIT_HOST,
     room: "1",
-    party:"vote",
+    party: "vote",
     onMessage(event) {
-      const message = JSON.parse(event.data) as Poll;
+      const data = event.data;
 
-      if (message.votes) {
-        setVotes(message.votes);
+      if (data === "vote now") {
+        // Add new message to the list
+        setMessages(prevMessages => [...prevMessages, "Please cast your vote now!"]);
+      } else {
+        const pollData = JSON.parse(data) as Poll;
+
+        if (pollData.votes) {
+          setVotes(pollData.votes);
+          // Optionally, you can also clear messages here if needed
+        }
       }
     },
   });
-  const pollId = '1';
-  const pollOptions = ['Option 1', 'Option 2', 'Option 3'];
-  const examplePoll: Poll = {
-    title: "vote",
-    options: pollOptions,
-    votes: [0, 0, 0]
-  };
-
-
 
   const sendVote = (optionIndex: number) => {
     if (vote === null) {
@@ -59,13 +55,19 @@ export default function PollUI({
       setVote(parseInt(saved, 10));
     }
   }, [id]);
-  console.log(sendVote)
+
   return (
-    <PollOptions
-      options={options}
-      setVote={sendVote}
-      vote={vote}
-      votes={votes}
-    />
+    <>
+      {/* Render all messages received */}
+      {messages.map((msg, index) => (
+        <div key={index}>{msg}</div>
+      ))}
+      <PollOptions
+        options={options}
+        setVote={sendVote}
+        vote={vote}
+        votes={votes}
+      />
+    </>
   );
 }

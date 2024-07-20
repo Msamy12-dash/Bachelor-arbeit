@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 "use client";
 import { useState, useRef, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";

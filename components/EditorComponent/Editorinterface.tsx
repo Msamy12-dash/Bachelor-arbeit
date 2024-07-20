@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 "use client";
 import React, { useState, useMemo } from "react";
 import { Card } from "@nextui-org/react";
@@ -8,10 +7,9 @@ import Quill from "react-quill";
 import Lobby from "../MainPageComponent/Lobby";
 import CommentHandler from "../ChatComponent/CommentHandler";
 import PollUI from "../voteComponent/VoteComponent";
+import LikeConnector from "../LikeComment/LikeConnector";
 
 import { Poll } from "@/party/types";
-import { PARTYKIT_URL } from "@/pages/env";
-import LikeConnector from "../LikeComment/LikeConnector";
 
 interface Comment {
   key: number;
@@ -70,23 +68,12 @@ export default function EditorPage() {
       .root.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
-  async function sendvote(poll: Poll) {
-    await fetch(`${PARTYKIT_URL}/parties/vote/${1}`, {
-      method: "POST",
-      body: JSON.stringify(poll),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  }
+
+  
 
   return (
     <>
-      <div style={{ padding: "10px" }}>
-        <button style={{ padding: "10px 20px", margin: "10px", backgroundColor: "#007BFF", color: "white", border: "none", borderRadius: "5px" }} onClick={() => sendvote(examplePoll)}>
-          Send Vote
-        </button>
-      </div>
+      <div style={{ padding: "10px" }} />
       <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
       <div style={{ display: "flex", height: "100vh" }}>
         <Card style={{ width: "20%", padding: "10px" }}>
@@ -110,7 +97,7 @@ export default function EditorPage() {
         <Card style={{ width: "20%", padding: "10px" }}>
           <PollUI id={pollId} initialVotes={initialVotes} options={pollOptions} />
           <LikeConnector roomID={"1"}  />
-          <LikeConnector roomID={"3"}  />
+          <LikeConnector roomID={"2"}  />
 
         </Card>
       </div>

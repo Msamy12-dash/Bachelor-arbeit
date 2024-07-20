@@ -1,10 +1,11 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable react/jsx-no-undef */
-// components/Tooltip.tsx
 import React from "react";
 import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 
+import {sendvote} from "../voteComponent/VoteClientFunctions"
+
 import CustomMenu from "./AIInteractionComponent";
+
+import { Poll } from "@/party/types";
 
 interface TooltipProps {
   show: boolean;
@@ -16,6 +17,14 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position }) => {
   if (!show) {
     return null;
   }
+  const pollId = '1';
+  const pollOptions = ['Option 1', 'Option 2', 'Option 3'];
+  const initialVotes = [0, 0, 0];
+  const examplePoll: Poll = {
+    title: "vote",
+    options: pollOptions,
+    votes: [10, 20, 5]
+  };
 
   return (
     <div
@@ -45,7 +54,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position }) => {
           <p>Selected text: {text}</p>
           <div className="flex flex-wrap gap-4 items-center">
             <CustomMenu  />
-            <Button color="success">vote</Button>
+            <Button color="success" onClick={() => sendvote(examplePoll)}>vote</Button>
             <Button color="danger">Cancel</Button>
           </div>
         </CardBody>
