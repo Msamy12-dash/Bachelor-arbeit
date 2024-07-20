@@ -1,8 +1,9 @@
 import type * as Party from "partykit/server";
 import { onConnect, type YPartyKitOptions } from "y-partykit";
 import * as Y from "yjs";
-import { SINGLETON_ROOM_ID } from "./types";
 import { Buffer } from 'buffer';
+import { connect } from "http2";
+
 
 export default class EditorServer implements Party.Server {
   constructor(public room: Party.Room) {}
@@ -12,7 +13,13 @@ export default class EditorServer implements Party.Server {
   };
 
   async onConnect(conn: Party.Connection) {
-    await this.updateCount();
+    const existingConnections = this.room.getConnections();
+    console.log('onConnect connections on editorserver connect:', [...existingConnections].length); 
+    console.log('onConnect connection id:', conn.id);
+    // Check if the client already exists
+    const clientAlreadyConnected = [...existingConnections].some(c => c.id === conn.id);
+    console.log('New connection established. Client already connected:', clientAlreadyConnected);
+    
 
     return onConnect(conn, this.room, {
       load: async () => this.handleLoadFromDB(),
@@ -49,6 +56,10 @@ export default class EditorServer implements Party.Server {
   }
 
   async onClose(_: Party.Connection) {
+    const existingConnections = this.room.getConnections();
+    console.log('Connections on editorserver close:', [...existingConnections].length); //log
+    console.log('onClose connection id:', conn.id);
+    
     await this.updateCount();
   }
 

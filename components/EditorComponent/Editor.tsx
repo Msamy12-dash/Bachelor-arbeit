@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import { QuillBinding } from "y-quill";
 import useYProvider from "y-partykit/react";
@@ -23,7 +23,8 @@ interface Position {
 Quill.register("modules/cursors", QuillCursors);
 
 export default function Editor({
-  room,
+  currentRoom,
+  yProvider,
   userColor,
   setTextSpecificComment,
   setEditor,
@@ -31,7 +32,8 @@ export default function Editor({
   setSelectedText,
   setCompleteText
 }: Readonly<{
-  room: string;
+  currentRoom: string;
+  yProvider: YPartykitProvider;
   userColor: string;
   setTextSpecificComment: Function;
   setEditor: Function;
@@ -58,27 +60,10 @@ export default function Editor({
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const quillRef = useRef<ReactQuill>(null);
-  const providerRef = useRef<YPartykitProvider | null>(null);
-
-  const provider = useYProvider({
-    host: "localhost:1999",
-    room: room,
-    party: "editorserver",
-    options: { connect: true }
-  });
 
   useEffect(() => {
-    providerRef.current = provider;
-    return () => {
-      if (providerRef.current) {
-        providerRef.current.disconnect();
-        providerRef.current = null;
-      }
-    };
-  }, [room, provider]);
-
-  useEffect(() => {
-    const ydoc = provider.doc;
+    if (!yProvider) return;
+    const ydoc = yProvider.doc;
     const ytext = ydoc.getText("quill");
   
     if (typeof window !== "undefined" && quillRef.current) {
@@ -96,10 +81,10 @@ export default function Editor({
       editor.on("selection-change", handleSelectionChange);
   
       // Create a binding between Yjs and the Quill editor
-      const binding = new QuillBinding(ytext, editor, provider.awareness);
+      const binding = new QuillBinding(ytext, editor, yProvider.awareness);
   
       // Set local user state in Yjs awareness system
-      provider.awareness.setLocalStateField("user", {
+      yProvider.awareness.setLocalStateField("user", {
         name: "Typing...",
         color: userColor,
       });
@@ -110,7 +95,7 @@ export default function Editor({
         editor.off("selection-change", handleSelectionChange); // Remove event listener
       };
     }
-  }, [userColor, provider]);
+  }, [userColor, yProvider]);
 
   function handleSelectionChange(range: Range) {
     // If text is selected
@@ -255,7 +240,7 @@ export default function Editor({
   return (
     <div>
       <h1>
-        Editor <code>Room #{room}</code>
+        Editor <code>Room #{currentRoom}</code>
       </h1>
       <ReactQuill
         ref={quillRef}

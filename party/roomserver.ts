@@ -1,38 +1,54 @@
-/* eslint-disable prettier/prettier */
 import type * as Party from "partykit/server";
 
-import { Rooms } from "./types";
+interface ConnectionUpdate {
+  type: "connect" | "disconnect";
+  connectionId: string;
+  roomId: string;
+}
 
 export default class RoomServer implements Party.Server {
-   // Track room occupancy
-   rooms: Rooms;
+  connections: Record<string, number> | undefined;
+  
+  constructor(readonly room: Party.Room) {
+    this.initialize();
+  }
 
-   constructor(public room: Party.Room) {
-     this.rooms = {};
-   }
- 
-   onConnect(connection: Party.Connection) {
-     connection.send(JSON.stringify({ type: "rooms", rooms: this.rooms }));
-   }
- 
-   async onRequest(req: Party.Request) {
-     if (req.method === "GET") {
-       return new Response(
-         `Hi! This is party '${this.room.name}' and room '${this.room.id}'!`
-       );
-     }
- 
-     if (req.method === "POST") {
-       const { room, count }: { room: string; count: number } = await req.json();
+  async initialize() {
+    // Clear connections on server start
+    await this.room.storage.delete("connections");
+    this.connections = {};
+    console.log("Connections reset on server start");
+  }
 
-       this.rooms[room] = count;
-       this.room.broadcast(JSON.stringify({ type: "rooms", rooms: this.rooms }));
+  async onRequest(request: Party.Request) {
+    // Read from storage
+    this.connections = this.connections ?? (await this.room.storage.get("connections")) ?? {};
+    
+    // Update connection count
+    if (request.method === "POST") {
+      const update: ConnectionUpdate = await request.json();
+      const count = this.connections[update.roomId] ?? 0;
+      if (update.type === "connect")
+        this.connections[update.roomId] = count + 1;
+      if (update.type === "disconnect")
+        this.connections[update.roomId] = Math.max(0, count - 1);
 
-       return Response.json({ ok: true });
-     }
- 
-     // Always return a Response
-     return Response.json({ error: "Method not allowed" }, { status: 405 });
-   }
- }
- 
+      // Save to storage
+      await this.room.storage.put("connections", this.connections);
+      
+      // Notify any connected listeners
+      this.room.broadcast(JSON.stringify(this.connections));
+
+      return new Response("OK");
+    }
+    return new Response("NOK");
+  }
+
+  async onConnect(connection: Party.Connection) {
+    const existingConnections = this.room.getConnections();
+    console.log('Connections on ROOMserver current:', [...existingConnections].length);
+
+    // Send current connections to the new connection
+    connection.send(JSON.stringify(this.connections));
+  }
+}
