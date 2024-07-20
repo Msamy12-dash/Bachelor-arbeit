@@ -39,8 +39,8 @@ export default function PollOptions({
                 } ${
                   vote === null ? "" : votes[index] === mostVotes ? "font-bold" : ""
                 }`}
-                onClick={() => setVote(index)}
                 disabled={vote !== null}
+                onClick={() => setVote(index)}
               >
                 {option}
               </button>

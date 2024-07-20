@@ -10,7 +10,7 @@ import CommentHandler from "../ChatComponent/CommentHandler";
 import PollUI from "../voteComponent/VoteComponent";
 
 import { Poll } from "@/party/types";
-import { PARTYKIT_HOST, PARTYKIT_URL } from "@/pages/env";
+import { PARTYKIT_URL } from "@/pages/env";
 import LikeConnector from "../LikeComment/LikeConnector";
 
 interface Comment {
@@ -109,7 +109,9 @@ export default function EditorPage() {
         </Card>
         <Card style={{ width: "20%", padding: "10px" }}>
           <PollUI id={pollId} initialVotes={initialVotes} options={pollOptions} />
-          <LikeConnector />
+          <LikeConnector roomID={"1"}  />
+          <LikeConnector roomID={"3"}  />
+
         </Card>
       </div>
     </>

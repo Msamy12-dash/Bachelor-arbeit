@@ -6,6 +6,6 @@
     "editorserver":"party/EditorServer.ts",
     "rooms":"party/roomserver.ts",
     "vote": "party/voteserver.ts",
-    "reactionserver":"party/likeserver.ts"
+    "likeserver":"party/likeserver.ts"
   }
 }

@@ -1,15 +1,10 @@
-/* eslint-disable prettier/prettier */
 import type * as Party from "partykit/server";
 
 import { onConnect, type YPartyKitOptions } from "y-partykit";
 import { Doc } from "yjs";
-import * as Y from 'yjs'
-import * as awarenessProtocol from 'y-protocols/awareness.js'
 
 import { SINGLETON_ROOM_ID } from "./types";
-import { PARTYKIT_HOST } from "@/pages/env";
-import PartySocket from "partysocket";
-import { Room } from "partykit/server";
+
 export default class EditorServer implements Party.Server {
   yjsOptions: YPartyKitOptions = {
     persist: { mode: "snapshot" },
@@ -45,6 +40,7 @@ export default class EditorServer implements Party.Server {
    
    
     const text=_.getText('quill')
+
     console.log(_.clientID)
 
 

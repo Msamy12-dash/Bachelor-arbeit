@@ -1,9 +1,8 @@
 /* eslint-disable prettier/prettier */
 import z from "zod";
-const allowedReactions = [ "heart", "thumbsup"] as const;
+const allowedReactions = ["thumbsup","heart"] as const;
 const allowedReactionsSchema = z.enum(allowedReactions);
-// client sends a message either via WebSocket or HTTP
-// { type: "reaction", kind: "clap" }
+
 // client sends a message either via WebSocket or HTTP
 // { type: "reaction", kind: "clap" }
 const ReactionSchema = z.object({
@@ -43,6 +42,13 @@ export const createUpdateMessage = (reactions: Record<string, number>) => {
     })
   );
 };
+
+export const DeleteReaction = (reactions: Record<string, number>) => {
+   for (let index = 0; index < reactions.length; index++) {
+     reactions[index] = 0;
+    
+   }
+};
 export type Poll = {
   title: string;
   options: string[];
@@ -55,3 +61,9 @@ export type Rooms = {
 export const SINGLETON_ROOM_ID = "index";
 export const LOCAL_HOST = "http://localhost:1999";
 
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, DELETE',
+};
+
+export const json = <T>(data: T, status = 200) => Response.json(data, { status, headers: CORS });

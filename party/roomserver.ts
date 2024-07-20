@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import type * as Party from "partykit/server";
 
 import { Rooms } from "./types";

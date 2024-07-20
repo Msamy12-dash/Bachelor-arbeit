@@ -1,7 +1,7 @@
-/* eslint-disable prettier/prettier */
 import type * as Party from "partykit/server";
 
-import { createUpdateMessage } from "@/party/types";
+import { createUpdateMessage, DeleteReaction, parseReactionMessage } from "./types";
+
 const json = (response: string) =>
   new Response(response, {
     headers: {
@@ -9,10 +9,9 @@ const json = (response: string) =>
     },
   });
 
-export default class ReactionServer implements Party.Server {
+export default class likelerver implements Party.Server {
   options: Party.ServerOptions = { hibernate: true };
   constructor(readonly room: Party.Room) {
-    
   }
   reactions: Record<string, number> = {};
 
@@ -21,9 +20,19 @@ export default class ReactionServer implements Party.Server {
     this.reactions = (await this.room.storage.get("reactions")) ?? {};
   }
 
-  async onRequest(_req: Party.Request) {
+  async onRequest(req: Party.Request) {
     // for all HTTP requests, respond with the current reaction counts
-    return json(createUpdateMessage(this.reactions));
+
+    if (req.method === "GET") {
+      return json(createUpdateMessage(this.reactions));
+    }
+
+    if (req.method === "DELETE") {
+     DeleteReaction(this.reactions)
+    }
+
+    return new Response("Not found", { status: 404 });
+
   }
 
   onConnect(conn: Party.Connection) {
@@ -31,22 +40,26 @@ export default class ReactionServer implements Party.Server {
     conn.send(createUpdateMessage(this.reactions));
   }
 
-  onMessage(message: string) {
+  onMessage(message: string, _sender: Party.Connection) {
     // rate limit incoming messages
-  
-      // client sends WebSocket message: update reaction count
-      this.updateAndBroadcastReactions(message);
-   
+
+    // client sends WebSocket message: update reaction count
+    const parsed = parseReactionMessage(message);
+
+    this.updateAndBroadcastReactions(parsed.kind);
   }
 
   updateAndBroadcastReactions(kind: string) {
     // update stored reaction counts
+    this.reactions[kind] = (this.reactions[kind] ?? 0) + 1;
     // send updated counts to all connected listeners
     this.room.broadcast(createUpdateMessage(this.reactions));
     // save reactions to disk (fire and forget)
     this.room.storage.put("reactions", this.reactions);
   }
+  async onClose(_connection: Party.Connection) {
+   
+  }
 }
 
-ReactionServer satisfies Party.Worker;
-
+likelerver satisfies Party.Worker;
