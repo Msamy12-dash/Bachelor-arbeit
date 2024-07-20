@@ -13,20 +13,25 @@ export default class EditorServer implements Party.Server {
   constructor(public room: Party.Room) {}
   
   getOpts() {
+    
     // options must match when calling unstable_getYDoc and onConnect
     const opts: YPartyKitOptions = {
+      readOnly: true,
       callback: { handler: (doc) => this.handleYDocChange(doc), 
         debounceWait: 200, // default: 2000 ms
         debounceMaxWait: 10000, // default: 10000 ms
         timeout: 5000},
-        
+       
     };
+   
     
     return opts;
   }
 
   async onConnect(conn: Party.Connection) {
     await this.updateCount();
+    console.log(this.room.storage);
+  
 
     return onConnect(conn, this.room, this.getOpts());
   }

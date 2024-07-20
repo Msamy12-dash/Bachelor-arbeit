@@ -9,13 +9,13 @@ export default class VoteServer implements Party.Server {
     // do something
     console.log("vote is over")
     // (optional) schedule next alarm in 5 minutes
-    this.room.storage.setAlarm(Date.now() +  10 * 1000);
+    this.room.storage.setAlarm(Date.now() +  10*60 * 1000);
   }
   
   constructor(readonly room: Party.Room) {
     console.log("vote is sent")
 
-      this.room.storage.setAlarm(Date.now() + 10 * 1000);
+      this.room.storage.setAlarm(Date.now() + 10*60 * 1000);
   }
   static async onCron(
 

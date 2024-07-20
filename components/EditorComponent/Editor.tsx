@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 "use client";
 import { useState, useRef, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
@@ -65,28 +66,17 @@ export default function Editor({
 
 
   useEffect(() => {
-    const fetchInitialText = async () => {
-      try {
-        console.log(`Fetching initial text for room: ${room}`);
-        const response = await fetch(`/api/getInitialText?room=${room}`);
-        const data = await response.json();
-
-        if (response.ok) {
+   
+     
+    
+ 
+       
           const ytext = provider.doc.getText("quill");
 
-          ytext.delete(0, ytext.length); // Clear existing content
-          ytext.insert(0, data.text); // Insert fetched text
-          setText(data.text); // Update local state
-          console.log(data.text);
-        } else {
-          console.error("Failed to fetch initial text:", data.error);
-        }
-      } catch (error) {
-        console.error("Failed to fetch initial text:", error);
-      }
-    };
+        
+        
+     
 
-    fetchInitialText();
   }, [room, provider]);
 
   useEffect(() => {

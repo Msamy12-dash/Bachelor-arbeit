@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+
 "use client";
 
 export default function PollOptions({
