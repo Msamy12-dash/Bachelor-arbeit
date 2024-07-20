@@ -32,6 +32,11 @@ interface Range {
   length: number;
 }
 
+interface MCP_AI_responses{
+  summary: string;
+  changes: string;
+}
+
 function getRandomColor() {
   const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
 
@@ -58,15 +63,15 @@ export default function EditorPage() {
   const [selectedText, setSelectedText] = useState<string>("");
   const [completeText, setCompleteText] = useState<string>("");
   const [showAIChangesDiv, setShowAIChangesDiv] = useState<boolean>(false);
-  const [AIChanges, setAIChanges] = useState<string>("");
+  const [AIChanges, setAIChanges] = useState<MCP_AI_responses | null>();
   const [isChecked, setIsChecked] = useState<boolean>(true); 
-
+  const [deleteSelectedComments, setDeleteSelectedComments] = useState<boolean>(false);
 
 
 
   useEffect(() => {
     // If there is new MCP Response
-    if(AIChanges != ""){
+    if(AIChanges != null){
       setShowAIChangesDiv(true);
     }
   }, [AIChanges]);
@@ -74,24 +79,34 @@ export default function EditorPage() {
 
   function handleSetRange(range: Range) {
     // for 'Show in Editor'-Button functionality
-    editor?.getEditor().setSelection(range);
-    editor
-      ?.getEditor()
-      .root.scrollIntoView({ behavior: "smooth", block: "center" });
+    editor?.editor?.setSelection(range);
+    editor?.editor?.root.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   function handleDiscardOnClick (){
-    setAIChanges("");
+    setAIChanges(null);
     setShowAIChangesDiv(false);
   }
 
+  function handleAcceptOnClick(){
+    editor?.editor?.setText(AIChanges!.changes);
+    setAIChanges(null);
+    setShowAIChangesDiv(false);
+
+    // When user wants selected comments to be deleted
+    if(isChecked){
+      setDeleteSelectedComments(true);
+    }
+  }
+
   function handleCheckboxOnChange (event: ChangeEvent<HTMLInputElement>){
-      // if checkbox is checked
-      if(event.target.checked){
-        setIsChecked(true);
-      }else{
-        setIsChecked(false);
-      }
+
+    // if checkbox is checked
+    if(event.target.checked){
+      setIsChecked(true);
+    }else{
+      setIsChecked(false);
+    }
   }
 
 
@@ -107,6 +122,8 @@ export default function EditorPage() {
             setRange={handleSetRange}
             textSpecificComment={textSpecificComment}
             setAIChanges={setAIChanges}
+            deleteSelectedComments={deleteSelectedComments}
+            setDeleteSelectedComments={setDeleteSelectedComments}
           />
         </Card>
 
@@ -114,20 +131,20 @@ export default function EditorPage() {
         <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor} selectedText={selectedText} setSelectedText={setSelectedText} setCompleteText={setCompleteText}/>
             {/* Pop up card for MCP Changes */}
             {showAIChangesDiv && (
-              <div style={{position: "absolute", left: "100px", top:"100px"}}>
-                <Card style={{ width: "40vw", padding: "1vw", backgroundColor: "#eee"}}>
-                  <p style={{fontWeight: "bold", marginBottom: "1vw"}}>Changes made by the AI according to selected Comments</p>
-                  <p style={{marginBottom: "1vw"}}>{AIChanges}</p>
+              <Card style={{position: "absolute", left: "100px", top:"100px", border: "1px solid grey", borderRadius: "25px"}}>
+                <div style={{ width: "40vw", padding: "1.5vw", backgroundColor: "#f0f0f0"}}>
+                  <p style={{fontWeight: "bold", marginBottom: "1vw", fontSize:"1.1rem"}}>Changes made by the AI according to selected Comments</p>
+                  <p style={{marginBottom: "1vw"}}>{AIChanges?.summary}</p>
                   <div style={{display: "flex", marginBottom: "1vw"}}>
-                    <input type="checkbox" checked={isChecked} onChange={handleCheckboxOnChange} ></input>
-                    <p style={{marginLeft: "0.5vw"}}>Delete selected Comments</p>
+                    <input type="checkbox" onChange={handleCheckboxOnChange} ></input>
+                    <p style={{marginLeft: "0.5vw"}}>Delete selected comment(s)</p>
                   </div>
                   <div style={{display: "flex"}}>                  
-                    <Button color="success">Accept changes</Button>
-                    <Button onClick={handleDiscardOnClick}>Discard</Button>
+                    <Button style={{color: "white", paddingLeft: "1vw", paddingRight: "1vw"}} color="success" onClick={handleAcceptOnClick}>Accept changes</Button>
+                    <Button onClick={handleDiscardOnClick} className="ml-5">Discard</Button>
                   </div>
-                </Card>
-              </div>
+                </div>
+              </Card>
             )}
   
           
