@@ -5,6 +5,7 @@ import { onConnect, type YPartyKitOptions } from "y-partykit";
 import { Doc } from "yjs";
 
 import { SINGLETON_ROOM_ID } from "./types";
+import * as Y from 'yjs'
 
 export default class EditorServer implements Party.Server {
   yjsOptions: YPartyKitOptions = {
@@ -18,8 +19,8 @@ export default class EditorServer implements Party.Server {
     // options must match when calling unstable_getYDoc and onConnect
     const opts: YPartyKitOptions = {
       callback: { handler: (doc) => this.handleYDocChange(doc), 
-        debounceWait: 10000, // default: 2000 ms
-        debounceMaxWait: 20000, // default: 10000 ms
+        debounceWait: 1000, // default: 2000 ms
+        debounceMaxWait: 2000, // default: 10000 ms
         timeout: 5000}
     };
     
@@ -37,9 +38,7 @@ export default class EditorServer implements Party.Server {
   }
 
   handleYDocChange(_: Doc) {
-    //  any changes handleYDocChange is called
-    
-    
+
   }
 
   async updateCount() {

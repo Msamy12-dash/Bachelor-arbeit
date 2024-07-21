@@ -10,10 +10,14 @@ import * as Y from "yjs";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import React from "react";
+import { saveRORange, handleROSelectionChange, handleROChange, handleRangeShift } from "../VoteComponent/ReadOnly";
+import { DeltaStatic, RangeStatic } from "quill/index";
 
 import { SINGLETON_ROOM_ID } from "@/party/types";
 import { PARTYKIT_HOST } from "@/pages/env";
 import Tooltip from "../ToolTipsComponets/ToolTip";
+import * as Party from "partykit/server";
+import PartyServer from "@/party/main";
 
 interface Range {
   index: number;
@@ -54,8 +58,10 @@ export default function Editor({
     maxWidth: number;
   }>({ x: 0, y: 0, maxWidth: 0 });
 
+
   const textareaRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   const quill = useRef<ReactQuill>(null);
+  const rangeListRef = useRef<Range[]>([]);
 
   const provider = useYProvider({
     room: room,
@@ -73,7 +79,11 @@ export default function Editor({
 
         if (response.ok) {
           const ytext = provider.doc.getText("quill");
+          const yarray = provider.doc.getArray('rangesArray');
+          const voteYarray = provider.doc.getArray('voteArray');
 
+          yarray.delete(0,yarray.length);
+          voteYarray.delete(0,voteYarray.length);
           ytext.delete(0, ytext.length); // Clear existing content
           ytext.insert(0, data.text); // Insert fetched text
           setText(data.text); // Update local state
@@ -138,21 +148,27 @@ export default function Editor({
   }, [text, room]);
 
   function handleSelectionChange(range: Range) {
+
+    const readOnlyContext = { quill, rangeListRef };
+    handleROSelectionChange(quill, range, "user",provider.doc);
+
     // If text is selected
     if (range && range.length > 0) {
       // Get range the user selected and store it in state
       const selection = quill.current!.getEditor().getSelection();
+      if (selection) {
+        setSelectedRange(selection);
 
-      setSelectedRange(selection);
+        // Get positions of Editor itself and selected range (in pixels)
+        const bounds = quill.current!.getEditor().getBounds(selection!.index);
+        setSelectedText(quill.current!.getEditor().getText(selection!.index,selection!.length));
 
-      // Get positions of Editor itself and selected range (in pixels)
-      const bounds = quill.current!.getEditor().getBounds(selection!.index);
+        // Set button position relative to selected text
+        setButtonPosition({top: bounds!.top + 40, left: bounds!.left});
 
-      // Set button position relative to selected text
-      setButtonPosition({ top: bounds!.top + 40, left: bounds!.left });
-
-      setShowButton(true);
-      //console.log(buttonPosition);
+        setShowButton(true);
+        //console.log(buttonPosition);
+      }
     } else {
       setShowButton(false);
     }
@@ -162,28 +178,34 @@ export default function Editor({
       const editor = quill.current.getEditor();
       const maxWidth = editor.container.offsetWidth; // Get the width of the editor
 
-      editor.on("selection-change", (range) => {
-        if (range && range.length > 0) {
+      const handleContextMenu = (event: MouseEvent) => {
+        event.preventDefault();
+        const range = editor.getSelection();
+        if (range) {
           const text = editor.getText(range.index, range.length);
-
           setSelectedText(text);
-
           const bounds = editor.getBounds(range.index, range.length);
 
           if (bounds) {
             setTooltipPosition({
               x: bounds.left,
               y: bounds.top + 120,
-              maxWidth: maxWidth, // Adjusted for better vertical positioning
+              maxWidth: maxWidth,
             });
+            setShowTooltip(true);
           } else {
-            // Handle the case when bounds is null
+            // setShowTooltip(false);
           }
-          setShowTooltip(true);
         } else {
-          setShowTooltip(false);
+          // setShowTooltip(false);
         }
-      });
+      };
+
+      editor.root.addEventListener("contextmenu", handleContextMenu);
+
+      return () => {
+        editor.root.removeEventListener("contextmenu", handleContextMenu);
+      };
     }
   }, []);
 
@@ -257,6 +279,22 @@ export default function Editor({
     }
   }
 
+  const onChange = (content: string, delta: DeltaStatic, source: string, editor: any): void => {
+    handleROChange(quill, content, delta, source);
+    handleRangeShift(delta,quill,provider.doc);
+    console.log(JSON.stringify(quill.current?.getEditor().getSelection()?.index))
+    setText(content);
+  };
+
+  const saveRange = ():void=>{
+    saveRORange(quill,provider.doc);
+  }
+
+  const handleHideTooltip = () => {
+    setShowTooltip(false);
+  };
+
+
   return (
     <div>
       <h1>
@@ -268,7 +306,7 @@ export default function Editor({
         modules={{ cursors: true }}
         theme="snow"
         value={text}
-        onChange={setText}
+        onChange={onChange}
       />
       {showButton && (
         <button
@@ -319,6 +357,10 @@ export default function Editor({
       position={tooltipPosition}
       show={showTooltip}
       text={selectedText}
+      onSaveRange={saveRange}
+      onCancel={handleHideTooltip}
+      quill={quill}
+      doc={provider.doc}
     />
 
     </div>

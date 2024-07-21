@@ -8,31 +8,41 @@ import {
   DropdownItem,
   Button,
 } from "@nextui-org/react";
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 interface CustomMenuProps {
   onSaveRange: () => void;
+    onInsertTrialText: () => void;
+  disabled: boolean;
 }
 
-const CustomMenu: React.FC<CustomMenuProps> = ({ onSaveRange }) => {
+
+const CustomMenu: React.FC<CustomMenuProps> = ({ onSaveRange, onInsertTrialText,disabled }) => {
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button color="primary" variant="ghost">Suggest</Button>
+        <Button color="primary" variant="ghost" isDisabled={disabled}>
+          <div className="flex items-center space-x-2">
+          <span>AI</span>
+            <AutoAwesomeIcon className="h-4 w-4 text-yellow-500" />
+        </div>
+        </Button>
       </DropdownTrigger>
       <DropdownMenu aria-label="Dropdown menu with description" variant="faded">
         <DropdownSection showDivider title="Actions">
           <DropdownItem
             key="copy"
-            description="Custom command2 "
+            description="improve clarity and vocab"
+            onClick={onInsertTrialText}
           >
-          Command1
+            Improve language
           </DropdownItem>
           <DropdownItem
             key="edit"
-            description="Custom command1"
-            onClick={onSaveRange}
+            description="Make the tone more freindly"
+            onClick={onInsertTrialText}
           >
-           Command2 
+            Friendly Tone
           </DropdownItem>
         </DropdownSection>
       

@@ -1,19 +1,75 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/jsx-no-undef */
 // components/Tooltip.tsx
-import React from "react";
+import React, {useState} from "react";
 import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 
 import CustomMenu from "./AIInteractionComponent";
-import PollUI from "../voteComponent/VoteComponent";
+import PollUI from "../VoteComponent/VoteComponent";
+import { saveRangeWithText, updateVoteRangeText, deleteRangeFromYArray } from "../VoteComponent/ReadOnly"; // Import the new function
+import ReactQuill from "react-quill";
+import * as Y from "yjs";
+
+
 
 interface TooltipProps {
   show: boolean;
   text: string;
   position: { x: number; y: number; maxWidth: number };
+    onSaveRange: () => void;
+    onCancel: () => void;
+    quill: any;
+    doc: Y.Doc;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ show, text, position }) => {
+const Tooltip: React.FC<TooltipProps> = ({ show, text, position,onSaveRange, onCancel, quill, doc }) => {
+
+    const [inputDisabled, setInputDisabled] = useState(true);
+    const [suggestButtonDisabled, setSuggestButtonDisabled] = useState(true);
+    const [votingInProgress, setVotingInProgress] = useState(false);
+    const [inputText, setInputText] = useState('');
+
+
+    const handleEditClick = () => {
+        onSaveRange();
+        setInputDisabled(false);
+        setSuggestButtonDisabled(false);
+        saveRangeWithText(quill, doc);
+    };
+
+    const handleCancelClick = () => {
+        setInputDisabled(true);
+        onCancel();
+    };
+
+    const handleVoteClick = () => {
+        setVotingInProgress(true);
+        setInputDisabled(true);
+        setSuggestButtonDisabled(true);
+        const range = quill.current?.getEditor().getSelection();
+        console.log('text: ' + text + '  new text: '+ inputText)
+        if (text) {
+            updateVoteRangeText(doc,text, inputText);
+        }
+    };
+
+    const handleEndVoteClick = () => {
+        setVotingInProgress(false);
+
+        // Delete the range from rangesArray and update the editor text
+        deleteRangeFromYArray(doc, inputText,quill);
+        onCancel();
+
+    };
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setInputText(event.target.value);
+    };
+
+    const handleInsertTrialText = () => {
+        setInputText("The origins of football in England can be traced back to as early as the eighth century.");
+    };
+
   if (!show) {
     return null;
   }
@@ -32,23 +88,68 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position }) => {
       <Card>
         <CardHeader className="flex gap-3">
           <div className="flex flex-col">
-            <p className="text-md">Options</p>
+            <p className="text-md"></p>
             <Avatar name="user" />
 
           </div>
         </CardHeader>
         <CardBody >
-        <Input
-      isRequired
-      className="max-w-xs"
-      label="new changes"
-    />
-        <PollUI id={"1"} options={[text]} />
-          <p>Selected text: {text}</p>
+            <div className="mb-4">
+            {inputDisabled ? (
+                <Input
+                    type="text"
+                    label=''
+                    variant="bordered"
+                    placeholder="Enter your text"
+                    defaultValue={inputText || text}
+                    value={inputText || text}
+                    disabled={inputDisabled}
+                    className="max-w-full"
+                    onChange={handleInputChange}
+
+                />
+            ) : (
+                <Input
+                    isClearable
+                    type="text"
+                    label="Edit text here"
+                    variant="bordered"
+                    placeholder="Enter your text"
+                    defaultValue={inputText || text}
+                    value={inputText || text}
+                    className="max-w-full scroll-auto"
+                    onChange={handleInputChange}
+
+                />
+            )}
+            </div>
+        {/*<PollUI id={"1"} options={[text]} />*/}
+            {votingInProgress && (
+                <div className="mb-4 text-red-500">
+                    Voting in progress
+                </div>
+            )}
           <div className="flex flex-wrap gap-4 items-center">
-            <CustomMenu  />
-            <Button color="success">vote</Button>
-            <Button color="danger">Cancel</Button>
+            <CustomMenu onSaveRange={onSaveRange} onInsertTrialText={handleInsertTrialText} disabled={suggestButtonDisabled} />
+              <Button
+                  color="primary"
+                  onClick={handleEditClick}
+                  disabled={!inputDisabled}
+                  className={!inputDisabled ? "bg-gray-300" : ""}
+              >
+                  Edit
+              </Button>
+              {votingInProgress ? (
+                  <Button color="success" onClick={handleEndVoteClick}>
+                      End Vote
+                  </Button>
+              ) : (
+                  <Button color="success" onClick={handleVoteClick}>
+                      Vote
+                  </Button>
+              )}
+            <Button color="danger" onClick={ handleCancelClick} >Cancel</Button>
+
           </div>
         </CardBody>
       </Card>

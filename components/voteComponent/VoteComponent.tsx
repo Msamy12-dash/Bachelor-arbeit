@@ -4,7 +4,7 @@
 import usePartySocket from "partysocket/react";
 import { useEffect, useState } from "react";
 
-import PollOptions from "./VoteOptions";
+import PollOptions from "../VoteComponent/VoteOptions";
 
 import { Poll } from "@/party/types";
 
