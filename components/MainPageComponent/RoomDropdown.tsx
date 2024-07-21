@@ -30,10 +30,7 @@ export default function RoomDropdown({
         const data = JSON.parse(evt.data);
 
         if (data.type === "rooms") {
-          setRooms((prevRooms) => ({
-            ...prevRooms,
-            ...data.rooms,
-          }));
+          setRooms(data.rooms);
         }
       } catch (err) {
         console.error(err);
@@ -43,11 +40,6 @@ export default function RoomDropdown({
 
   const handleNewRoom = () => {
     const newRoomId = Math.random().toString(36).substring(2, 8);
-
-    setRooms((prevRooms) => ({
-      ...prevRooms,
-      [newRoomId]: 1, // Assuming the new room starts with 1 present user
-    }));
     setCurrentRoom(newRoomId);
   };
 
