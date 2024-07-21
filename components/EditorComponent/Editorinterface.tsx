@@ -7,6 +7,7 @@ import CommentHandler from "../ChatComponent/CommentHandler";
 import { Card, Button } from "@nextui-org/react";
 import CardContainer from "../MUPComponents/CardContainer";
 import YPartyKitProvider from "y-partykit/provider";
+import * as Y from "yjs";
 
 interface Comment {
   key: number;
@@ -37,9 +38,11 @@ function getRandomColor() {
 
 export default function EditorPage({
   currentRoom,
+  yDoc,
   yProvider
 }: {
   currentRoom: string;
+  yDoc: Y.Doc;
   yProvider: YPartyKitProvider;
 }) {
   const userColor = useMemo(() => getRandomColor(), []);
@@ -113,6 +116,7 @@ export default function EditorPage({
           <Editor
             key={currentRoom}
             currentRoom={currentRoom}
+            yDoc={yDoc}
             yProvider={yProvider}
             userColor={userColor}
             setTextSpecificComment={setTextSpecificComment}
@@ -157,6 +161,7 @@ export default function EditorPage({
           <CardContainer
             key={currentRoom}
             currentRoom={currentRoom}
+            yDoc={yDoc}
             yProvider={yProvider}
             selectedText={selectedText}
             completeText={completeText}

@@ -10,28 +10,26 @@ import * as Y from "yjs";
 
 export default function IndexPage() {
   const [currentRoom, setCurrentRoom] = useState("default");
+  const [yProvider, setYProvider] = useState<YPartyKitProvider | null>(null);
   const [yDoc, setYDoc] = useState<Y.Doc | null>(null);
 
-  const providerRef = useRef<YPartyKitProvider | null>(null);
-
-  useEffect(() => {
-    // Create a new provider when the room changes
-    const yProvider = new YPartyKitProvider(
+  const createProvider = useCallback(() => {
+    const provider = new YPartyKitProvider(
       PARTYKIT_HOST,
       currentRoom,
       undefined,
       { party: "editorserver" }
     );
+    setYProvider(provider);
+    setYDoc(provider.doc);
+    return provider;
+  }, [currentRoom]);
 
-    providerRef.current = yProvider;
-    setYDoc(yProvider.doc);
+  useEffect(() => {
+    const provider = createProvider();
 
-    // Cleanup function to disconnect the previous provider
     return () => {
-      if (providerRef.current) {
-        providerRef.current.disconnect();
-        providerRef.current = null;
-      }
+      provider.disconnect();
     };
   }, [currentRoom]);
   
@@ -51,10 +49,13 @@ export default function IndexPage() {
   renderCount.current += 1;
   console.log(`Component rendered. Render count: ${renderCount.current}`);
 
+  if (!yProvider || !yDoc) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <DefaultLayout currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} >
-        {/* <EditorPage currentRoom={currentRoom} yDoc{yDoc}=} /> */}
-        <div>Index Page</div>
+        <EditorPage currentRoom={currentRoom} yDoc={yDoc} yProvider={yProvider} />
     </DefaultLayout>
   );
 }

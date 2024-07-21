@@ -9,6 +9,7 @@ import * as Y from "yjs";
 import YPartykitProvider from "y-partykit/provider";
 import Tooltip from "../ToolTipsComponets/ToolTip";
 import { PARTYKIT_HOST } from "@/pages/env";
+import YPartyKitProvider from "y-partykit/provider";
 
 interface Range {
   index: number;
@@ -24,6 +25,7 @@ Quill.register("modules/cursors", QuillCursors);
 
 export default function Editor({
   currentRoom,
+  yDoc,
   yProvider,
   userColor,
   setTextSpecificComment,
@@ -33,7 +35,8 @@ export default function Editor({
   setCompleteText
 }: Readonly<{
   currentRoom: string;
-  yProvider: YPartykitProvider;
+  yDoc: Y.Doc;
+  yProvider: YPartyKitProvider;
   userColor: string;
   setTextSpecificComment: Function;
   setEditor: Function;
@@ -62,9 +65,8 @@ export default function Editor({
   const quillRef = useRef<ReactQuill>(null);
 
   useEffect(() => {
-    if (!yProvider) return;
-    const ydoc = yProvider.doc;
-    const ytext = ydoc.getText("quill");
+    if (!yDoc) return;
+    const ytext = yDoc.getText("quill");
   
     if (typeof window !== "undefined" && quillRef.current) {
       const editor = quillRef.current.getEditor();
@@ -79,7 +81,7 @@ export default function Editor({
   
       // Handle selection change in the Quill editor
       editor.on("selection-change", handleSelectionChange);
-  
+      
       // Create a binding between Yjs and the Quill editor
       const binding = new QuillBinding(ytext, editor, yProvider.awareness);
   

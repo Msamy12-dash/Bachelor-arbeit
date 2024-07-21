@@ -6,6 +6,7 @@ import Quill from "react-quill";
 import colors from "../../highlightColors.js";
 import { PARTYKIT_HOST } from "@/pages/env";
 import YPartyKitProvider from "y-partykit/provider";
+import * as Y from "yjs";
 
 interface CardData {
   id: string;
@@ -19,12 +20,14 @@ interface CardData {
 
 export default function CardContainer({
   currentRoom,
+  yDoc,
   yProvider,
   selectedText,
   completeText,
   editor,
 }: Readonly<{
   currentRoom: string;
+  yDoc: Y.Doc;
   yProvider: YPartyKitProvider;
   selectedText: string;
   completeText: string;
