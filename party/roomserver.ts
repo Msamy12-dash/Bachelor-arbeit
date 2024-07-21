@@ -10,6 +10,22 @@ export default class RoomServer implements Party.Server {
     this.rooms = {};
   }
 
+  async onStart(): Promise<void> {
+    try {
+      // Assuming you have a method to get all room names from the database
+      const roomNames = await this.getAllRoomNamesFromAPI();
+      
+      // Initialize each room with a count of 0
+      roomNames.forEach(roomName => {
+        this.rooms[roomName] = 0;
+      });
+
+      console.log("Rooms initialized:", this.rooms);
+    } catch (error) {
+      console.error("Error initializing rooms:", error);
+    }
+  }
+
   onConnect(conn: Party.Connection) {
     const partyName = this.room.name;
     const roomId = this.room.id;
@@ -62,5 +78,21 @@ Number of connections: ${numberOfExistingConnections},
 Connection ID: ${connectionID},
 Client already connected: ${clientAlreadyConnected}
 `);
+  }
+
+  private async getAllRoomNamesFromAPI(): Promise<string[]> {
+    const response = await fetch('http://localhost:3000/api/getRoomNames', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch room names');
+    }
+
+    const data = await response.json();
+    return data.roomNames;
   }
 }
