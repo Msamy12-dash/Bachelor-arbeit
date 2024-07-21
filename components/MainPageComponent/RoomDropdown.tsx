@@ -6,9 +6,8 @@ import {
   DropdownItem,
   Button,
 } from "@nextui-org/react";
-import PartySocket from "partysocket";
 import usePartySocket from "partysocket/react";
-import { Rooms } from "@/party/types";
+import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
 import { PARTYKIT_HOST } from "@/pages/env";
 
 export default function RoomDropdown({
@@ -18,52 +17,44 @@ export default function RoomDropdown({
   currentRoom: string;
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const [roomCounts, setRoomCounts] = useState<Record<string, number>>({});
-  
-  const socket = usePartySocket({
+  const [rooms, setRooms] = useState<Rooms>({});
+
+  usePartySocket({
+    // host: props.host, -- defaults to window.location.host if not set
     host: PARTYKIT_HOST,
+
     party: "roomserver",
-    room: "active-connections",
+    room: SINGLETON_ROOM_ID,
     onMessage(evt) {
       try {
         const data = JSON.parse(evt.data);
-        if (typeof data === "object" && data !== null) {
-          setRoomCounts(prevCounts => ({...prevCounts, ...data}));
+
+        if (data.type === "rooms") {
+          setRooms((prevRooms) => ({
+            ...prevRooms,
+            ...data.rooms,
+          }));
         }
-      } catch (error) {
-        console.error("Error parsing message:", error);
+      } catch (err) {
+        console.error(err);
       }
     },
   });
 
-  useEffect(() => {
-    // Initial fetch of room counts
-    const fetchRoomCounts = async () => {
-      try {
-        const response = await fetch(`${PARTYKIT_HOST}/parties/roomserver/active-connections`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setRoomCounts(data);
-      } catch (error) {
-        console.error("Error fetching room counts:", error);
-      }
-    };
-
-    fetchRoomCounts();
-  }, []);
-
-
-  const createNewRoom = useCallback(() => {
+  const handleNewRoom = () => {
     const newRoomId = Math.random().toString(36).substring(2, 8);
+
+    setRooms((prevRooms) => ({
+      ...prevRooms,
+      [newRoomId]: 1, // Assuming the new room starts with 1 present user
+    }));
     setCurrentRoom(newRoomId);
-  }, [setCurrentRoom]);
+  };
 
   const renderDropdownItems = () => {
-    const items = Object.entries(roomCounts).map(([roomId, count]) => (
-      <DropdownItem 
-        key={roomId} 
+    const items = Object.entries(rooms).map(([roomId, count]) => (
+      <DropdownItem
+        key={roomId}
         className={currentRoom === roomId ? "bg-primary-100" : ""}
       >
         {`Room ${roomId} (${count} user${count !== 1 ? "s" : ""})`}
@@ -73,7 +64,7 @@ export default function RoomDropdown({
       <DropdownItem
         key="new-room"
         className="text-primary"
-        onClick={createNewRoom}
+        onClick={handleNewRoom}
       >
         Create New Room
       </DropdownItem>
@@ -86,7 +77,7 @@ export default function RoomDropdown({
       <DropdownTrigger>
         <Button variant="flat" className="capitalize">
           {currentRoom
-            ? `Room: ${currentRoom} (${roomCounts[currentRoom] || 0})`
+            ? `Room: ${currentRoom} (${rooms[currentRoom] || 0})`
             : "Select Room"}
         </Button>
       </DropdownTrigger>
