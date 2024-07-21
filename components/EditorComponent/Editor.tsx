@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 "use client";
 import { useState, useRef, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
@@ -101,31 +100,12 @@ export default function Editor({
       };
     }
   }, [userColor, provider]);
-  const saveTextToBackend = async () => {
-    try {
-      const response = await fetch("/api/saveMainText", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ room, text }),
-      });
-      const data = await response.json();
-
-      console.log("Save response:", data);
-    } catch (error) {
-      console.error("Failed to save text:", error);
-    }
-  };
+  
+   
+  
 
   // Effect to save text every 30 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      saveTextToBackend();
-    }, 10000); // Save every 30 seconds
 
-    return () => clearInterval(interval);
-  }, [text, room]);
 
   function handleSelectionChange(range: Range) {
     // If text is selected

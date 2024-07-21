@@ -50,7 +50,7 @@ export default class likelerver implements Party.Server {
     this.room.storage.put("reactions", this.reactions);
   }
   async onClose(_connection: Party.Connection) {
-   
+   _connection.id
   }
 }
 
