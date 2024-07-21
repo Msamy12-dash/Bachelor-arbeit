@@ -83,7 +83,9 @@ export default function RoomDropdown({
       </DropdownTrigger>
       <DropdownMenu
         aria-label="Room selection"
-        onAction={(key) => key !== "new-room" && setCurrentRoom(key.toString())}
+        onAction={(key) => {key !== "new-room" && setCurrentRoom(key.toString())
+          console.log(currentRoom)
+        }}
         selectionMode="single"
         selectedKeys={currentRoom ? [currentRoom] : []}
       >

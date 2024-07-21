@@ -11,8 +11,8 @@ export default function IndexPage() {
 
   const yProvider = useYProvider({
     host: PARTYKIT_HOST,
-    room: currentRoom,
     party: "editorserver",
+    room: currentRoom,
   });
 
   const renderCount = useRef(0);
@@ -32,8 +32,7 @@ export default function IndexPage() {
 
   return (
     <DefaultLayout currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} >
-        {/* <EditorPage currentRoom={currentRoom} yProvider={yProvider} /> */}
-        <div></div>
+        <EditorPage currentRoom={currentRoom} yProvider={yProvider} />
     </DefaultLayout>
   );
 }
