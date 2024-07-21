@@ -32,7 +32,9 @@ export default function CommentHandler({
   editor,
   
   promptList,
-  setAIChanges
+  setAIChanges,
+  deleteSelectedComments,
+  setDeleteSelectedComments
 }: Readonly<{
   room: string;
   textSpecificComment: Comment | null;
@@ -40,6 +42,8 @@ export default function CommentHandler({
   setRange: Function;
   promptList: string[];
   setAIChanges: Function;
+  deleteSelectedComments: boolean;
+  setDeleteSelectedComments: Function;
 }>) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
@@ -48,6 +52,8 @@ export default function CommentHandler({
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
+  const [checkedKeys, setCheckedKeys] = useState<number[]>([]);
+  
 
   const fetchCurrentKey = async (): Promise<number> => {
     try {
@@ -189,11 +195,30 @@ export default function CommentHandler({
     fetchComments();
   }, []);
 
+
+
   useEffect(() => {
     if (textSpecificComment != null) {
       addComment(textSpecificComment);
     }
   }, [textSpecificComment]);
+
+
+
+  useEffect(() => {
+
+    if(deleteSelectedComments){
+      for (let key of checkedKeys){
+        //console.log(key);
+        let comment = comments.find(comment => comment.key === key);
+        if(comment){
+          deleteComment(comment!);
+        }
+      }
+
+      setDeleteSelectedComments(false);
+    }
+  }, [deleteSelectedComments])
 
 
   const incrementUpvote = async (IncrementComment: Comment) => {
@@ -254,6 +279,7 @@ export default function CommentHandler({
     const updatedComments = removeComment(comments);
     setComments(updatedComments);
     
+
     try {
       // API call to delete the comment in MongoDB
       const response = await fetch('/api/delete-comment', {
@@ -344,31 +370,34 @@ export default function CommentHandler({
             </TabList>
           </Box>
           <TabPanel value="1">
-            <div>
-              <div className="Comment-font">Comments</div>
-              <button onClick={() => setShowComments(!showComments)}>
-                {showComments ? "Hide Comments" : "Show Comments"}
-              </button>
-              {showComments && (
-                <CommentList
-                  addComment={addComment}
-                  deleteComment={deleteComment}
-                  editComment={editComment}
-                  getRange={getRange}
-                  comments={comments}
-                  editor={editor}
-
-                  incrementUpvote={incrementUpvote}
-                  setAIChanges={setAIChanges}
-                />
-              )}
-            </div>
+          <div className="comments text-center block">
+      <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
+      <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
+        {showComments ? "Hide Comments" : "Show Comments"}
+      </button>
+      {showComments && (
+        <div className="mt-8">
+          <CommentList
+            comments={comments}
+            incrementUpvote={incrementUpvote}
+            deleteComment={deleteComment}
+            editComment={editComment}
+            addComment={addComment}
+            editor={editor}
+            getRange={getRange}
+            setAIChanges={setAIChanges}
+            setCheckedKeys={setCheckedKeys}
+        />
+        </div>
+      )}
+    </div>
           </TabPanel>
           <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
             <PromptList promptList={promptList} />
           </TabPanel>
         </TabContext>
       </Box>
-    </div>
+      </div>
+
   );
 }
