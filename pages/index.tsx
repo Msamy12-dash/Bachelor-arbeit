@@ -1,35 +1,40 @@
 import EditorPage from "@/components/EditorComponent/Editorinterface";
 import DefaultLayout from "@/layouts/default";
-import { use, useCallback, useEffect, useRef, useState } from "react";
+import { act, use, useCallback, useEffect, useRef, useState } from "react";
 import YPartyKitProvider from "y-partykit/provider";
 import useYProvider from "y-partykit/react";
 import { PARTYKIT_HOST } from "./env";
 import usePartySocket from "partysocket/react";
 import { connect } from "http2";
+import * as Y from "yjs";
 
 export default function IndexPage() {
   const [currentRoom, setCurrentRoom] = useState("default");
+  const [yDoc, setYDoc] = useState<Y.Doc | null>(null);
 
-  const yProvider = useRef<YPartyKitProvider | null>(null);
+  const providerRef = useRef<YPartyKitProvider | null>(null);
 
   useEffect(() => {
+    // Create a new provider when the room changes
+    const yProvider = new YPartyKitProvider(
+      PARTYKIT_HOST,
+      currentRoom,
+      undefined,
+      { party: "editorserver" }
+    );
+
+    providerRef.current = yProvider;
+    setYDoc(yProvider.doc);
+
     // Cleanup function to disconnect the previous provider
     return () => {
-      if (yProvider.current) {
-        yProvider.current.disconnect();
-        yProvider.current = null;
+      if (providerRef.current) {
+        providerRef.current.disconnect();
+        providerRef.current = null;
       }
     };
   }, [currentRoom]);
   
-  const actualYProvider = useYProvider({
-    host: PARTYKIT_HOST,
-    party: "editorserver",
-    room: currentRoom,
-  });
-
-  // Assign the new provider to the ref
-  yProvider.current = actualYProvider;
 
   const renderCount = useRef(0);
   const mountCount = useRef(0);
@@ -48,7 +53,7 @@ export default function IndexPage() {
 
   return (
     <DefaultLayout currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} >
-        {/* <EditorPage currentRoom={currentRoom} yProvider={yProvider} /> */}
+        {/* <EditorPage currentRoom={currentRoom} yDoc{yDoc}=} /> */}
         <div>Index Page</div>
     </DefaultLayout>
   );
