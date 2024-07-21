@@ -40,6 +40,7 @@ interface CommentListState {
   showAllSubcomments: boolean;
   checkedKeys: number[];
   loading: boolean;
+  sortBy: "release" | "upvotes";
 }
 
 class CommentList extends Component<CommentListProps, CommentListState>  {
@@ -48,7 +49,8 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     showSubcomments: true,
     showAllSubcomments: true,
     checkedKeys: [],
-    loading: false
+    loading: false,
+    sortBy: "release"
   };
 
   
@@ -63,6 +65,12 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
 
   toggleAllSubcomments = () => {
     this.setState((prevState) => ({ showAllSubcomments: !prevState.showAllSubcomments }));
+  };
+
+  toggleSortBy = () => {
+    this.setState((prevState) => ({
+      sortBy: prevState.sortBy === "release" ? "upvotes" : "release",
+    }));
   };
 
   handleAddComment = (comment: Comment) => {
@@ -124,9 +132,15 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
 
 
   renderCommentsRecursive = (comments: Comment[], level = 0) => {
-    const { showSubcomments, showAllSubcomments } = this.state;
+    const { showSubcomments, showAllSubcomments, sortBy } = this.state;
 
-    comments.sort((a, b) => b.key - a.key);
+    comments.sort((a, b) => {
+      if (sortBy === "upvotes") {
+        return b.upvotes - a.upvotes;
+      } else {
+        return b.key - a.key;
+      }
+    });
 
     return comments.map((comment) => {
       const classNames = `comment comment-level-${level} text-center block`;
@@ -162,10 +176,19 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
 
   render() {
     const { comments } = this.props;
-    const { showTextarea, showAllSubcomments } = this.state;
+    const { showTextarea, showAllSubcomments, sortBy } = this.state;
     return (
       <div>
         <div className="comment-list-container h-[35vw] overflow-auto">
+          <div className="flex justify-center items-center mb-2">
+            <div className="text-lg font-semibold mr-2">Sort by:</div>
+            <button
+              onClick={this.toggleSortBy}
+              className="text-black bg-white border border-black rounded-full py-2 px-4 font-semibold hover:bg-gray-200"
+            >
+              {sortBy === "release" ? "Release" : "Upvotes"}
+            </button>
+          </div>
           {comments.length > 0 && (
           <button className="toggle-all-subcomments-btn mb-2" onClick={this.toggleAllSubcomments}>
             {showAllSubcomments ? 'Hide Subcomments' : 'Show All Subcomments'}
