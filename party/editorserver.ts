@@ -3,6 +3,7 @@ import { onConnect, type YPartyKitOptions } from "y-partykit";
 import * as Y from "yjs";
 import { Buffer } from 'buffer';
 import { connect } from "http2";
+import { SINGLETON_ROOM_ID } from "./types";
 
 
 export default class EditorServer implements Party.Server {
@@ -19,7 +20,8 @@ export default class EditorServer implements Party.Server {
     // Check if the client already exists
     const clientAlreadyConnected = [...existingConnections].some(c => c.id === conn.id);
     console.log('New connection established. Client already connected:', clientAlreadyConnected);
-    
+
+    await this.updateCount();
 
     return onConnect(conn, this.room, {
       load: async () => this.handleLoadFromDB(),
@@ -91,7 +93,7 @@ export default class EditorServer implements Party.Server {
   async updateCount() {
     const count = [...this.room.getConnections()].length;
     try {
-      const response = await this.room.context.parties.rooms.get(SINGLETON_ROOM_ID).fetch({
+      const response = await this.room.context.parties.roomserver.get(SINGLETON_ROOM_ID).fetch({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ room: this.room.id, count }),
