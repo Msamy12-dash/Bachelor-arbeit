@@ -14,7 +14,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
             const usersData = await usersCollection.find({}).toArray();
             const users: User[] = usersData.map(userData => ({
-                id: userData._id.toString(),
+                id: userData.id, // Use the id not _id as the id
                 name: userData.name,
                 color: userData.color,
                 role: userData.role as Role
