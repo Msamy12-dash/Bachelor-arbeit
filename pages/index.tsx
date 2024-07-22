@@ -9,48 +9,48 @@ import { getOrCreateUser } from "@/lib/userUtils";
 
 export default function IndexPage() {
   const [currentRoom, setCurrentRoom] = useState("default");
-  const [yProvider, setYProvider] = useState<YPartyKitProvider | null>(null);
-  const [yDoc, setYDoc] = useState<Y.Doc | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [yProvider, setYProvider] = useState<YPartyKitProvider | null>(null); //hand this down to your component, if you need it
+  const [yDoc, setYDoc] = useState<Y.Doc | null>(null); //hand this down to your component, if you need it
+  const [user, setUser] = useState<User | null>(null); //hand this down to your component, if you need it
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function initUser() {
-      try {
-        // You might want to get these values from a context or props
-        const newUser = await getOrCreateUser('defaultUser', Role.User);
-        setUser(newUser);
-      } catch (error) {
-        setError((error as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    }
+  // useEffect(() => {
+  //   async function initUser() {
+  //     try {
+  //       // You might want to get these values from a context or props
+  //       const newUser = await getOrCreateUser('defaultUser', Role.User);
+  //       setUser(newUser);
+  //     } catch (error) {
+  //       setError((error as Error).message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
 
-    initUser();
-  }, []);
+  //   initUser();
+  // }, []);
 
 
 
   const createProvider = useCallback(() => {
-    if (!user) return;
-    console.log("userID: ", user.id);
+    //if (!user) return;
+    //console.log("userID: ", user.id);
     const provider = new YPartyKitProvider(
       PARTYKIT_HOST,
       currentRoom,
       undefined,
       { party: "editorserver",
-        connectionId: user.id,
+        //connectionId: user.id,
        }
     );
     setYProvider(provider);
     setYDoc(provider.doc);
     return provider;
-  }, [currentRoom, user]);
+  }, [currentRoom, /*user*/]);
 
   useEffect(() => {
-    if (!user) return;
+    //if (!user) return;
 
     const provider = createProvider();
     setLoading(false);
@@ -58,17 +58,17 @@ export default function IndexPage() {
     return () => {
       provider?.disconnect();
     };
-  }, [currentRoom, user, createProvider]);
+  }, [currentRoom, /*user*/, createProvider]);
   
   
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  // if (error) {
+  //   return <div>Error: {error}</div>;
+  // }
 
 // //Debugging lines:
 //   const renderCount = useRef(0);
