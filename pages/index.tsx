@@ -1,46 +1,26 @@
 import EditorPage from "@/components/EditorComponent/Editorinterface";
 import DefaultLayout from "@/layouts/default";
-import { act, use, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import YPartyKitProvider from "y-partykit/provider";
-import useYProvider from "y-partykit/react";
-import { PARTYKIT_HOST } from "./env";
-import usePartySocket from "partysocket/react";
-import { connect } from "http2";
+import { PARTYKIT_HOST, PARTYKIT_URL } from "./env";
 import * as Y from "yjs";
 import { Role, SINGLETON_ROOM_ID, User } from "@/party/types";
-import PartySocket from "partysocket";
 
 export default function IndexPage() {
   const [currentRoom, setCurrentRoom] = useState("default");
   const [yProvider, setYProvider] = useState<YPartyKitProvider | null>(null);
   const [yDoc, setYDoc] = useState<Y.Doc | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const createProvider = useCallback(() => {
-    const provider = new YPartyKitProvider(
-      PARTYKIT_HOST,
-      currentRoom,
-      undefined,
-      { party: "editorserver",
-        connectionId: "daniel",
-       }
-    );
-    setYProvider(provider);
-    setYDoc(provider.doc);
-    return provider;
-  }, [currentRoom]);
-
-  useEffect(() => {
-    const provider = createProvider();
-
-    return () => {
-      provider.disconnect();
-    };
-  }, [currentRoom]);
   
+
   const getOrCreateUser = async (username: string, role: Role) => {
+    setLoading(true);
+    setError(null);
     try {
-      const response = await fetch(`${PARTYKIT_HOST}/parties/useridserver/${SINGLETON_ROOM_ID}`, {
+      const response = await fetch(`${PARTYKIT_URL}/parties/useridserver/${SINGLETON_ROOM_ID}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,13 +29,14 @@ export default function IndexPage() {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to get or create user');
+        throw new Error(`Failed to get or create user: ${response.statusText}`);
       }
       
       const user = await response.json();
       setUser(user);
     } catch (error) {
       console.error('Error getting or creating user:', error);
+      setError((error as Error).message);
     }
   };
 
@@ -64,6 +45,44 @@ export default function IndexPage() {
     // For now, we'll use a default username and role
     getOrCreateUser('defaultUser', Role.User);
   }, []);
+
+
+  const createProvider = useCallback(() => {
+    if (!user) return;
+    console.log("userID: ", user.id);
+    const provider = new YPartyKitProvider(
+      PARTYKIT_HOST,
+      currentRoom,
+      undefined,
+      { party: "editorserver",
+        connectionId: user.id,
+       }
+    );
+    setYProvider(provider);
+    setYDoc(provider.doc);
+    return provider;
+  }, [currentRoom, user]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const provider = createProvider();
+    setLoading(false);
+
+    return () => {
+      provider?.disconnect();
+    };
+  }, [currentRoom, user, createProvider]);
+  
+  
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
 // //Debugging lines:
 //   const renderCount = useRef(0);
@@ -81,8 +100,8 @@ export default function IndexPage() {
 //   renderCount.current += 1;
 //   console.log(`Component rendered. Render count: ${renderCount.current}`);
 
-if (!yProvider || !yDoc || !user) {
-  return <div>Loading...</div>;
+if (!yProvider || !yDoc) {
+  return <div>Initializing...</div>;
 }
 
 return (

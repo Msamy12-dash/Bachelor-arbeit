@@ -20,7 +20,7 @@ export default class RoomServer implements Party.Server {
         this.rooms[roomName] = 0;
       });
 
-      console.log("Rooms initialized:", this.rooms);
+      //console.log("Rooms initialized:", this.rooms);
     } catch (error) {
       console.error("Error initializing rooms:", error);
     }
@@ -54,9 +54,9 @@ Client already connected: ${clientAlreadyConnected}
       this.room.broadcast(JSON.stringify({ type: "rooms", rooms: this.rooms }));
       
       console.log(`Room update: ${room} has ${count} user${count !== 1 ? "s" : ""}`);
-      console.log(`All rooms:
-${JSON.stringify(this.rooms, null, 2)}
-`);
+//       console.log(`All rooms:
+// ${JSON.stringify(this.rooms, null, 2)}
+// `);
       return Response.json({ ok: true });
     }
 
