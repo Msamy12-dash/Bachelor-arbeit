@@ -5,6 +5,7 @@ import YPartyKitProvider from "y-partykit/provider";
 import { PARTYKIT_HOST, PARTYKIT_URL } from "./env";
 import * as Y from "yjs";
 import { Role, SINGLETON_ROOM_ID, User } from "@/party/types";
+import { getOrCreateUser } from "@/lib/userUtils";
 
 export default function IndexPage() {
   const [currentRoom, setCurrentRoom] = useState("default");
@@ -14,37 +15,22 @@ export default function IndexPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  
-
-  const getOrCreateUser = async (username: string, role: Role) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`${PARTYKIT_URL}/parties/useridserver/${SINGLETON_ROOM_ID}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, role }),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to get or create user: ${response.statusText}`);
-      }
-      
-      const user = await response.json();
-      setUser(user);
-    } catch (error) {
-      console.error('Error getting or creating user:', error);
-      setError((error as Error).message);
-    }
-  };
-
   useEffect(() => {
-    // You might want to prompt the user for their username and role here
-    // For now, we'll use a default username and role
-    getOrCreateUser('defaultUser', Role.User);
+    async function initUser() {
+      try {
+        // You might want to get these values from a context or props
+        const newUser = await getOrCreateUser('defaultUser', Role.User);
+        setUser(newUser);
+      } catch (error) {
+        setError((error as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    initUser();
   }, []);
+
 
 
   const createProvider = useCallback(() => {
