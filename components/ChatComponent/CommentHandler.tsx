@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import CommentList from './CommentList';
 import Quill from "react-quill";
+import * as Y from "yjs";
+import useYProvider from "y-partykit/react";
 
 interface Comment {
   key: number;
@@ -34,73 +36,45 @@ export default function CommentHandler({
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
 
-  const fetchCurrentKey = async (): Promise<number> => {
-    try {
-      const response = await fetch('/api/get-key');
-      if (!response.ok) {
-        throw new Error('Failed to fetch key');
-      }
-      const data = await response.json();
-      return data.currentKey;
-    } catch (error) {
-      console.error('Failed to fetch key:', error);
-      return 0;
+  const provider = useYProvider({
+    host: "localhost:1999",
+    party: "editorserver",
+    room: room
+  });
+
+  useEffect(() => {
+    if (provider.doc) {
+      const ydoc = provider.doc;
+      const yarray = ydoc.getArray<Comment>("comments");
+
+      const updateComments = () => {
+        setComments(yarray.toArray());
+      };
+
+      yarray.observe(updateComments);
+      updateComments();
+
+      return () => {
+        yarray.unobserve(updateComments);
+      };
     }
-  };
-  
-  const updateKey = async (newKey: number) => {
-    try {
-      const response = await fetch('/api/update-key', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ currentKey: newKey }),
-      });      
-      if (!response.ok) {
-        throw new Error('Failed to update key');
-      }
-      const data = await response.json();
-      console.log('Key updated successfully:', data);
-    } catch (error) {
-      console.error('Failed to update key:', error);
-    }
-  };
+  }, [provider.doc]);
 
   const getNewKey = async (): Promise<number> => {
-    const currentKey = await fetchCurrentKey();
+    const ydoc = provider.doc;
+    const ymap = ydoc.getMap('keys');
+    //does numberfix work?
+    const currentKey = Number(ymap.get('currentKey') || 0);
     const newKey = currentKey + 1;
-    await updateKey(newKey);
+    ymap.set('currentKey', newKey);
     return newKey;
-  };
-
-  // Function to save a new comment in MongoDB
-  const saveComment = async (comment: Comment) => {
-    try {
-      const response = await fetch('/api/save-comment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comment }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to save comment');
-      }
-      const data = await response.json();
-      console.log('Comment saved successfully:', data);
-    } catch (error) {
-      console.error('Failed to save comment:', error);
-    }
   };
 
   const addComment = async (comment: Comment) => {
     const newKey = await getNewKey();
     let canReply = true;
 
-    // Check if it's a subsubcomment -> can't reply
     if (comment.parentKey !== null) {
-      // Find the comment with the matching parentkey
       const parentKey = comment.parentKey;
       const parentComment = comments.find(comment => comment.key === parentKey);
       if (parentComment === undefined) {
@@ -124,24 +98,20 @@ export default function CommentHandler({
       canReply: canReply
     };
 
-    // Save comment in Database
-    saveComment(newComment);
+    const ydoc = provider.doc;
+    const yarray = ydoc.getArray<Comment>("comments");
 
     if (comment.parentKey === null) {
-      // If parentkey is null, add the new comment as a root comment
-      setComments(prevComments => [...prevComments, newComment]);
-      // Save only main comments
+      yarray.push([newComment]);
     } else {
       const addReplyToComment = (commentsArray: Comment[], keyToFind: number, replyToAdd: Comment): Comment[] => {
         return commentsArray.map(comment => {
           if (comment.key === keyToFind) {
-            // Add new comment as a reply to this comment
             return {
               ...comment,
               replies: [...comment.replies, replyToAdd],
             };
           } else if (comment.replies.length > 0) {
-            // Recursively check in replies
             return {
               ...comment,
               replies: addReplyToComment(comment.replies, keyToFind, replyToAdd)
@@ -150,30 +120,11 @@ export default function CommentHandler({
           return comment;
         });
       };
-      const updatedComments = addReplyToComment(comments, comment.parentKey, newComment);
-      setComments(updatedComments);
+      const updatedComments = addReplyToComment(yarray.toArray(), comment.parentKey, newComment);
+      yarray.delete(0, yarray.length);
+      yarray.push(updatedComments);
     } 
   };
-
-  useEffect(() => {
-    // Fetch comments from the API when the component mounts
-    const fetchComments = async () => {
-      try {
-        const response = await fetch('/api/fetch-comments');
-        if (!response.ok) {
-          throw new Error('Failed to fetch comments');
-        }
-        const data = await response.json();
-        setComments(data);
-  
-      } catch (error) {
-  
-      }
-    };
-
-    fetchComments();
-  }, []);
-
 
   useEffect(() => {
     if (textSpecificComment != null) {
@@ -181,8 +132,10 @@ export default function CommentHandler({
     }
   }, [textSpecificComment]);
 
+  const incrementUpvote = (IncrementComment: Comment) => {
+    const ydoc = provider.doc;
+    const yarray = ydoc.getArray<Comment>("comments");
 
-  const incrementUpvote = async (IncrementComment: Comment) => {
     const updateUpvote = (comments: Comment[]): Comment[] => {
       return comments.map(comment => {
         if (comment.key === IncrementComment.key) {
@@ -199,29 +152,16 @@ export default function CommentHandler({
         return comment;
       });
     };
-    const updatedComments = updateUpvote(comments);
-    setComments(updatedComments);
 
-    try {
-      // API call to update the comment in MongoDB
-      const response = await fetch('/api/increment-comment', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comment: IncrementComment }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update comment');
-      }
-      const data = await response.json();
-      console.log('Comment updated successfully:', data);
-    } catch (error) {
-      console.error('Failed to update comment:', error);
-    }
+    const updatedComments = updateUpvote(yarray.toArray());
+    yarray.delete(0, yarray.length);
+    yarray.push(updatedComments);
   };
 
-  const deleteComment = async (DeleteComment: Comment) => {
+  const deleteComment = (DeleteComment: Comment) => {
+    const ydoc = provider.doc;
+    const yarray = ydoc.getArray<Comment>("comments");
+
     const removeComment = (comments: Comment[]): Comment[] => {
       return comments.reduce((acc, comment) => {
         if (comment.key === DeleteComment.key && comment.parentKey === DeleteComment.parentKey) {
@@ -237,29 +177,15 @@ export default function CommentHandler({
       }, [] as Comment[]);
     };
   
-    const updatedComments = removeComment(comments);
-    setComments(updatedComments);
-    
-    try {
-      // API call to delete the comment in MongoDB
-      const response = await fetch('/api/delete-comment', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comment: DeleteComment }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete comment');
-      }
-      const data = await response.json();
-      console.log('Comment deleted successfully:', data);
-    } catch (error) {
-      console.error('Failed to delete comment:', error);
-    }
+    const updatedComments = removeComment(yarray.toArray());
+    yarray.delete(0, yarray.length);
+    yarray.push(updatedComments);
   };
 
-  const editComment = async (EditComment: Comment, newContent: string) => {
+  const editComment = (EditComment: Comment, newContent: string) => {
+    const ydoc = provider.doc;
+    const yarray = ydoc.getArray<Comment>("comments");
+
     const updateComment = (comments: Comment[]): Comment[] => {
       return comments.map((comment) => {
         if (comment.key === EditComment.key && comment.parentKey === EditComment.parentKey) {
@@ -272,35 +198,15 @@ export default function CommentHandler({
       });
     };
 
-    const updatedComments = updateComment(comments);
-    setComments(updatedComments);  
-
-    try {
-      // API call to update the comment in MongoDB
-      const response = await fetch('/api/update-comment', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comment: EditComment, content: newContent }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update comment');
-      }
-      const data = await response.json();
-      console.log('Comment updated successfully:', data);
-    } catch (error) {
-      console.error('Failed to update comment:', error);
-    }
+    const updatedComments = updateComment(yarray.toArray());
+    yarray.delete(0, yarray.length);
+    yarray.push(updatedComments);
   };
-
 
   const getRange = (index: number, length: number) => {
     console.log(index, length);
     setRange({index: index, length: length});
   };
-
-  
 
   return (
     <div className="comments text-center block">
@@ -325,5 +231,7 @@ export default function CommentHandler({
     </div>
   );
 }
+
+
 
 
