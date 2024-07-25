@@ -1,9 +1,8 @@
-/* eslint-disable prettier/prettier */
 import { useState } from "react";
 import usePartySocket from "partysocket/react";
 
-import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
 import { PARTYKIT_HOST } from "@/pages/env";
+import { Rooms, SINGLETON_ROOM_ID } from "@/party/src/types";
 
 export default function Lobby({
   currentRoom,

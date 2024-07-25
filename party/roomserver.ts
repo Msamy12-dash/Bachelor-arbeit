@@ -1,6 +1,7 @@
 import type * as Party from "partykit/server";
 
-import { Rooms } from "./types";
+import { Rooms } from "./src/types";
+
 
 export default class RoomServer implements Party.Server {
    // Track room occupancy

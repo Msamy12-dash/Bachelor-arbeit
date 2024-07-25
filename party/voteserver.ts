@@ -1,64 +1,67 @@
 import type * as Party from "partykit/server";
 
+import { json, Poll } from "./src/types";
 
-import { Poll,json } from "./types";
-import { Pool } from "@mui/icons-material";
+
+
 
 export default class VoteServer implements Party.Server {
   onAlarm() {
     // do something
     console.log("vote is over")
+
     // (optional) schedule next alarm in 5 minutes
     this.room.storage.setAlarm(Date.now() +  10*60 * 1000);
+    //this.room.storage.deleteAll;
   }
   
   constructor(readonly room: Party.Room) {
-    console.log("vote is sent")
+    //console.log("vote is sent")
 
       this.room.storage.setAlarm(Date.now() + 10*60 * 1000);
   }
   static async onCron(
 
-    cron: Party.Cron,
-    lobby: Party.CronLobby,
-    ctx: Party.ExecutionContext,
+    _cron: Party.Cron,
+    _lobby: Party.CronLobby,
+    _ctx: Party.ExecutionContext,
 
   ) {
 
-    cron.scheduledTime
-    console.log(`Running cron ${cron.name} at ${cron.scheduledTime}`);
+    _cron.scheduledTime
+    
+    //console.log(`Running cron ${_cron.name} at ${_cron.scheduledTime}`);
   }
 
   poll: Poll | undefined;
 
   async onRequest(req: Party.Request) {
     if (req.method === "POST") {
-      const poll = (await req.json()) as Poll;
+      const comingPoll = (await req.json()) as Poll;
 
-      console.log("recived post")
-      this.poll = { ...poll, votes: poll.options.map(() => 0) };
+      this.poll = { ...comingPoll, votes: comingPoll.options.map(() => 0) };
       this.savePoll();
     
-    }
+    
 
     if (this.poll) {
       console.log(this.poll)
       this.room.broadcast("vote now");
-             return json( this.poll,200)
+
+             return json( this.poll)
 
 
-    }
+    }}
     if (req.method === "GET") {
       const poll = (await req.json()) as Poll;
 
-      console.log(this.poll)
       this.poll = { ...poll, votes: poll.options.map(() => 0) };
       this.savePoll();
 
-      return json( this.poll,200)
+      return json( this.room.storage)
     }
 
-    return json( "NOTFOUND",400)
+    return json( "NOTFOUND")
   }
 
   async onMessage(message: string) {

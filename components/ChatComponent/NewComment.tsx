@@ -25,7 +25,7 @@ interface Comment {
   canReply: boolean;
 }
 
-class NewComment extends Component<NewCommentProps, NewCommentState> {
+ class NewComment extends Component<NewCommentProps, NewCommentState> {
   textareaRef: React.RefObject<HTMLTextAreaElement>;
 
   constructor(props: NewCommentProps) {

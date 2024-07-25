@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import CommentCard from "./CommentCard";
-import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
+
+import NewComment from "./NewComment";
+import CommentCard from "./CommentCard";
 //install mui: npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 
 interface Comment {
@@ -59,16 +60,17 @@ class CommentList extends Component<CommentListProps, CommentListState> {
   renderCommentsRecursive = (comments: Comment[], level = 0) => {
     return comments.map((comment) => {
       const classNames = "comment comment-level-${level}";
+
       return (
         <div key={comment.key} className={classNames}>
           <CommentCard
-            onIncrement={() => this.props.incrementUpvote(comment.key)}
-            onDelete={(key, parentKey) => this.props.deleteComment(key, parentKey)}
-            onEdit={(key, newContent, parentKey) => this.props.editComment(key, newContent, parentKey)}
             addComment={(newcomment) => this.props.addComment(newcomment)}
-            onGetRange = {(index: number, length: number) => this.props.getRange(index, length)}
             comment={comment}
             editor={this.props.editor}
+            onDelete={(key, parentKey) => this.props.deleteComment(key, parentKey)}
+            onEdit={(key, newContent, parentKey) => this.props.editComment(key, newContent, parentKey)}
+            onGetRange = {(index: number, length: number) => this.props.getRange(index, length)}
+            onIncrement={() => this.props.incrementUpvote(comment.key)}
           />
           {comment.replies.length > 0 && (
             <div className={"replies replies-level-${level}"}>
@@ -83,6 +85,7 @@ class CommentList extends Component<CommentListProps, CommentListState> {
   render() {
     const { comments } = this.props;
     const { showTextarea } = this.state;
+
     return (
       <div className="comment-list"> 
           {this.renderCommentsRecursive(comments)}

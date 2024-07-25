@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
+import Snackbar from "@mui/material/Snackbar";
 import usePartySocket from "partysocket/react";
 
-import PollOptions from "../VoteComponent/VoteOptions";
+import PollOptions from "../voteComponent/VoteOptions";
 
-import { Poll } from "@/party/types";
 import { PARTYKIT_HOST } from "@/pages/env";
+import { Poll } from "@/party/src/types";
 
 // Custom hook to create and handle WebSocket connection
 function useSocketConnection(onMessage: (event: MessageEvent) => void) {
@@ -16,28 +18,23 @@ function useSocketConnection(onMessage: (event: MessageEvent) => void) {
   });
 }
 
-export default function PollUI({
-  id,
-  options,
-  initialVotes,
-}: {
-  id: string;
-  options: string[];
-  initialVotes?: number[];
-}) {
+const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[] }> = ({ id, options, initialVotes }) => {
   const [votes, setVotes] = useState<number[]>(initialVotes ?? []);
   const [vote, setVote] = useState<number | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
   const onMessage = (event: MessageEvent) => {
     const data = event.data;
 
-    if (data != "vote now") {
-   
+    if (data === "vote now") {
+      setIsSnackbarOpen(true);  // Ensure to open the snackbar when a message is received
+      setTimeout(() => setIsSnackbarOpen(false), 3000); // Auto close snackbar after 3 seconds
+    } else {
       const pollData = JSON.parse(data) as Poll;
 
       if (pollData.votes) {
         setVotes(pollData.votes);
-        // Optionally, you can also clear messages here if needed
       }
     }
   };
@@ -62,13 +59,27 @@ export default function PollUI({
 
   return (
     <>
-    
-      <PollOptions
-        options={options}
-        setVote={sendVote}
-        vote={vote}
-        votes={votes}
+      <button className="btn btn-primary" onClick={onOpen}>Open Poll</button>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalContent>
+          <ModalHeader>Poll</ModalHeader>
+          <ModalBody>
+            <PollOptions options={options} setVote={sendVote} vote={vote} votes={votes} />
+          </ModalBody>
+          <ModalFooter>
+            <Button color="danger" onPress={onClose}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={3000}
+        message="New notification received!"
+        open={isSnackbarOpen}
+        onClose={() => setIsSnackbarOpen(false)}
       />
     </>
   );
-}
+};
+
+export default PollUI;

@@ -6,10 +6,8 @@ import Quill from "react-quill";
 
 import Lobby from "../MainPageComponent/Lobby";
 import CommentHandler from "../ChatComponent/CommentHandler";
-import PollUI from "../VoteComponent/VoteComponent";
-import LikeConnector from "../LikeComment/LikeConnector";
 
-import { Poll } from "@/party/types";
+
 
 interface Comment {
   key: number;
@@ -47,18 +45,13 @@ export default function EditorPage() {
       ssr: false,
     });
   }, []);
+  const [, setIsModalOpen] = useState(false);
 
+  const openModal = () => setIsModalOpen(true);
   const [textSpecificComment, setTextSpecificComment] =
     useState<Comment | null>(null);
   const [editor, setEditor] = useState<Quill | null>(null);
-  const pollId = '1';
-  const pollOptions = ['Option 1', 'Option 2', 'Option 3'];
-  const initialVotes = [0, 0, 0];
-  const examplePoll: Poll = {
-    title: "vote",
-    options: pollOptions,
-    votes: [10, 20, 5]
-  };
+
 
   function handleSetRange(range: Range) {
     // for 'Show in Editor'-Button functionality
@@ -94,12 +87,7 @@ export default function EditorPage() {
             userColor={userColor}
           />
         </Card>
-        <Card style={{ width: "20%", padding: "10px" }}>
-          <PollUI id={pollId} initialVotes={initialVotes} options={pollOptions} />
-          <LikeConnector roomID={"1"}  />
-          <LikeConnector roomID={"2"}  />
-
-        </Card>
+        <Card style={{ width: "20%", padding: "10px" }} />
       </div>
     </>
   );

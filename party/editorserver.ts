@@ -2,8 +2,8 @@ import type * as Party from "partykit/server";
 
 import { onConnect, type YPartyKitOptions } from "y-partykit";
 import { Doc } from "yjs";
+import { SINGLETON_ROOM_ID } from "./src/types";
 
-import { SINGLETON_ROOM_ID } from "./types";
 
 export default class EditorServer implements Party.Server {
   yjsOptions: YPartyKitOptions = {

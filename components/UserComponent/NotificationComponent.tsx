@@ -4,12 +4,14 @@ import Snackbar from "@mui/material/Snackbar";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import usePartySocket from "partysocket/react";
 
+import PollUI from "../voteComponent/VoteComponent";
+
 import { PARTYKIT_HOST } from "@/pages/env";
 
-function useSocketConnection(onMessage: (event: MessageEvent) => void) {
+function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
   return usePartySocket({
     host: PARTYKIT_HOST,
-    room: "1",
+    room: ID,
     party: "vote",
     onMessage,
   });
@@ -19,23 +21,25 @@ const NotificationComponent: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [isPollModalOpen, setIsPollModalOpen] = useState(false);
+  const [notificationID, setNotificationID] = useState(0); // State for tracking notification ID.
 
   const onMessage = (event: MessageEvent) => {
     const data = event.data;
 
     if (data === "vote now") {
       setMessages(prev => [...prev, "Please cast your vote now!"]);
-      setIsSnackbarOpen(true);  // Ensure to open the snackbar when a message is received
-      setTimeout(() => setIsSnackbarOpen(false), 3000); // Auto close snackbar after 3 seconds
+      setIsSnackbarOpen(true);
+      setIsPollModalOpen(true);
+      setTimeout(() => setIsSnackbarOpen(false), 3000);
+      setNotificationID(prevID => prevID + 1); // Increment the notification ID.
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const socket = useSocketConnection(onMessage);
+  const socket = useSocketConnection(notificationID.toString(), onMessage);
 
   useEffect(() => {
     const saved = localStorage.getItem("messages") || "[]";
-
     setMessages(JSON.parse(saved));
   }, []);
 
@@ -43,16 +47,19 @@ const NotificationComponent: React.FC = () => {
     localStorage.setItem("messages", JSON.stringify(messages));
   }, [messages]);
 
+  const closePollModal = () => {
+    setIsPollModalOpen(false);
+  };
+
   return (
     <div className="relative inline-block ml-4">
       <button
         aria-label={`You have ${messages.length} notifications`}
-        className="relative p-2 rounded-full bg-gray-200 hover:bg-gray-300"
         onClick={onOpen}
       >
         <NotificationsIcon style={{ fontSize: 24 }} />
         {messages.length > 0 && (
-          <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-600 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">
+          <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full h-5 w-5 flex items-center justify-center text-xs">
             {messages.length}
           </span>
         )}
@@ -64,11 +71,20 @@ const NotificationComponent: React.FC = () => {
             {messages.length === 0 ? (
               <p>No notifications</p>
             ) : (
-              messages.map((msg, index) => <p key={index}>{msg}</p>)
+              <div>
+                <p>Please cast your vote now!</p>
+                {isPollModalOpen && (
+                  <PollUI
+                    id={`poll-${notificationID}`}
+                    initialVotes={[0, 0]}
+                    options={["SOCCER IN ITSELF DOES", "The origins of football in England can be traced back to as early as the eighth century."]}
+                  />
+                )}
+              </div>
             )}
           </ModalBody>
           <ModalFooter>
-            <Button  color="danger" onPress={onClose}>Close</Button>
+            <Button color="danger" onPress={onClose}>Close</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

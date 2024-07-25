@@ -1,21 +1,20 @@
 
 "use client";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import { QuillBinding } from "y-quill";
 import useYProvider from "y-partykit/react";
 import "react-quill/dist/quill.snow.css";
 import QuillCursors from "quill-cursors";
-import * as Y from "yjs";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import React from "react";
-import { saveRORange, handleROSelectionChange, handleROChange, handleRangeShift } from "../VoteComponent/ReadOnly";
-import { DeltaStatic, RangeStatic } from "quill/index";
+import { DeltaStatic } from "quill/index";
 
-import { SINGLETON_ROOM_ID } from "@/party/types";
-import { PARTYKIT_HOST } from "@/pages/env";
 import Tooltip from "../ToolTipsComponets/ToolTip";
+import { handleROSelectionChange, handleRangeShift, handleROChange,  saveRORange } from "../voteComponent/ReadOnly";
+
+import { PARTYKIT_HOST } from "@/pages/env";
+
 
 
 interface Range {
@@ -124,17 +123,20 @@ export default function Editor({
   function handleSelectionChange(range: Range) {
 
     const readOnlyContext = { quill };
+
     handleROSelectionChange(quill, range, "user",provider.doc);
 
     // If text is selected
     if (range && range.length > 0) {
       // Get range the user selected and store it in state
       const selection = quill.current!.getEditor().getSelection();
+
       if (selection) {
         setSelectedRange(selection);
 
         // Get positions of Editor itself and selected range (in pixels)
         const bounds = quill.current!.getEditor().getBounds(selection!.index);
+
         setSelectedText(quill.current!.getEditor().getText(selection!.index,selection!.length));
 
         // Set button position relative to selected text
@@ -155,8 +157,10 @@ export default function Editor({
       const handleContextMenu = (event: MouseEvent) => {
         event.preventDefault();
         const range = editor.getSelection();
+
         if (range) {
           const text = editor.getText(range.index, range.length);
+
           setSelectedText(text);
           const bounds = editor.getBounds(range.index, range.length);
 
@@ -328,13 +332,13 @@ export default function Editor({
           </div>
         </div>
       )}<Tooltip
+      doc={provider.doc}
       position={tooltipPosition}
+      quill={quill}
       show={showTooltip}
       text={selectedText}
-      onSaveRange={saveRange}
       onCancel={handleHideTooltip}
-      quill={quill}
-      doc={provider.doc}
+      onSaveRange={saveRange}
     />
 
     </div>
