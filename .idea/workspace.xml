@@ -4,22 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inlp2024.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jpa-buddy.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/VoteComponent/ReadOnly.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/VoteComponent/Storage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment=" Improve vote UI + Fixing text blocking bugs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/ToolTipsComponets/AIInteractionComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ToolTipsComponets/AIInteractionComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/voteComponent/VoteComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/voteComponent/VoteComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/party/editorserver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/party/editorserver.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/partykit.json" beforeDir="false" afterPath="$PROJECT_DIR$/partykit.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,19 +77,6 @@
   }
 }</component>
   <component name="RunManager">
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="inlp2024" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="inlp2024" />
-      <option name="filePath" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -164,8 +139,20 @@
       <workItem from="1720110089910" duration="9000" />
       <workItem from="1720117087448" duration="680000" />
       <workItem from="1720124807439" duration="1695000" />
-      <workItem from="1720769946909" duration="82306000" />
+      <workItem from="1720769946909" duration="83340000" />
+      <workItem from="1721639798003" duration="377000" />
+      <workItem from="1721657366242" duration="1284000" />
+      <workItem from="1721921966704" duration="1768000" />
     </task>
+    <task id="LOCAL-00001" summary=" Improve vote UI + Fixing text blocking bugs">
+      <option name="closed" value="true" />
+      <created>1721601575857</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1721601575857</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -184,5 +171,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value=" Improve vote UI + Fixing text blocking bugs" />
+    <option name="LAST_COMMIT_MESSAGE" value=" Improve vote UI + Fixing text blocking bugs" />
   </component>
 </project>

@@ -6,7 +6,7 @@ import Quill from "react-quill";
 
 import Lobby from "../MainPageComponent/Lobby";
 import CommentHandler from "../ChatComponent/CommentHandler";
-import PollUI from "../voteComponent/VoteComponent";
+import PollUI from "../VoteComponent/VoteComponent";
 import LikeConnector from "../LikeComment/LikeConnector";
 
 import { Poll } from "@/party/types";

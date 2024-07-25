@@ -1,14 +1,13 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable react/jsx-no-undef */
-// components/Tooltip.tsx
 import React, {useState} from "react";
 import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 
 import CustomMenu from "./AIInteractionComponent";
 import PollUI from "../VoteComponent/VoteComponent";
-import { saveRangeWithText, updateVoteRangeText, deleteRangeFromYArray } from "../VoteComponent/ReadOnly"; // Import the new function
+import { saveRangeWithText, updateVoteRangeText, deleteRangeFromYArray } from "../VoteComponent/ReadOnly";
+import {sendvote} from "../VoteComponent/VoteClientFunctions";
 import ReactQuill from "react-quill";
 import * as Y from "yjs";
+import {Poll} from "@/party/types";
 
 
 
@@ -29,6 +28,15 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position,onSaveRange, onC
     const [votingInProgress, setVotingInProgress] = useState(false);
     const [inputText, setInputText] = useState('');
 
+    const pollId = '1';
+    const pollOptions = ['Option 1', 'Option 2', 'Option 3'];
+    const initialVotes = [0, 0, 0];
+
+    const examplePoll: Poll = {
+        title: "vote",
+        options: pollOptions,
+        votes: [10, 20, 5]
+    };
 
     const handleEditClick = () => {
         onSaveRange();
@@ -43,6 +51,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position,onSaveRange, onC
     };
 
     const handleVoteClick = () => {
+        sendvote(examplePoll);
         setVotingInProgress(true);
         setInputDisabled(true);
         setSuggestButtonDisabled(true);
@@ -148,6 +157,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position,onSaveRange, onC
                       Vote
                   </Button>
               )}
+              <Button color="success" onClick={() => sendvote(examplePoll)}>vote</Button>
             <Button color="danger" onClick={ handleCancelClick} >Cancel</Button>
 
           </div>
