@@ -1,34 +1,37 @@
-/* eslint-disable prettier/prettier */
 import type * as Party from "partykit/server";
 
 import { onConnect, type YPartyKitOptions } from "y-partykit";
 import { Doc } from "yjs";
 
 import { SINGLETON_ROOM_ID } from "./types";
-import * as Y from 'yjs'
 
 export default class EditorServer implements Party.Server {
   yjsOptions: YPartyKitOptions = {
     persist: { mode: "snapshot" },
-    
    
   };
   constructor(public room: Party.Room) {}
-
+  
   getOpts() {
+    
     // options must match when calling unstable_getYDoc and onConnect
     const opts: YPartyKitOptions = {
+      readOnly: true,
       callback: { handler: (doc) => this.handleYDocChange(doc), 
-        debounceWait: 1000, // default: 2000 ms
-        debounceMaxWait: 2000, // default: 10000 ms
-        timeout: 5000}
+        debounceWait: 200, // default: 2000 ms
+        debounceMaxWait: 10000, // default: 10000 ms
+        timeout: 5000},
+       
     };
+   
     
     return opts;
   }
 
   async onConnect(conn: Party.Connection) {
     await this.updateCount();
+    console.log(this.room.storage);
+  
 
     return onConnect(conn, this.room, this.getOpts());
   }
@@ -37,7 +40,15 @@ export default class EditorServer implements Party.Server {
     await this.updateCount();
   }
 
-  handleYDocChange(_: Doc) {
+  async handleYDocChange(_: Doc) {
+    //  any changes handleYDocChange is called
+   
+   
+    const text=_.getText('quill')
+
+    console.log(_.clientID)
+
+
 
   }
 
@@ -55,3 +66,4 @@ export default class EditorServer implements Party.Server {
 
 
 }
+/**    */

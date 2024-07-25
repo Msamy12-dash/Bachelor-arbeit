@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React, { Component, ChangeEvent } from "react";
 
 interface NewCommentProps {

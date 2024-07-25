@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+
 "use client";
 import { useState, useRef, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
@@ -16,8 +16,7 @@ import { DeltaStatic, RangeStatic } from "quill/index";
 import { SINGLETON_ROOM_ID } from "@/party/types";
 import { PARTYKIT_HOST } from "@/pages/env";
 import Tooltip from "../ToolTipsComponets/ToolTip";
-import * as Party from "partykit/server";
-import PartyServer from "@/party/main";
+
 
 interface Range {
   index: number;
@@ -61,7 +60,6 @@ export default function Editor({
 
   const textareaRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   const quill = useRef<ReactQuill>(null);
-  const rangeListRef = useRef<Range[]>([]);
 
   const provider = useYProvider({
     room: room,
@@ -121,35 +119,11 @@ export default function Editor({
       };
     }
   }, [userColor, provider]);
-  const saveTextToBackend = async () => {
-    try {
-      const response = await fetch("/api/saveMainText", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ room, text }),
-      });
-      const data = await response.json();
 
-      console.log("Save response:", data);
-    } catch (error) {
-      console.error("Failed to save text:", error);
-    }
-  };
-
-  // Effect to save text every 30 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      saveTextToBackend();
-    }, 10000); // Save every 30 seconds
-
-    return () => clearInterval(interval);
-  }, [text, room]);
 
   function handleSelectionChange(range: Range) {
 
-    const readOnlyContext = { quill, rangeListRef };
+    const readOnlyContext = { quill };
     handleROSelectionChange(quill, range, "user",provider.doc);
 
     // If text is selected

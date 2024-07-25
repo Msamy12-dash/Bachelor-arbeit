@@ -1,14 +1,20 @@
-/* eslint-disable prettier/prettier */
-"use client";
-
-import usePartySocket from "partysocket/react";
 import { useEffect, useState } from "react";
+import usePartySocket from "partysocket/react";
 
 import PollOptions from "../VoteComponent/VoteOptions";
 
 import { Poll } from "@/party/types";
+import { PARTYKIT_HOST } from "@/pages/env";
 
-
+// Custom hook to create and handle WebSocket connection
+function useSocketConnection(onMessage: (event: MessageEvent) => void) {
+  return usePartySocket({
+    host: PARTYKIT_HOST,
+    room: "1",
+    party: "vote",
+    onMessage,
+  });
+}
 
 export default function PollUI({
   id,
@@ -22,45 +28,47 @@ export default function PollUI({
   const [votes, setVotes] = useState<number[]>(initialVotes ?? []);
   const [vote, setVote] = useState<number | null>(null);
 
-  const socket = usePartySocket({
-    room: "1",
-    debug : true,
-    onMessage(event) {
-      const message = JSON.parse(event.data) as Poll;
+  const onMessage = (event: MessageEvent) => {
+    const data = event.data;
 
-      if (message.votes) {
-        setVotes(message.votes);
+    if (data != "vote now") {
+   
+      const pollData = JSON.parse(data) as Poll;
+
+      if (pollData.votes) {
+        setVotes(pollData.votes);
+        // Optionally, you can also clear messages here if needed
       }
-    },
-  });
-
-  socket.send(JSON.stringify({ type: "vote", options }));
-  
-  const sendVote = (option: number) => {
-    if (vote === null) {
-      socket.send(JSON.stringify({ type: "vote", option }));
-      setVote(option);
     }
   };
 
+  const socket = useSocketConnection(onMessage);
 
-  // prevent double voting
-  useEffect(() => {
-    let saved = localStorage?.getItem("poll:" + id);
-
-    if (vote === null && saved !== null) {
-      setVote(+saved);
-    } else if (vote !== null && saved === null) {
-      localStorage?.setItem("poll:" + id, `${vote}`);
+  const sendVote = (optionIndex: number) => {
+    if (vote === null) {
+      socket.send(JSON.stringify({ type: "vote", option: optionIndex }));
+      setVote(optionIndex);
+      localStorage.setItem("poll:" + id, optionIndex.toString());
     }
-  }, [id, vote]);
+  };
+
+  useEffect(() => {
+    const saved = localStorage.getItem("poll:" + id);
+
+    if (saved) {
+      setVote(parseInt(saved, 10));
+    }
+  }, [id]);
 
   return (
-    <PollOptions
-      options={options}
-      setVote={sendVote}
-      vote={vote}
-      votes={votes}
-    />
+    <>
+    
+      <PollOptions
+        options={options}
+        setVote={sendVote}
+        vote={vote}
+        votes={votes}
+      />
+    </>
   );
 }

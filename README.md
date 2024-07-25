@@ -25,6 +25,7 @@ npm install
 
 install for the Commenticons:
 npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
+### server configuration
 
 ## server configuration
 
