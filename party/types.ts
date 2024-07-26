@@ -44,18 +44,6 @@ export type Poll = {
 export type Rooms = {
   [key: string]: number;
 };
-
-export enum Role {
-  Admin = "admin",
-  User = "user",
-}
-
-export type User = {
-  id: string;
-  name: string;
-  color: string;
-  role: Role;
-};
 export const SINGLETON_ROOM_ID = "index";
 export const LOCAL_HOST = "http://localhost:1999";
 

@@ -8,19 +8,11 @@ import NextLink from "next/link";
 import clsx from "clsx";
 
 import UserAvatar from "../UserComponent/UserAvatar";
-import RoomDropdown from "./RoomDropdown";  // Import the new RoomDropdown component
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/MainPageComponent/theme-switch";
-import PartySocket from "partysocket";
 
-export const Navbar = ({ 
-  currentRoom, 
-  setCurrentRoom,
-}: { 
-  currentRoom: string, 
-  setCurrentRoom: React.Dispatch<React.SetStateAction<string>>,
-}) => {
+export const Navbar = () => {
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -42,20 +34,16 @@ export const Navbar = ({
         </div>
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="center">
-        <NavbarItem>
-          <RoomDropdown currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
-        </NavbarItem>
-      </NavbarContent>
-
-      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="end">
+      <NavbarContent
+        className="hidden sm:flex basis-1/5 sm:basis-full"
+        justify="end"
+      >
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
         </NavbarItem>
-        <NavbarItem>
-          <UserAvatar />
-        </NavbarItem>
       </NavbarContent>
+
+      <UserAvatar />
     </NextUINavbar>
   );
 };

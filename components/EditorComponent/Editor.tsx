@@ -1,15 +1,19 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useRef, useEffect, useMemo } from "react";
+"use client";
+import { useState, useRef, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import { QuillBinding } from "y-quill";
 import useYProvider from "y-partykit/react";
 import "react-quill/dist/quill.snow.css";
 import QuillCursors from "quill-cursors";
 import * as Y from "yjs";
-import YPartykitProvider from "y-partykit/provider";
-import Tooltip from "../ToolTipsComponets/ToolTip";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import React from "react";
+import YPartykitProvider from "y-partykit/provider"
+import { SINGLETON_ROOM_ID } from "@/party/types";
 import { PARTYKIT_HOST } from "@/pages/env";
-import YPartyKitProvider from "y-partykit/provider";
+import Tooltip from "../ToolTipsComponets/ToolTip";
 
 interface Range {
   index: number;
@@ -24,9 +28,7 @@ interface Position {
 Quill.register("modules/cursors", QuillCursors);
 
 export default function Editor({
-  currentRoom,
-  yDoc,
-  yProvider,
+  room,
   userColor,
   setTextSpecificComment,
   setEditor,
@@ -34,9 +36,7 @@ export default function Editor({
   setSelectedText,
   setCompleteText
 }: Readonly<{
-  currentRoom: string;
-  yDoc: Y.Doc;
-  yProvider: YPartyKitProvider;
+  room: string;
   userColor: string;
   setTextSpecificComment: Function;
   setEditor: Function;
@@ -44,36 +44,60 @@ export default function Editor({
   setSelectedText: (text: string) => void;
   setCompleteText: (text: string) => void;
 }>) {
+
   const [text, setText] = useState("");
-  const [selectedRange, setSelectedRange] = useState<Range | null>(null);
-  const [buttonPosition, setButtonPosition] = useState<Position | null>(null);
+  const [selectedRange, setSelectedRange] = useState<Range | null>();
+  const [buttonPosition, setButtonPosition] = useState<Position>();
   const [showButton, setShowButton] = useState(false);
-  const [textareaPosition, setTextareaPosition] = useState<Position | null>(
-    null
-  );
+  const [textareaPosition, setTextareaPosition] = useState<Position>();
   const [showTextarea, setShowTextarea] = useState(false);
   const [shortenedSelectedText, setShortenedSelectedText] = useState("");
   const [commentContent, setCommentContent] = useState("");
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState({
-    x: 0,
-    y: 0,
-    maxWidth: 0,
-  });
+  const [showTooltip, setShowTooltip] = useState<boolean>(false);
+  const [tooltipPosition, setTooltipPosition] = useState<{
+    x: number;
+    y: number;
+    maxWidth: number;
+  }>({ x: 0, y: 0, maxWidth: 0 });
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const quillRef = useRef<ReactQuill>(null);
+  const textareaRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
+  const quill = useRef<ReactQuill>(null);
+
+  const providerRef = useRef<YPartykitProvider | null>(null);
 
   useEffect(() => {
-    if (!yDoc) return;
-    const ytext = yDoc.getText("quill");
+    // Cleanup function to disconnect the previous provider
+    return () => {
+      if (providerRef.current) {
+        providerRef.current.disconnect();
+        providerRef.current = null;
+      }
+    };
+  }, [room]);
+
+  const provider = useYProvider({
+    //host: PARTYKIT_HOST,
+    host: "localhost:1999",
+    room: room,
+    party: "editorserver", //correct?
+    options: {
+      connect: true,
+    }
+  });
   
-    if (typeof window !== "undefined" && quillRef.current) {
-      const editor = quillRef.current.getEditor();
+  // Assign the new provider to the ref
+  providerRef.current = provider;
+
+  useEffect(() => {
+    const ydoc = provider.doc;
+    const ytext = ydoc.getText("quill");
+  
+    if (typeof window !== "undefined" && quill.current) {
+      const editor = quill.current.getEditor();
   
       // Set editor methods and state in the parent component
       setEditor({
-        ...quillRef.current,
+        ...quill.current,
         highlightText,
         removeHighlight,
         getSelection: () => editor.getSelection()
@@ -81,12 +105,12 @@ export default function Editor({
   
       // Handle selection change in the Quill editor
       editor.on("selection-change", handleSelectionChange);
-      
+  
       // Create a binding between Yjs and the Quill editor
-      const binding = new QuillBinding(ytext, editor, yProvider.awareness);
+      const binding = new QuillBinding(ytext, editor, provider.awareness);
   
       // Set local user state in Yjs awareness system
-      yProvider.awareness.setLocalStateField("user", {
+      provider.awareness.setLocalStateField("user", {
         name: "Typing...",
         color: userColor,
       });
@@ -97,39 +121,38 @@ export default function Editor({
         editor.off("selection-change", handleSelectionChange); // Remove event listener
       };
     }
-  }, [userColor, yProvider]);
+  }, [userColor, provider]);
 
   function handleSelectionChange(range: Range) {
     // If text is selected
     if (range && range.length > 0) {
       // Get range the user selected and store it in state
-      const selection = quillRef.current!.getEditor().getSelection();
+      const selection = quill.current!.getEditor().getSelection();
 
       setSelectedRange(selection);
 
       // Update selectedText
-      const getText = quillRef
-        .current!.getEditor()
-        .getText(range.index, range.length);
+      const getText = quill.current!.getEditor().getText(range.index, range.length);
       setSelectedText(getText);
 
       // Get positions of Editor itself and selected range (in pixels)
-      const bounds = quillRef.current!.getEditor().getBounds(selection!.index);
+      const bounds = quill.current!.getEditor().getBounds(selection!.index);
 
       // Set button position relative to selected text
       setButtonPosition({ top: bounds!.top + 40, left: bounds!.left });
 
       setShowButton(true);
       //console.log(buttonPosition);
-    } else {
+
+    }else{
       setSelectedText("");
       setShowButton(false);
     }
   }
 
   useEffect(() => {
-    if (quillRef.current) {
-      const editor = quillRef.current.getEditor();
+    if (quill.current) {
+      const editor = quill.current.getEditor();
       const maxWidth = editor.container.offsetWidth; // Get the width of the editor
 
       editor.on("selection-change", (range) => {
@@ -162,22 +185,20 @@ export default function Editor({
     setShowTextarea(true);
     console.log(buttonPosition);
     // Get selected text
-    const gettext = quillRef
+    const gettext = quill
       .current!.getEditor()
       .getText(selectedRange?.index, selectedRange?.length);
 
     // Shorten text if too long
     const threshold = 25;
-    if (gettext.length > threshold) {
-      const shortenedText = gettext.substring(0, threshold) + "...";
+    if (gettext.length > threshold){
+      const shortenedText = gettext.substring(0,threshold) + "...";
       setShortenedSelectedText(shortenedText);
-    } else {
+    }else{
       setShortenedSelectedText(gettext);
     }
 
-    const bounds = quillRef
-      .current!.getEditor()
-      .getBounds(selectedRange!.index);
+    const bounds = quill.current!.getEditor().getBounds(selectedRange!.index);
 
     setTextareaPosition({
       top: bounds!.top,
@@ -198,7 +219,7 @@ export default function Editor({
   function handleSendOnClick() {
     if (textareaRef.current!.value != "") {
       // Mark the text
-      quillRef
+      quill
         .current!.getEditor()
         .formatText(selectedRange!.index, selectedRange!.length, {
           background: "#ffff66",
@@ -227,25 +248,23 @@ export default function Editor({
     }
   }
 
-  function highlightText(index: number, length: number, color: string) {
-    quillRef.current
-      ?.getEditor()
-      .formatText(index, length, { background: color });
+  function highlightText(index: number, length: number, color: string ) {
+    quill.current?.getEditor().formatText(index, length, { background: color });
   }
-
+  
   function removeHighlight(index: number, length: number) {
-    quillRef.current
-      ?.getEditor()
-      .formatText(index, length, { background: false });
+    quill.current?.getEditor().formatText(index, length, { background: false });
   }
+  
+
 
   return (
     <div>
       <h1>
-        Editor <code>Room #{currentRoom}</code>
+        Editor <code>Room #{room}</code>
       </h1>
       <ReactQuill
-        ref={quillRef}
+        ref={quill}
         className="quill"
         modules={{ cursors: true }}
         theme="snow"
@@ -253,56 +272,38 @@ export default function Editor({
         onChange={setText}
       />
       {showButton && (
-        <button
-          className="new-comment-btn bg-blue-500 text-white py-1 px-3 rounded hover:bg-cyan-500 transition-colors"
-          onClick={handleCommentOnClick}
-          style={{
-            position: "absolute",
-            top: `${buttonPosition?.top}px`,
-            left: `${buttonPosition?.left}px`,
-          }}
-        >
-          Comment
-        </button>
-      )}
+        <button className="new-comment-btn bg-blue-500 text-white py-1 px-3 rounded hover:bg-cyan-500 transition-colors" onClick={handleCommentOnClick} style={{
+              position: 'absolute',
+              top: `${buttonPosition!.top}px`,
+              left: `${buttonPosition!.left}px`,    
+            }}>Comment </button>)
+        }
+
       {showTextarea && (
-        <div
-          className="newTextComment-card"
-          style={{
-            position: "absolute",
-            top: `${textareaPosition?.top}px`,
-            left: `${textareaPosition?.left}px`,
-          }}
-        >
-          <div className="new-comment flex flex-col items-start p-4 rounded-lg shadow-md mt-2 mb-2">
-            <textarea
-              ref={textareaRef}
-              onChange={handleCommentChange}
-              placeholder="Add a comment..."
-              className="new-comment-input w-full min-h-20 p-2 mb-2 border border-gray-300 rounded-md resize-vertical text-base"
-            />
-            <div className="new-comment-buttons flex space-x-2">
-              <button
-                className="new-comment-btn bg-blue-500 text-white py-1 px-3 rounded hover:bg-cyan-500 transition-colors"
-                onClick={handleSendOnClick}
-              >
-                Send
-              </button>
-              <button
-                className="new-comment-close-btn bg-pink-500 text-white py-1 px-2 rounded hover:bg-yellow-500 transition-colors"
-                onClick={handleCloseOnClick}
-              >
-                Cancel
-              </button>
+        <div className="newTextComment-card" style={{
+          position: 'absolute',
+          top: `${textareaPosition!.top}px`,
+          left: `${textareaPosition!.left}px`}}>
+
+            <div className="new-comment flex flex-col items-start p-4 rounded-lg shadow-md mt-2 mb-2">
+                <textarea
+                    ref={textareaRef}
+                    onChange={handleCommentChange}
+                    placeholder="Add a comment..."
+                    className="new-comment-input w-full min-h-20 p-2 mb-2 border border-gray-300 rounded-md resize-vertical text-base"
+                />
+                <div className="new-comment-buttons flex space-x-2">
+                    <button className="new-comment-btn bg-blue-500 text-white py-1 px-3 rounded hover:bg-cyan-500 transition-colors" onClick={handleSendOnClick}>Send</button>
+                    <button className="new-comment-close-btn bg-pink-500 text-white py-1 px-2 rounded hover:bg-yellow-500 transition-colors" onClick={handleCloseOnClick}>Cancel</button>
+                </div>
             </div>
-          </div>
-          </div>
-      )}
-      <Tooltip
-        position={tooltipPosition}
-        show={showTooltip}
-        text={selectedText}
-      />
+        </div>
+      )}<Tooltip
+      position={tooltipPosition}
+      show={showTooltip}
+      text={selectedText}
+    />
+
     </div>
   );
 }
