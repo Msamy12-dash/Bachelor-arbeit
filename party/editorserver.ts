@@ -3,7 +3,7 @@ import type * as Party from "partykit/server";
 
 import { onConnect, type YPartyKitOptions } from "y-partykit";
 import * as Y from "yjs";
-import { SINGLETON_ROOM_ID } from "./types";
+import { SINGLETON_ROOM_ID } from "./src/types";
 import { Buffer } from 'buffer';
 
 export default class EditorServer implements Party.Server {

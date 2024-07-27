@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import * as Y from "yjs";
 
-import { saveRangeWithText, updateVoteRangeText, deleteRangeFromYArray } from "../VoteComponent/ReadOnly";
+import { saveRangeWithText, updateVoteRangeText, deleteRangeFromYArray } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 
 import CustomMenu from "./AIInteractionComponent";
@@ -62,6 +62,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
   };
 
   const handleEndVoteClick = () => {
+    console.log("HandleEndVoteClick")
     setVotingInProgress(false);
     deleteRangeFromYArray(doc, inputText, quill);
     onCancel();

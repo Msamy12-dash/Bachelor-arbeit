@@ -28,6 +28,8 @@ interface Position {
 
 Quill.register("modules/cursors", QuillCursors);
 
+
+
 export default function Editor({
   room,
   userColor,
@@ -89,7 +91,13 @@ export default function Editor({
 
   // Assign the new provider to the ref
   providerRef.current = provider;
+  function highlightText(index: number, length: number, color: string ) {
+    quill.current?.getEditor().formatText(index, length, { background: color });
+  }
 
+  function removeHighlight(index: number, length: number) {
+    quill.current?.getEditor().formatText(index, length, { background: false });
+  }
   useEffect(() => {
     const ydoc = provider.doc;
     const ytext = ydoc.getText("quill");
@@ -128,9 +136,9 @@ export default function Editor({
 
   function handleSelectionChange(range: Range) {
 
-    const readOnlyContext = { quill };
+    const readOnlyContext = {quill};
 
-    handleROSelectionChange(quill, range, "user",provider.doc);
+    handleROSelectionChange(quill, range, "user", provider.doc);
 
     // If text is selected
     if (range && range.length > 0) {
@@ -140,22 +148,23 @@ export default function Editor({
       if (selection) {
         setSelectedRange(selection);
 
-      // Update selectedText
-      const getText = quill.current!.getEditor().getText(range.index, range.length);
-      setSelectedText(getText);
+        // Update selectedText
+        const getText = quill.current!.getEditor().getText(range.index, range.length);
+        setSelectedText(getText);
 
-      // Get positions of Editor itself and selected range (in pixels)
-      const bounds = quill.current!.getEditor().getBounds(selection!.index);
+        // Get positions of Editor itself and selected range (in pixels)
+        const bounds = quill.current!.getEditor().getBounds(selection!.index);
 
-      // Set button position relative to selected text
-      setButtonPosition({ top: bounds!.top + 40, left: bounds!.left });
+        // Set button position relative to selected text
+        setButtonPosition({top: bounds!.top + 40, left: bounds!.left});
 
-      setShowButton(true);
-      //console.log(buttonPosition);
+        setShowButton(true);
+        //console.log(buttonPosition);
 
-    }else{
-      setSelectedText("");
-      setShowButton(false);
+      } else {
+        setSelectedText("");
+        setShowButton(false);
+      }
     }
   }
 
@@ -280,16 +289,6 @@ export default function Editor({
   const handleHideTooltip = () => {
     setShowTooltip(false);
   };
-
-
-  function highlightText(index: number, length: number, color: string ) {
-    quill.current?.getEditor().formatText(index, length, { background: color });
-  }
-
-  function removeHighlight(index: number, length: number) {
-    quill.current?.getEditor().formatText(index, length, { background: false });
-  }
-
 
 
   return (

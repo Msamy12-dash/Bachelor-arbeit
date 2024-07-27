@@ -2,7 +2,7 @@
 import { useState } from "react";
 import usePartySocket from "partysocket/react";
 
-import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
+import { Rooms, SINGLETON_ROOM_ID } from "@/party/src/types";
 import { PARTYKIT_HOST } from "@/pages/env";
 
 export default function Lobby({

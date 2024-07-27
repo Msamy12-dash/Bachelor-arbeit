@@ -2,7 +2,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import usePartySocket from "partysocket/react";
-import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
+import { Rooms, SINGLETON_ROOM_ID } from "@/party/src/types";
 import CardContainer from "../MUPComponents/CardContainer";
 import { Button } from "@nextui-org/react";
 import { PARTYKIT_HOST } from "@/pages/env";
