@@ -44,8 +44,8 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-export default function EditorPage() {
-  const [currentRoom, setCurrentRoom] = useState("default");
+export default function EditorPage({ currentRoom }) {
+  const [ setCurrentRoom] = useState("default");
   const userColor = useMemo(() => getRandomColor(), []);
   const Editor = useMemo(() => {
     return dynamic(() => import("@/components/EditorComponent/Editor"), {
@@ -119,7 +119,6 @@ export default function EditorPage() {
 
   return (
     <>
-          <LobbyTop currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
       <div style={{ padding: "10px" }} />
       <div style={{ display: "flex", height: "100vh" }}>
         <Card style={{ width: "20%", padding: "10px" }}>

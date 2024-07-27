@@ -1,7 +1,10 @@
-import { useState } from "react";
-import usePartySocket from "partysocket/react";
-import { Rooms, SINGLETON_ROOM_ID } from "@/party/src/types";
-import { PARTYKIT_HOST } from "@/pages/env";
+import React, { useState } from 'react';
+import usePartySocket from 'partysocket/react';
+
+import UserAvatar from '../UserComponent/UserAvatar';
+
+import { Rooms, SINGLETON_ROOM_ID } from '@/party/src/types';
+import { PARTYKIT_HOST } from '@/pages/env';
 
 export default function LobbyTop({
   currentRoom,
@@ -22,11 +25,12 @@ export default function LobbyTop({
 
       if (data.type === "rooms") {
         setRooms((prevRooms) => {
-          // Update the room counts
           const updatedRooms = { ...prevRooms };
+
           Object.keys(data.rooms).forEach((roomKey) => {
             updatedRooms[roomKey] = data.rooms[roomKey];
           });
+
           return updatedRooms;
         });
       }
@@ -34,33 +38,44 @@ export default function LobbyTop({
   });
 
   const handleNewRoom = () => {
-    const newRoom = nextRoomId.toString().padStart(1, "0"); // Converts the number to a string with leading zeros
+    // Get all existing room numbers as integers
+    const existingRoomIds = Object.keys(rooms).map((id) => parseInt(id, 10));
+
+    // Find the next available room number
+    let newRoomId = 1;
+    while (existingRoomIds.includes(newRoomId)) {
+      newRoomId++;
+    }
+
+    const newRoom = newRoomId.toString().padStart(1, "0");
 
     setRooms((prevRooms) => ({
       ...prevRooms,
-      [newRoom]: 1, // Assuming the new room starts with 1 present user
+      [newRoom]: 1,
     }));
     setCurrentRoom(newRoom);
-    setNextRoomId(nextRoomId + 1); // Increment the next room ID
+    setNextRoomId(newRoomId + 1); // Update nextRoomId for future reference
   };
 
+  const userCount = rooms[currentRoom] || 0;
+
   return (
-    <div className="">
-      <h3 className="text-lg font-bold mb-4">All Rooms</h3>
+    <>
+      <UserAvatar userCount={userCount} />
+
       <select
-        className=" p-2 mb-4 border rounded"
+        className=""
         value={currentRoom}
         onChange={(e) => setCurrentRoom(e.target.value)}
       >
         {Object.entries(rooms).map(([room, count]) => (
           <option key={room} value={room}>
-            Room Number {room} (Present: {count})
+            Room Number {room} 
           </option>
         ))}
       </select>
-      <div>
-        <button onClick={handleNewRoom}>New Room</button>
-      </div>
-    </div>
+      <button onClick={handleNewRoom}>New Room</button>
+      {/* Pass the user count to the UserAvatar component */}
+    </>
   );
 }

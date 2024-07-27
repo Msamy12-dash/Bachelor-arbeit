@@ -9,6 +9,7 @@ import QuillCursors from "quill-cursors";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { DeltaStatic } from "quill/index";
+import YPartyKitProvider from "y-partykit/provider";
 
 import Tooltip from "../ToolTipsComponets/ToolTip";
 import { handleRangeShift, handleROChange, handleROSelectionChange, saveRORange } from "../VoteComponent/TextBlocking";

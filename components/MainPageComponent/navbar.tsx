@@ -6,14 +6,17 @@ import {
 } from "@nextui-org/react";
 import NextLink from "next/link";
 import clsx from "clsx";
+import { useState } from "react";
 
-import UserAvatar from "../UserComponent/UserAvatar";
+
+import LobbyTop from "./LobbyTop";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/MainPageComponent/theme-switch";
 
-export const Navbar = () => {
+export const Navbar = ({ currentRoom, setCurrentRoom }) => {
   return (
+
     <NextUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <div className="hidden lg:flex gap-4 justify-start ml-2">
@@ -35,15 +38,15 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
+        className=""
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
         </NavbarItem>
       </NavbarContent>
+          <LobbyTop currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
 
-      <UserAvatar />
     </NextUINavbar>
   );
 };
