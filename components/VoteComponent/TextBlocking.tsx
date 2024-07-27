@@ -45,9 +45,9 @@ export const addElementToVoteYArray = (doc: Y.Doc, element: VoteRange) => {
 
 const getYArray = (doc: Y.Doc): any[] => {
   const yarray = doc.getArray("rangesArray")
-
-  return yarray.toArray();
   console.log(yarray);
+  return yarray.toArray();
+
 };
 
 export const saveRORange = (quill: React.RefObject<ReactQuill>, doc: Y.Doc) => {

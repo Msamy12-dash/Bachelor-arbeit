@@ -11,7 +11,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { DeltaStatic } from "quill/index";
 
 import Tooltip from "../ToolTipsComponets/ToolTip";
-import { handleROSelectionChange, handleRangeShift, handleROChange,  saveRORange } from "../voteComponent/ReadOnly";
+import { handleROSelectionChange, handleRangeShift, handleROChange,  saveRORange } from "../VoteComponent/TextBlocking";
 
 import { PARTYKIT_HOST } from "@/pages/env";
 

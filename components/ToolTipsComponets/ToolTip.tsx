@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import * as Y from "yjs";
 
-import { saveRangeWithText, updateVoteRangeText, deleteRangeFromYArray } from "../voteComponent/ReadOnly";
-import { sendvote } from "../voteComponent/VoteClientFunctions";
+import { saveRangeWithText, updateVoteRangeText, deleteRangeFromYArray } from "../VoteComponent/ReadOnly";
+import { sendvote } from "../VoteComponent/VoteClientFunctions";
 
 import CustomMenu from "./AIInteractionComponent";
 
