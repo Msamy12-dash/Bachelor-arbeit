@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 
 export default function Signup() {
   const [name, setName] = useState('');
-  // Default role set to 'user'
   const [role, setRole] = useState('user'); 
   const router = useRouter();
 
@@ -24,20 +23,20 @@ export default function Signup() {
   };
 
   return (
-    <div className="ls-container">
-      <div className="ls-form-box">
-        <h1 className="ls-form-title">Sign Up</h1>
-        <form onSubmit={handleSubmit} className="ls-form">
+    <div className="flex justify-center items-center h-screen ">
+      <div className=" p-5 rounded-lg shadow-md text-center w-80">
+        <h1 className="text-2xl mb-5">Sign Up</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="text"
-            className="ls-input-field"
+            className="p-2 text-lg border rounded-md w-full"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Username"
             required
           />
           <select
-            className="ls-select-field"
+            className="p-2 text-lg border rounded-md w-full"
             value={role}
             onChange={(e) => setRole(e.target.value)}
             required
@@ -45,7 +44,9 @@ export default function Signup() {
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
-          <button type="submit" className="ls-submit-button">Sign Up</button>
+          <button type="submit" className="p-2 text-lg bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            Sign Up
+          </button>
         </form>
       </div>
     </div>
