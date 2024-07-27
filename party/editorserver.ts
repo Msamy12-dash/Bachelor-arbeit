@@ -1,10 +1,11 @@
-/* eslint-disable prettier/prettier */
 import type * as Party from "partykit/server";
+
+import { Buffer } from 'buffer';
 
 import { onConnect, type YPartyKitOptions } from "y-partykit";
 import * as Y from "yjs";
+
 import { SINGLETON_ROOM_ID } from "./src/types";
-import { Buffer } from 'buffer';
 
 export default class EditorServer implements Party.Server {
   yjsOptions: YPartyKitOptions = {
@@ -31,6 +32,7 @@ export default class EditorServer implements Party.Server {
   async onConnect(conn: Party.Connection) {
     await this.updateCount();
     console.log(this.room.storage);
+
     return onConnect(conn, this.room, {
       load: async () => this.handleLoadFromDB(),
       callback: {
@@ -53,15 +55,19 @@ export default class EditorServer implements Party.Server {
       }
 
       const { state } = await response.json();
+
       if (state) {
         const uint8Array = Buffer.from(state, 'base64');
         const yDoc = new Y.Doc();
+
         Y.applyUpdate(yDoc, uint8Array);
+
         return yDoc;
       }
     } catch (error) {
-      console.error('Error loading from DB:', error);
+      
     }
+
     return new Y.Doc();
   }
 
@@ -84,6 +90,7 @@ export default class EditorServer implements Party.Server {
 
       if (!response.ok) {
         const errorText = await response.text();
+
         throw new Error(`Failed to save state. Status: ${response.status}, Response: ${errorText}`);
       }
 
@@ -97,12 +104,14 @@ export default class EditorServer implements Party.Server {
   async updateCount() {
     // Count the number of live connections
     const count = [...this.room.getConnections()].length;
+
     try {
       const response = await this.room.context.parties.rooms.get(SINGLETON_ROOM_ID).fetch({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ room: this.room.id, count }),
       });
+
       if (!response.ok) {
         throw new Error(`Failed to update count. Status: ${response.status}`);
       }

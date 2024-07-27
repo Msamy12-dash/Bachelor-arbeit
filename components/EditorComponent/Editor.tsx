@@ -6,13 +6,14 @@ import { QuillBinding } from "y-quill";
 import useYProvider from "y-partykit/react";
 import "react-quill/dist/quill.snow.css";
 import QuillCursors from "quill-cursors";
-import * as Y from "yjs";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { DeltaStatic } from "quill/index";
-import YPartykitProvider from "y-partykit/provider"
+
 import Tooltip from "../ToolTipsComponets/ToolTip";
-import { handleROSelectionChange, handleRangeShift, handleROChange,  saveRORange } from "../VoteComponent/TextBlocking";
+import { handleRangeShift, handleROChange, handleROSelectionChange, saveRORange } from "../VoteComponent/TextBlocking";
+
+import { PARTYKIT_HOST } from "@/pages/env";
 
 
 
@@ -28,24 +29,16 @@ interface Position {
 
 Quill.register("modules/cursors", QuillCursors);
 
-
-
 export default function Editor({
   room,
   userColor,
   setTextSpecificComment,
   setEditor,
-  selectedText,
-  setSelectedText,
-  setCompleteText
 }: Readonly<{
   room: string;
   userColor: string;
   setTextSpecificComment: Function;
   setEditor: Function;
-  selectedText: string;
-  setSelectedText: (text: string) => void;
-  setCompleteText: (text: string) => void;
 }>) {
 
   const [text, setText] = useState("");
@@ -54,7 +47,7 @@ export default function Editor({
   const [showButton, setShowButton] = useState(false);
   const [textareaPosition, setTextareaPosition] = useState<Position>();
   const [showTextarea, setShowTextarea] = useState(false);
-  const [shortenedSelectedText, setShortenedSelectedText] = useState("");
+  const [selectedText, setSelectedText] = useState("");
   const [commentContent, setCommentContent] = useState("");
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [tooltipPosition, setTooltipPosition] = useState<{
@@ -67,57 +60,51 @@ export default function Editor({
   const textareaRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   const quill = useRef<ReactQuill>(null);
 
-  const providerRef = useRef<YPartykitProvider | null>(null);
-
-  useEffect(() => {
-    // Cleanup function to disconnect the previous provider
-    return () => {
-      if (providerRef.current) {
-        providerRef.current.disconnect();
-        providerRef.current = null;
-      }
-    };
-  }, [room]);
-
   const provider = useYProvider({
-    //host: PARTYKIT_HOST,
-    host: "localhost:1999",
     room: room,
-    party: "editorserver", //correct?
-    options: {
-      connect: true,
-    }
+    party: "editorserver",
+    host: PARTYKIT_HOST,
   });
 
-  // Assign the new provider to the ref
-  providerRef.current = provider;
-  function highlightText(index: number, length: number, color: string ) {
-    quill.current?.getEditor().formatText(index, length, { background: color });
-  }
 
-  function removeHighlight(index: number, length: number) {
-    quill.current?.getEditor().formatText(index, length, { background: false });
-  }
   useEffect(() => {
-    const ydoc = provider.doc;
-    const ytext = ydoc.getText("quill");
-    const yarray = provider.doc.getArray('rangesArray');
-    const voteYarray = provider.doc.getArray('voteArray');
+    const fetchInitialText = async () => {
+      try {
+        console.log(`Fetching initial text for room: ${room}`);
+        const response = await fetch(`/api/getInitialText?room=${room}`);
+        const data = await response.json();
 
-    yarray.delete(0,yarray.length);
-    voteYarray.delete(0,voteYarray.length);
-    if (typeof window !== "undefined" && quill.current) {
-      const editor = quill.current.getEditor();
+        if (response.ok) {
+          const ytext = provider.doc.getText("quill");
+          const yarray = provider.doc.getArray('rangesArray');
+          const voteYarray = provider.doc.getArray('voteArray');
 
-      // Set editor methods and state in the parent component
-      setEditor({
-        ...quill.current,
-        highlightText,
-        removeHighlight,
-        getSelection: () => editor.getSelection()
-      });
+          yarray.delete(0,yarray.length);
+          voteYarray.delete(0,voteYarray.length);
+          ytext.delete(0, ytext.length); // Clear existing content
+          ytext.insert(0, data.text); // Insert fetched text
+          setText(data.text); // Update local state
+          console.log(data.text);
+        } else {
+          console.error("Failed to fetch initial text:", data.error);
+        }
+      } catch (error) {
+        console.error("Failed to fetch initial text:", error);
+      }
+    };
 
-      // Handle selection change in the Quill editor
+    fetchInitialText();
+  }, [room, provider]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const ytext = provider.doc.getText("quill");
+
+      const editor = quill.current!.getEditor();
+
+      if (quill.current) {
+        setEditor(quill.current);
+      }
       editor.on("selection-change", handleSelectionChange);
       const binding = new QuillBinding(ytext, editor, provider.awareness);
 
@@ -127,8 +114,7 @@ export default function Editor({
       });
 
       return () => {
-        binding.destroy(); // Destroy the binding when component unmounts
-        editor.off("selection-change", handleSelectionChange); // Remove event listener
+        binding.destroy();
       };
     }
   }, [userColor, provider]);
@@ -136,9 +122,9 @@ export default function Editor({
 
   function handleSelectionChange(range: Range) {
 
-    const readOnlyContext = {quill};
+    const readOnlyContext = { quill };
 
-    handleROSelectionChange(quill, range, "user", provider.doc);
+    handleROSelectionChange(quill, range, "user",provider.doc);
 
     // If text is selected
     if (range && range.length > 0) {
@@ -148,26 +134,21 @@ export default function Editor({
       if (selection) {
         setSelectedRange(selection);
 
-        // Update selectedText
-        const getText = quill.current!.getEditor().getText(range.index, range.length);
-        setSelectedText(getText);
-
         // Get positions of Editor itself and selected range (in pixels)
         const bounds = quill.current!.getEditor().getBounds(selection!.index);
+
+        setSelectedText(quill.current!.getEditor().getText(selection!.index,selection!.length));
 
         // Set button position relative to selected text
         setButtonPosition({top: bounds!.top + 40, left: bounds!.left});
 
         setShowButton(true);
         //console.log(buttonPosition);
-
-      } else {
-        setSelectedText("");
-        setShowButton(false);
       }
+    } else {
+      setShowButton(false);
     }
   }
-
   useEffect(() => {
     if (quill.current) {
       const editor = quill.current.getEditor();
@@ -181,7 +162,6 @@ export default function Editor({
           const text = editor.getText(range.index, range.length);
 
           setSelectedText(text);
-
           const bounds = editor.getBounds(range.index, range.length);
 
           if (bounds) {
@@ -218,11 +198,13 @@ export default function Editor({
 
     // Shorten text if too long
     const threshold = 25;
-    if (gettext.length > threshold){
-      const shortenedText = gettext.substring(0,threshold) + "...";
-      setShortenedSelectedText(shortenedText);
-    }else{
-      setShortenedSelectedText(gettext);
+
+    if (gettext.length > threshold) {
+      const shortenedText = gettext.substring(0, threshold) + "...";
+
+      setSelectedText(shortenedText);
+    } else {
+      setSelectedText(gettext);
     }
 
     const bounds = quill.current!.getEditor().getBounds(selectedRange!.index);
@@ -305,31 +287,49 @@ export default function Editor({
         onChange={onChange}
       />
       {showButton && (
-        <button className="new-comment-btn bg-blue-500 text-white py-1 px-3 rounded hover:bg-cyan-500 transition-colors" onClick={handleCommentOnClick} style={{
-              position: 'absolute',
-              top: `${buttonPosition!.top}px`,
-              left: `${buttonPosition!.left}px`,
-            }}>Comment </button>)
-        }
+        <button
+          style={{
+            position: "absolute",
+            top: `${buttonPosition!.top}px`,
+            left: `${buttonPosition!.left}px`,
+            background: "#eee",
+            border: "1px solid #ccc",
+            padding: "4px 13px",
+            borderRadius: "4px",
+          }}
+          onClick={handleCommentOnClick}
+        >
+          Comment{" "}
+        </button>
+      )}
 
       {showTextarea && (
-        <div className="newTextComment-card" style={{
-          position: 'absolute',
-          top: `${textareaPosition!.top}px`,
-          left: `${textareaPosition!.left}px`}}>
-
-            <div className="new-comment flex flex-col items-start p-4 rounded-lg shadow-md mt-2 mb-2">
-                <textarea
-                    ref={textareaRef}
-                    onChange={handleCommentChange}
-                    placeholder="Add a comment..."
-                    className="new-comment-input w-full min-h-20 p-2 mb-2 border border-gray-300 rounded-md resize-vertical text-base"
-                />
-                <div className="new-comment-buttons flex space-x-2">
-                    <button className="new-comment-btn bg-blue-500 text-white py-1 px-3 rounded hover:bg-cyan-500 transition-colors" onClick={handleSendOnClick}>Send</button>
-                    <button className="new-comment-close-btn bg-pink-500 text-white py-1 px-2 rounded hover:bg-yellow-500 transition-colors" onClick={handleCloseOnClick}>Cancel</button>
-                </div>
+        <div
+          className="newTextComment-card"
+          style={{
+            position: "absolute",
+            top: `${textareaPosition!.top}px`,
+            left: `${textareaPosition!.left}px`,
+          }}
+        >
+          <div className="newTextComment-body">
+            <div className="newTextComment-top">
+              <h5 className="newTextComment-name">Name</h5>
+              <IconButton onClick={handleCloseOnClick}>
+                <CloseIcon />
+              </IconButton>
             </div>
+            <textarea
+              ref={textareaRef}
+              className="newTextComment-textarea"
+              placeholder="Add new Comment here"
+              onChange={handleCommentChange}
+            />
+
+            <button className="newTextComment-send" onClick={handleSendOnClick}>
+              Send
+            </button>
+          </div>
         </div>
       )}<Tooltip
       doc={provider.doc}

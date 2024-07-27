@@ -1,11 +1,9 @@
-/* eslint-disable prettier/prettier */
 import { useState } from "react";
 import usePartySocket from "partysocket/react";
-
 import { Rooms, SINGLETON_ROOM_ID } from "@/party/src/types";
 import { PARTYKIT_HOST } from "@/pages/env";
 
-export default function Lobby({
+export default function LobbyTop({
   currentRoom,
   setCurrentRoom,
 }: {
@@ -16,19 +14,21 @@ export default function Lobby({
   const [nextRoomId, setNextRoomId] = useState<number>(1);
 
   usePartySocket({
-    // host: props.host, -- defaults to window.location.host if not set
     host: PARTYKIT_HOST,
-
     party: "rooms",
     room: SINGLETON_ROOM_ID,
     onMessage(evt) {
       const data = JSON.parse(evt.data);
 
       if (data.type === "rooms") {
-        setRooms((prevRooms) => ({
-          ...prevRooms,
-          ...data.rooms,
-        }));
+        setRooms((prevRooms) => {
+          // Update the room counts
+          const updatedRooms = { ...prevRooms };
+          Object.keys(data.rooms).forEach((roomKey) => {
+            updatedRooms[roomKey] = data.rooms[roomKey];
+          });
+          return updatedRooms;
+        });
       }
     },
   });

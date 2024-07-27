@@ -1,12 +1,11 @@
-/* eslint-disable prettier/prettier */
 "use client";
 import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import Quill from "react-quill";
-import Lobby from "../MainPageComponent/Lobby";
+import { Card, Button } from "@nextui-org/react";
+
 import LobbyTop from "../MainPageComponent/LobbyTop";
 import CommentHandler from "../ChatComponent/CommentHandler";
-import { Card, Button } from "@nextui-org/react";
 
 
 
@@ -125,18 +124,18 @@ export default function EditorPage() {
       <div style={{ display: "flex", height: "100vh" }}>
         <Card style={{ width: "20%", padding: "10px" }}>
           <CommentHandler
+            deleteSelectedComments={deleteSelectedComments}
             editor={editor}
             room={currentRoom}
+            setAIChanges={setAIChanges}
+            setDeleteSelectedComments={setDeleteSelectedComments}
             setRange={handleSetRange}
             textSpecificComment={textSpecificComment}
-            setAIChanges={setAIChanges}
-            deleteSelectedComments={deleteSelectedComments}
-            setDeleteSelectedComments={setDeleteSelectedComments}
           />
         </Card>
 
         <Card style={{ width: "60%", padding: "20px" }}>
-        <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor} selectedText={selectedText} setSelectedText={setSelectedText} setCompleteText={setCompleteText}/>
+        <Editor key={currentRoom} room={currentRoom} selectedText={selectedText} setCompleteText={setCompleteText} setEditor={setEditor} setSelectedText={setSelectedText} setTextSpecificComment={setTextSpecificComment} userColor={userColor}/>
             {/* Pop up card for MCP Changes */}
             {showAIChangesDiv && (
               <Card style={{position: "absolute", left: "100px", top:"100px", border: "1px solid grey", borderRadius: "25px"}}>
@@ -144,12 +143,12 @@ export default function EditorPage() {
                   <p style={{fontWeight: "bold", marginBottom: "1vw", fontSize:"1.1rem"}}>Changes made by the AI according to selected Comments</p>
                   <p style={{marginBottom: "1vw"}}>{AIChanges?.summary}</p>
                   <div style={{display: "flex", marginBottom: "1vw"}}>
-                    <input type="checkbox" onChange={handleCheckboxOnChange} ></input>
+                    <input type="checkbox" onChange={handleCheckboxOnChange}  />
                     <p style={{marginLeft: "0.5vw"}}>Delete selected comment(s)</p>
                   </div>
                   <div style={{display: "flex"}}>
-                    <Button style={{color: "white", paddingLeft: "1vw", paddingRight: "1vw"}} color="success" onClick={handleAcceptOnClick}>Accept changes</Button>
-                    <Button onClick={handleDiscardOnClick} className="ml-5">Discard</Button>
+                    <Button color="success" style={{color: "white", paddingLeft: "1vw", paddingRight: "1vw"}} onClick={handleAcceptOnClick}>Accept changes</Button>
+                    <Button className="ml-5" onClick={handleDiscardOnClick}>Discard</Button>
                   </div>
                 </div>
               </Card>
