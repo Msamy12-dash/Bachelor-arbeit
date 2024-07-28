@@ -3,8 +3,8 @@
   "main": "party/editorserver.ts",
   "compatibilityDate": "2024-06-20",
   "parties": {
-    "editorserver":"party/editorserver.ts",
-    "rooms":"party/roomserver.ts"
-    
+    "editorserver": "party/editorserver.ts",
+    "roomserver":"party/roomserver.ts",
+    "useridserver":"party/useridserver.ts"
   }
 }
