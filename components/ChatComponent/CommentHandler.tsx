@@ -20,22 +20,31 @@ interface Comment {
   canReply: boolean;
 }
 
-export default function CommentHandler({
-  room,
-  textSpecificComment,
-  setRange,
-  editor,
-  setAIChanges
-}: Readonly<{
+interface CommentHandlerProps {
   room: string;
   textSpecificComment: Comment | null;
   editor: Quill | null;
   setRange: Function;
   setAIChanges: Function;
-}>) {
+  deleteSelectedComments: boolean;
+  setDeleteSelectedComments: Function;
+  promptList: string[]; // Neue Prop hinzugefügt
+}
+
+export default function CommentHandler({
+  room,
+  textSpecificComment,
+  setRange,
+  editor,
+  setAIChanges,
+  deleteSelectedComments,
+  setDeleteSelectedComments,
+  promptList // Neue Prop hinzugefügt
+}: Readonly<CommentHandlerProps>) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
-
+  const [checkedKeys, setCheckedKeys] = useState<number[]>([]);
+  
   const provider = useYProvider({
     host: "localhost:1999",
     party: "editorserver",
@@ -63,7 +72,6 @@ export default function CommentHandler({
   const getNewKey = async (): Promise<number> => {
     const ydoc = provider.doc;
     const ymap = ydoc.getMap('keys');
-    //does numberfix work?
     const currentKey = Number(ymap.get('currentKey') || 0);
     const newKey = currentKey + 1;
     ymap.set('currentKey', newKey);
@@ -225,13 +233,12 @@ export default function CommentHandler({
             editor={editor}
             getRange={getRange}
             setAIChanges={setAIChanges}
-        />
+            setCheckedKeys={setCheckedKeys}
+            //promptList={promptList} // Neue Prop weitergegeben
+          />
         </div>
       )}
     </div>
   );
 }
-
-
-
 
