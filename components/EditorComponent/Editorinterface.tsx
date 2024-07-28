@@ -3,13 +3,11 @@
 import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import Quill from "react-quill";
-import Lobby from "../MainPageComponent/Lobby";
-import LobbyTop from "../MainPageComponent/LobbyTop";
 import CommentHandler from "../ChatComponent/CommentHandler";
 import { Card, Button } from "@nextui-org/react";
-
-
-
+import CardContainer from "../MUPComponents/CardContainer";
+import YPartyKitProvider from "y-partykit/provider";
+import * as Y from "yjs";
 
 interface Comment {
   key: number;
@@ -43,8 +41,15 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-export default function EditorPage() {
-  const [currentRoom, setCurrentRoom] = useState("default");
+export default function EditorPage({
+  currentRoom,
+  yDoc,
+  yProvider
+}: {
+  currentRoom: string;
+  yDoc: Y.Doc;
+  yProvider: YPartyKitProvider;
+}) {
   const userColor = useMemo(() => getRandomColor(), []);
   const Editor = useMemo(() => {
     return dynamic(() => import("@/components/EditorComponent/Editor"), {
@@ -55,11 +60,14 @@ export default function EditorPage() {
 
   const [textSpecificComment, setTextSpecificComment] =
     useState<Comment | null>(null);
-    const [editor, setEditor] = useState<(Quill & {
+  const [editor, setEditor] = useState<
+    | (Quill & {
       highlightText: (index: number, length: number, color: string) => void;
       removeHighlight: (index: number, length: number) => void;
       getSelection: () => { index: number; length: number } | null;
-    }) | null>(null);
+      })
+    | null
+  >(null);
   const [selectedText, setSelectedText] = useState<string>("");
   const [completeText, setCompleteText] = useState<string>("");
   const [showAIChangesDiv, setShowAIChangesDiv] = useState<boolean>(false);
@@ -75,7 +83,6 @@ export default function EditorPage() {
       setShowAIChangesDiv(true);
     }
   }, [AIChanges]);
-
 
   function handleSetRange(range: Range) {
     // for 'Show in Editor'-Button functionality
@@ -109,10 +116,8 @@ export default function EditorPage() {
     }
   }
 
-
   return (
     <>
-          <LobbyTop currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
       <div style={{ display: "flex", height: "100vh" }}>
         <Card style={{ width: "20%", padding: "10px" }}>
           {/*<PollMaker >**/}
@@ -128,7 +133,18 @@ export default function EditorPage() {
         </Card>
 
         <Card style={{ width: "60%", padding: "20px" }}>
-        <Editor key={currentRoom} room={currentRoom} userColor={userColor} setTextSpecificComment={setTextSpecificComment} setEditor={setEditor} selectedText={selectedText} setSelectedText={setSelectedText} setCompleteText={setCompleteText}/>
+          <Editor
+            key={currentRoom}
+            currentRoom={currentRoom}
+            yDoc={yDoc}
+            yProvider={yProvider}
+            userColor={userColor}
+            setTextSpecificComment={setTextSpecificComment}
+            setEditor={setEditor}
+            selectedText={selectedText}
+            setSelectedText={setSelectedText}
+            setCompleteText={setCompleteText}
+          />
             {/* Pop up card for MCP Changes */}
             {showAIChangesDiv && (
               <Card style={{position: "absolute", left: "100px", top:"100px", border: "1px solid grey", borderRadius: "25px"}}>
@@ -146,11 +162,17 @@ export default function EditorPage() {
                 </div>
               </Card>
             )}
-  
-          
         </Card>
-        <Card style={{ width: "20%" }}>
-          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} selectedText={selectedText} completeText={completeText} editor={editor}/>
+        <Card className="w-1/5 p-4 overflow-y-auto">
+          <CardContainer
+            key={currentRoom}
+            currentRoom={currentRoom}
+            yDoc={yDoc}
+            yProvider={yProvider}
+            selectedText={selectedText}
+            completeText={completeText}
+            editor={editor}
+          />
         </Card>
       </div>
     </>
