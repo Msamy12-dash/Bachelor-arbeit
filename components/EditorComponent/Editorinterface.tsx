@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+// Editor 
 "use client";
 import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
@@ -50,6 +51,7 @@ export default function EditorPage({
   yDoc: Y.Doc;
   yProvider: YPartyKitProvider;
 }) {
+  const [prompts, setPrompts] = useState<string[]>([]);
   const userColor = useMemo(() => getRandomColor(), []);
   const Editor = useMemo(() => {
     return dynamic(() => import("@/components/EditorComponent/Editor"), {
@@ -127,6 +129,7 @@ export default function EditorPage({
             setRange={handleSetRange}
             textSpecificComment={textSpecificComment}
             setAIChanges={setAIChanges}
+            promptList={prompts}
             deleteSelectedComments={deleteSelectedComments}
             setDeleteSelectedComments={setDeleteSelectedComments}
           />
@@ -172,6 +175,7 @@ export default function EditorPage({
             selectedText={selectedText}
             completeText={completeText}
             editor={editor}
+            setPrompts={setPrompts}
           />
         </Card>
       </div>

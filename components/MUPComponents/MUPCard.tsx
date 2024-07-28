@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Button, Spinner } from "@nextui-org/react";
 import { useTheme } from "next-themes";
+import * as Y from "yjs";
+
 
 interface CardData {
   id: string;
@@ -19,6 +21,8 @@ export default function MUPCard({
   onResponseChange,
   onSubmittingChange,
   onDiscard,
+  yDoc,
+  setPrompts,
 }: Readonly<{
   cardData: CardData;
   room: string;
@@ -26,12 +30,17 @@ export default function MUPCard({
   onResponseChange: (id: string, newResponse: string) => void;
   onSubmittingChange: (id: string, isSubmitting: boolean) => void;
   onDiscard: (id: string) => void;
+  yDoc: Y.Doc;
+  setPrompts: Function;
 }>) {
   const [loading, setLoading] = useState(false);
+  const [inputText, setInputText] = useState('')
+
   const { theme } = useTheme();
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
+    setInputText(newText);
     onTextChange(cardData.id, newText);
   };
 
@@ -75,6 +84,20 @@ export default function MUPCard({
     onDiscard(cardData.id);
   };
 
+  const handleSave = () => {
+    const savedPrompts = JSON.parse(
+      localStorage.getItem("savedPrompts") || "[]"
+    );
+    const updatedPrompts = [...savedPrompts, inputText];
+
+    localStorage.setItem("savedPrompts", JSON.stringify(updatedPrompts));
+    setPrompts(updatedPrompts);
+    const ytext = yDoc.getText("promptList");
+      ytext.setAttribute("savePrompt", JSON.stringify(updatedPrompts));
+      console.log("🚀 ~ handleSave ~ ytext:", ytext.getAttribute("savePrompt"));
+    setInputText("");
+  };
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 w-full box-border">
       <div className="mb-4 p-4 bg-gray-50 border border-gray-300 rounded-lg box-border">
@@ -107,7 +130,10 @@ export default function MUPCard({
         </div>
       )}
       <div className="mt-4 flex space-x-2 w-full">
-        <Button className="flex-grow flex-shrink min-w-0 px-2 py-3 text-lg text-white bg-green-500 rounded-full shadow-md hover:bg-green-600 transition-all duration-300">
+        <Button 
+          className="flex-grow flex-shrink min-w-0 px-2 py-3 text-lg text-white bg-green-500 rounded-full shadow-md hover:bg-green-600 transition-all duration-300"
+          onClick={handleSave}
+        >
           Save
         </Button>
         <Button 

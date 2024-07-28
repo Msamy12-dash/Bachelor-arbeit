@@ -44,7 +44,7 @@ Press `Ctrl + C` in bash.
 You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
 install for the Commenticons:
