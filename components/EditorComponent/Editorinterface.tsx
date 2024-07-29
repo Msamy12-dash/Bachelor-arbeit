@@ -142,6 +142,8 @@ export default function EditorPage({
                   deleteSelectedComments={deleteSelectedComments}
                   setDeleteSelectedComments={setDeleteSelectedComments}
                   promptList={prompts}
+                  yDoc={yDoc}
+                  yProvider={yProvider}
                 />
               </Card>
             </div>
@@ -196,7 +198,6 @@ export default function EditorPage({
             selectedText={selectedText}
             completeText={completeText}
             editor={editor}
-            //setPrompts={setPrompts}
           />
         </Card>
       </div>

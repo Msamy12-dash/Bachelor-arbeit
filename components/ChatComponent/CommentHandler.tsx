@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CommentList from './CommentList';
 import Quill from "react-quill";
 import * as Y from "yjs";
-import useYProvider from "y-partykit/react";
+import YPartyKitProvider from "y-partykit/provider";
 
 interface Comment {
   key: number;
@@ -28,7 +28,9 @@ interface CommentHandlerProps {
   setAIChanges: Function;
   deleteSelectedComments: boolean;
   setDeleteSelectedComments: Function;
-  promptList: string[]; // Neue Prop hinzugefügt
+  promptList: string[];
+  yDoc: Y.Doc;
+  yProvider: YPartyKitProvider;
 }
 
 export default function CommentHandler({
@@ -39,22 +41,17 @@ export default function CommentHandler({
   setAIChanges,
   deleteSelectedComments,
   setDeleteSelectedComments,
-  promptList // Neue Prop hinzugefügt
+  promptList,
+  yDoc,
+  yProvider
 }: Readonly<CommentHandlerProps>) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
   const [checkedKeys, setCheckedKeys] = useState<number[]>([]);
-  
-  const provider = useYProvider({
-    host: "localhost:1999",
-    party: "editorserver",
-    room: room
-  });
 
   useEffect(() => {
-    if (provider.doc) {
-      const ydoc = provider.doc;
-      const yarray = ydoc.getArray<Comment>("comments");
+    if (yDoc) {
+      const yarray = yDoc.getArray<Comment>("comments");
 
       const updateComments = () => {
         setComments(yarray.toArray());
@@ -67,11 +64,10 @@ export default function CommentHandler({
         yarray.unobserve(updateComments);
       };
     }
-  }, [provider.doc]);
+  }, [yDoc]);
 
   const getNewKey = async (): Promise<number> => {
-    const ydoc = provider.doc;
-    const ymap = ydoc.getMap('keys');
+    const ymap = yDoc.getMap('keys');
     const currentKey = Number(ymap.get('currentKey') || 0);
     const newKey = currentKey + 1;
     ymap.set('currentKey', newKey);
@@ -106,8 +102,7 @@ export default function CommentHandler({
       canReply: canReply
     };
 
-    const ydoc = provider.doc;
-    const yarray = ydoc.getArray<Comment>("comments");
+    const yarray = yDoc.getArray<Comment>("comments");
 
     if (comment.parentKey === null) {
       yarray.push([newComment]);
@@ -141,8 +136,7 @@ export default function CommentHandler({
   }, [textSpecificComment]);
 
   const incrementUpvote = (IncrementComment: Comment) => {
-    const ydoc = provider.doc;
-    const yarray = ydoc.getArray<Comment>("comments");
+    const yarray = yDoc.getArray<Comment>("comments");
 
     const updateUpvote = (comments: Comment[]): Comment[] => {
       return comments.map(comment => {
@@ -167,8 +161,7 @@ export default function CommentHandler({
   };
 
   const deleteComment = (DeleteComment: Comment) => {
-    const ydoc = provider.doc;
-    const yarray = ydoc.getArray<Comment>("comments");
+    const yarray = yDoc.getArray<Comment>("comments");
 
     const removeComment = (comments: Comment[]): Comment[] => {
       return comments.reduce((acc, comment) => {
@@ -191,8 +184,7 @@ export default function CommentHandler({
   };
 
   const editComment = (EditComment: Comment, newContent: string) => {
-    const ydoc = provider.doc;
-    const yarray = ydoc.getArray<Comment>("comments");
+    const yarray = yDoc.getArray<Comment>("comments");
 
     const updateComment = (comments: Comment[]): Comment[] => {
       return comments.map((comment) => {
@@ -234,11 +226,10 @@ export default function CommentHandler({
             getRange={getRange}
             setAIChanges={setAIChanges}
             setCheckedKeys={setCheckedKeys}
-            //promptList={promptList} // Neue Prop weitergegeben
+            //promptList={promptList}
           />
         </div>
       )}
     </div>
   );
 }
-
