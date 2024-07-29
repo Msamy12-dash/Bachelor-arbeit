@@ -120,7 +120,7 @@ export default function EditorPage({
             width={commentWidth}
             height={Infinity}
             axis="x"
-            minConstraints={[200, Infinity]}
+            minConstraints={[250, Infinity]}
             maxConstraints={[1000, Infinity]}
             onResize={(event, { size }) => setCommentWidth(size.width)}
             handle={<div style={{ width: 10, cursor: 'ew-resize', position: 'absolute', right: -5, top: 0, bottom: 0, backgroundColor: '#ccc' }} />}
