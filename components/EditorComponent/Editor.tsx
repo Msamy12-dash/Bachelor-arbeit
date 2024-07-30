@@ -10,6 +10,8 @@ import YPartykitProvider from "y-partykit/provider";
 import Tooltip from "../ToolTipsComponets/ToolTip";
 import { PARTYKIT_HOST } from "@/pages/env";
 import YPartyKitProvider from "y-partykit/provider";
+import { handleRangeShift } from "../ChatComponent/handleRangeShift"
+import { DeltaStatic } from "quill/index";
 
 interface Range {
   index: number;
@@ -28,11 +30,12 @@ export default function Editor({
   yDoc,
   yProvider,
   userColor,
-  setTextSpecificComment,
   setEditor,
   selectedText,
   setSelectedText,
-  setCompleteText
+  setCompleteText,
+  selectedRange,
+  setSelectedRange
 }: Readonly<{
   currentRoom: string;
   yDoc: Y.Doc;
@@ -43,17 +46,11 @@ export default function Editor({
   selectedText: string;
   setSelectedText: (text: string) => void;
   setCompleteText: (text: string) => void;
+  selectedRange: Range | undefined | null;
+  setSelectedRange: (range: Range | undefined | null) => void;
 }>) {
   const [text, setText] = useState("");
-  const [selectedRange, setSelectedRange] = useState<Range | null>(null);
-  const [buttonPosition, setButtonPosition] = useState<Position | null>(null);
-  const [showButton, setShowButton] = useState(false);
-  const [textareaPosition, setTextareaPosition] = useState<Position | null>(
-    null
-  );
-  const [showTextarea, setShowTextarea] = useState(false);
   const [shortenedSelectedText, setShortenedSelectedText] = useState("");
-  const [commentContent, setCommentContent] = useState("");
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({
     x: 0,
@@ -115,15 +112,8 @@ export default function Editor({
 
       // Get positions of Editor itself and selected range (in pixels)
       const bounds = quillRef.current!.getEditor().getBounds(selection!.index);
-
-      // Set button position relative to selected text
-      setButtonPosition({ top: bounds!.top + 40, left: bounds!.left });
-
-      setShowButton(true);
-      //console.log(buttonPosition);
     } else {
       setSelectedText("");
-      setShowButton(false);
     }
   }
 
@@ -157,76 +147,6 @@ export default function Editor({
     }
   }, []);
 
-  function handleCommentOnClick() {
-    setShowButton(false);
-    setShowTextarea(true);
-    console.log(buttonPosition);
-    // Get selected text
-    const gettext = quillRef
-      .current!.getEditor()
-      .getText(selectedRange?.index, selectedRange?.length);
-
-    // Shorten text if too long
-    const threshold = 25;
-    if (gettext.length > threshold) {
-      const shortenedText = gettext.substring(0, threshold) + "...";
-      setShortenedSelectedText(shortenedText);
-    } else {
-      setShortenedSelectedText(gettext);
-    }
-
-    const bounds = quillRef
-      .current!.getEditor()
-      .getBounds(selectedRange!.index);
-
-    setTextareaPosition({
-      top: bounds!.top,
-      left: bounds!.left + bounds!.width + 100,
-    });
-  }
-
-  function handleCommentChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
-    setCommentContent(event.target.value);
-  }
-
-  function handleCloseOnClick() {
-    setShowTextarea(false);
-    setCommentContent("");
-    setSelectedRange(null);
-  }
-
-  function handleSendOnClick() {
-    if (textareaRef.current!.value != "") {
-      // Mark the text
-      quillRef
-        .current!.getEditor()
-        .formatText(selectedRange!.index, selectedRange!.length, {
-          background: "#ffff66",
-        });
-
-      const date = new Date().toLocaleDateString();
-
-      // Send comment to Editorinterface
-      setTextSpecificComment({
-        key: 0,
-        name: "Name",
-        content: commentContent,
-        date: date,
-        upvotes: 0,
-        isTextSpecific: true,
-        shortenedSelectedText: shortenedSelectedText,
-        index: selectedRange!.index,
-        length: selectedRange!.length,
-        history: [],
-        replies: [],
-        parentKey: null,
-        canReply: true,
-      });
-
-      setShowTextarea(false);
-    }
-  }
-
   function highlightText(index: number, length: number, color: string) {
     quillRef.current
       ?.getEditor()
@@ -237,6 +157,11 @@ export default function Editor({
     quillRef.current
       ?.getEditor()
       .formatText(index, length, { background: false });
+  }
+
+  const onChange = (content: string, delta: DeltaStatic, source: string, editor: any): void => {
+    handleRangeShift(delta, quillRef, yDoc);
+    setText(content)
   }
 
   return (
@@ -250,54 +175,8 @@ export default function Editor({
         modules={{ cursors: true }}
         theme="snow"
         value={text}
-        onChange={setText}
+        onChange={onChange}
       />
-      {showButton && (
-        <button
-          className="new-comment-btn bg-blue-500 text-white py-1 px-3 rounded hover:bg-cyan-500 transition-colors"
-          onClick={handleCommentOnClick}
-          style={{
-            position: "absolute",
-            top: `${buttonPosition?.top}px`,
-            left: `${buttonPosition?.left}px`,
-          }}
-        >
-          Comment
-        </button>
-      )}
-      {showTextarea && (
-        <div
-          className="newTextComment-card"
-          style={{
-            position: "absolute",
-            top: `${textareaPosition?.top}px`,
-            left: `${textareaPosition?.left}px`,
-          }}
-        >
-          <div className="new-comment flex flex-col items-start p-4 rounded-lg shadow-md mt-2 mb-2">
-            <textarea
-              ref={textareaRef}
-              onChange={handleCommentChange}
-              placeholder="Add a comment..."
-              className="new-comment-input w-full min-h-20 p-2 mb-2 border border-gray-300 rounded-md resize-vertical text-base"
-            />
-            <div className="new-comment-buttons flex space-x-2">
-              <button
-                className="new-comment-btn bg-blue-500 text-white py-1 px-3 rounded hover:bg-cyan-500 transition-colors"
-                onClick={handleSendOnClick}
-              >
-                Send
-              </button>
-              <button
-                className="new-comment-close-btn bg-pink-500 text-white py-1 px-2 rounded hover:bg-yellow-500 transition-colors"
-                onClick={handleCloseOnClick}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-          </div>
-      )}
       <Tooltip
         position={tooltipPosition}
         show={showTooltip}

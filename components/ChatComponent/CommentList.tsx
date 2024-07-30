@@ -23,8 +23,15 @@ interface Comment {
   canReply: boolean;
 }
 
+interface Range {
+  index: number;
+  length: number;
+}
+
 interface CommentListProps {
   comments: Comment[];
+  selectedText: string;
+  selectedRange: Range | null | undefined;
   editor: Quill|null;
   addComment: (comment: Comment) => void;
   incrementUpvote: (comment: Comment) => void;
@@ -33,6 +40,8 @@ interface CommentListProps {
   getRange: (index: number, length: number) => void;
   setAIChanges: Function;
   setCheckedKeys: Function;
+  highlightText: (index:number, length: number, color: string) => void;
+  removeHighlight: (index:number, length: number) => void;
 }
 
 interface CommentListState {
@@ -166,6 +175,8 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
             editor={this.props.editor}
             newChecked={this.newChecked}
             unchecked={this.unchecked}
+            highlightText={this.props.highlightText}
+            removeHighlight={this.props.removeHighlight}
           />
           {showSubs && (
             <div className={`replies replies-level-${level} ml-5`}>
@@ -208,7 +219,14 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
             </IconButton>
           </div>
           {showTextarea && (
-            <NewComment addComment={(comment: Comment) => this.handleAddComment(comment)} cancel={this.toggleTextarea} />
+            <NewComment 
+              addComment={(comment: Comment) => this.handleAddComment(comment)} 
+              selectedText={this.props.selectedText} 
+              selectedRange={this.props.selectedRange}
+              cancel={this.toggleTextarea} 
+              highlightText={this.props.highlightText}
+              removeHighlight={this.props.removeHighlight}
+            />
           )}
           <div className="comment-list">
           { this.renderCommentsRecursive(comments)}

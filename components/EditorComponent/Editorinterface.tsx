@@ -73,6 +73,7 @@ export default function EditorPage({
   const [isChecked, setIsChecked] = useState<boolean>(true);
   const [isCommentsVisible, setIsCommentsVisible] = useState<boolean>(true);
   const [deleteSelectedComments, setDeleteSelectedComments] = useState<boolean>(false);
+  const [selectedRange, setSelectedRange] = useState<Range | null>();
 
   const [commentWidth, setCommentWidth] = useState<number>(300);
 
@@ -137,13 +138,16 @@ export default function EditorPage({
                   editor={editor}
                   room={currentRoom}
                   setRange={handleSetRange}
-                  textSpecificComment={textSpecificComment}
                   setAIChanges={setAIChanges}
+                  selectedText={selectedText}
+                  selectedRange={selectedRange}
                   deleteSelectedComments={deleteSelectedComments}
                   setDeleteSelectedComments={setDeleteSelectedComments}
                   promptList={prompts}
                   yDoc={yDoc}
                   yProvider={yProvider}
+                  highlightText={editor?.highlightText}
+                  removeHighlight={editor?.removeHighlight}
                 />
               </Card>
             </div>
@@ -170,6 +174,8 @@ export default function EditorPage({
             selectedText={selectedText}
             setSelectedText={setSelectedText}
             setCompleteText={setCompleteText}
+            selectedRange={selectedRange}
+            setSelectedRange={setSelectedRange}
           />
           {showAIChangesDiv && AIChanges && (
             <Card style={{position: "absolute", left: "100px", top:"100px", border: "1px solid grey", borderRadius: "25px"}}>

@@ -3,6 +3,7 @@ import CommentList from './CommentList';
 import Quill from "react-quill";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
+import colors from "../../highlightColors.js"
 
 interface Comment {
   key: number;
@@ -20,9 +21,13 @@ interface Comment {
   canReply: boolean;
 }
 
+interface Range {
+  index: number;
+  length: number;
+}
+
 interface CommentHandlerProps {
   room: string;
-  textSpecificComment: Comment | null;
   editor: Quill | null;
   setRange: Function;
   setAIChanges: Function;
@@ -31,11 +36,13 @@ interface CommentHandlerProps {
   promptList: string[];
   yDoc: Y.Doc;
   yProvider: YPartyKitProvider;
+  selectedText: string;
+  selectedRange: Range | null | undefined;
+  highlightText: ((index: number, length: number, color: string) => void) | undefined;
+  removeHighlight: ((index: number, length: number) => void) | undefined; 
 }
 
 export default function CommentHandler({
-  room,
-  textSpecificComment,
   setRange,
   editor,
   setAIChanges,
@@ -43,7 +50,11 @@ export default function CommentHandler({
   setDeleteSelectedComments,
   promptList,
   yDoc,
-  yProvider
+  yProvider,
+  selectedText,
+  selectedRange,
+  highlightText,
+  removeHighlight
 }: Readonly<CommentHandlerProps>) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
@@ -73,6 +84,18 @@ export default function CommentHandler({
     ymap.set('currentKey', newKey);
     return newKey;
   };
+
+  const handleHighlightText = (index: number, length: number, color: string) => {
+    if (highlightText) {
+      highlightText(index, length, color);
+    }
+  };
+
+  const handleRemoveHighlight = (index: number, length: number) => {
+    if (removeHighlight) {
+      removeHighlight(index, length);
+    }
+  }
 
   const addComment = async (comment: Comment) => {
     const newKey = await getNewKey();
@@ -104,6 +127,10 @@ export default function CommentHandler({
 
     const yarray = yDoc.getArray<Comment>("comments");
 
+    if (newComment.isTextSpecific) {
+      handleHighlightText(newComment.index, newComment.length, colors.currentMUPSectionDYellow);
+    }
+
     if (comment.parentKey === null) {
       yarray.push([newComment]);
     } else {
@@ -128,12 +155,6 @@ export default function CommentHandler({
       yarray.push(updatedComments);
     } 
   };
-
-  useEffect(() => {
-    if (textSpecificComment != null) {
-      addComment(textSpecificComment);
-    }
-  }, [textSpecificComment]);
 
   const incrementUpvote = (IncrementComment: Comment) => {
     const yarray = yDoc.getArray<Comment>("comments");
@@ -177,8 +198,26 @@ export default function CommentHandler({
         }
       }, [] as Comment[]);
     };
+
+    if (DeleteComment.isTextSpecific) {
+      handleRemoveHighlight(DeleteComment.index, DeleteComment.length);
+    }
   
     const updatedComments = removeComment(yarray.toArray());
+
+    updatedComments.forEach(comment => {
+      const commentEnd = comment.index + comment.length;
+      const deleteCommentEnd = DeleteComment.index + DeleteComment.length;
+  
+      if (
+        (comment.index >= DeleteComment.index && comment.index < deleteCommentEnd) || // Anfang des Kommentars liegt innerhalb des DeleteComments
+        (commentEnd > DeleteComment.index && commentEnd <= deleteCommentEnd) || // Ende des Kommentars liegt innerhalb des DeleteComments
+        (comment.index <= DeleteComment.index && commentEnd >= deleteCommentEnd) // Kommentar umfasst den gesamten DeleteComment-Bereich
+      ) {
+        handleHighlightText(comment.index, comment.length, colors.currentMUPSectionDYellow);
+      }
+    });
+
     yarray.delete(0, yarray.length);
     yarray.push(updatedComments);
   };
@@ -217,6 +256,8 @@ export default function CommentHandler({
         <div className="mt-8">
           <CommentList
             comments={comments}
+            selectedText={selectedText}
+            selectedRange={selectedRange}
             incrementUpvote={incrementUpvote}
             deleteComment={deleteComment}
             editComment={editComment}
@@ -226,6 +267,8 @@ export default function CommentHandler({
             setAIChanges={setAIChanges}
             setCheckedKeys={setCheckedKeys}
             //promptList={promptList}
+            highlightText={handleHighlightText}
+            removeHighlight={handleRemoveHighlight}
           />
         </div>
       )}

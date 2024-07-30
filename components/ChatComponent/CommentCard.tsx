@@ -25,6 +25,11 @@ interface Comment {
   canReply: boolean;
 }
 
+interface Range {
+  index: number;
+  length: number;
+}
+
 interface CommentCardProps {
   comment: Comment;
   editor: Quill | null;
@@ -35,10 +40,11 @@ interface CommentCardProps {
   onGetRange: (index: number, length: number) => void;
   newChecked: (key: number) => void;
   unchecked: (key: number) => void;
-
+  highlightText: (index:number, length: number, color: string) => void;
+  removeHighlight: (index:number, length: number) => void;
 }
 
-const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDelete, onIncrement, addComment, onGetRange, newChecked, unchecked }) => {
+const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDelete, onIncrement, addComment, onGetRange, newChecked, unchecked, highlightText, removeHighlight }) => {
   const { theme } = useTheme();
 
   const [isEditing, setIsEditing] = React.useState(false);
@@ -169,8 +175,12 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
 
         {showReplyTextarea && (
           <NewComment
+            selectedText=''
+            selectedRange={null}
             addComment={(comment: Comment) => handleAddReply(comment)}
             cancel={toggleReplyTextarea}
+            highlightText={highlightText}
+            removeHighlight={removeHighlight}
           />
         )}
 
