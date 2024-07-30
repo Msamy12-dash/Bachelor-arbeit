@@ -2,11 +2,19 @@ import React, { useState, useEffect } from "react";
 import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import * as Y from "yjs";
 
-import { saveRangeWithText, updateVoteRangeText, deleteRangeFromYArray } from "../VoteComponent/TextBlocking";
+import { saveRangeWithText, updateVoteRangeText, deleteRangeFromYArray, deleteAll,saveRORange } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
+import Draggable from 'react-draggable';
+
+import CloseIcon from '@mui/icons-material/Close';
 
 import CustomMenu from "./AIInteractionComponent";
+import { IconButton } from "@mui/material";
 
+interface Range {
+  index: number;
+  length: number;
+}
 interface TooltipProps {
   show: boolean;
   text: string;
@@ -15,28 +23,30 @@ interface TooltipProps {
   onCancel: () => void;
   quill: any;
   doc: Y.Doc;
+  range : Range;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, onCancel, quill, doc }) => {
+const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, onCancel, quill, doc, range }) => {
   const [inputDisabled, setInputDisabled] = useState(true);
   const [suggestButtonDisabled, setSuggestButtonDisabled] = useState(true);
   const [votingInProgress, setVotingInProgress] = useState(false);
   const [inputText, setInputText] = useState('');
   const [voteID, setVoteID] = useState(0); // State to track the ID
 
+
   useEffect(() => {
-    // Update input text with selected text when the component mounts or text changes
     setInputText(text);
   }, [text]);
 
   const handleEditClick = () => {
-    onSaveRange();
+    saveRORange(quill,doc,range);
     setInputDisabled(false);
     setSuggestButtonDisabled(false);
     saveRangeWithText(quill, doc);
   };
 
   const handleCancelClick = () => {
+    deleteAll(quill, doc);
     setInputDisabled(true);
     onCancel();
   };
@@ -62,13 +72,12 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
   };
 
   const handleEndVoteClick = () => {
-    console.log("HandleEndVoteClick")
     setVotingInProgress(false);
     deleteRangeFromYArray(doc, inputText, quill);
     onCancel();
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(event.target.value);
   };
 
@@ -76,12 +85,17 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
     setInputText("The origins of football in England can be traced back to as early as the eighth century.");
   };
 
+  const handleClearText = () => {
+    setInputText('');
+  };
+
   if (!show) {
     return null;
   }
 
   return (
-    <div
+    <Draggable >
+      <div
       style={{
         position: "absolute",
         left: `${position.x}px`,
@@ -95,20 +109,31 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
             <p className="text-md">Voting</p>
             <Avatar name="user" />
           </div>
+
         </CardHeader>
         <CardBody>
           <div className="mb-4">
-            <Input
-              className="max-w-full"
-              defaultValue={text}
-              disabled={inputDisabled}
-              label=""
-              placeholder="Enter your text"
-              type="text"
-              value={inputText || text}
-              variant="bordered"
-              onChange={handleInputChange}
-            />
+            {!inputDisabled && (
+              <IconButton
+                size="small"
+                onClick={handleClearText}
+                style={{ position: 'absolute', top: '-10px', right: '10px' }}
+              >
+                {/*<CloseIcon fontSize="small" />*/}
+                <span className="text-sm text-blue-500 cursor-pointer">
+                clear all
+              </span>
+              </IconButton>
+            )}
+              <textarea
+                className="max-w-full p-2 border border-gray-300 rounded-md"
+                style={{ width: '100%', height: '100px', resize: 'vertical', overflow: 'auto' }}
+                defaultValue={text}
+                disabled={inputDisabled}
+                placeholder="Enter your text"
+                value={inputText}
+                onChange={handleInputChange}
+              />
           </div>
           {votingInProgress && (
             <div className="mb-4 text-red-500">
@@ -138,7 +163,8 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
           </div>
         </CardBody>
       </Card>
-    </div>
+      </div>
+    </Draggable>
   );
 };
 

@@ -15,23 +15,33 @@ interface VoteRange {
   text: string;
 }
 
-export const addElementToYArray = (doc: Y.Doc, element: Range) => {
-  const yarray = doc.getArray<Range>("rangesArray");
+const voteRangesDoc = new Y.Doc();
 
-  console.log("Current Yjs Array:", yarray.toArray()); // Debug log
+export const deleteAll = (quill: React.RefObject<ReactQuill> , doc : Y.Doc) => {
+  const yarray = doc.getArray('rangeArray');
+  const voteYarray = voteRangesDoc.getArray('voteArray');
+  yarray.delete(0,yarray.length);
+  voteYarray.delete(0,voteYarray.length);
+
+  const editor = quill.current?.getEditor();
+  editor?.formatText(0,editor?.getLength(),{ background: false });
+
+};
+
+export const addElementToYArray = (doc: Y.Doc, element: Range) => {
+  const yarray = doc.getArray<Range>("rangeArray");
+
+
 
   const newRange: Range = {
     index: element.index,
     length: element.length,
   };
 
-  yarray.push([newRange]);
-  console.log("Updated Yjs Array:", yarray.toArray());
+  yarray.push([newRange])
 };
 export const addElementToVoteYArray = (doc: Y.Doc, element: VoteRange) => {
-  const voteYarray = doc.getArray<VoteRange>("voteArray");
-
-  console.log("Current vote Array:", voteYarray.toArray()); // Debug log
+  const voteYarray = voteRangesDoc.getArray<VoteRange>("voteArray");
 
   const newRange: VoteRange = {
     index: element.index,
@@ -40,20 +50,17 @@ export const addElementToVoteYArray = (doc: Y.Doc, element: VoteRange) => {
   };
 
   voteYarray.push([newRange]);
-  console.log("Updated vote Array:", voteYarray.toArray());
 };
 
 const getYArray = (doc: Y.Doc): any[] => {
-  const yarray = doc.getArray("rangesArray")
-  console.log(yarray);
+  const yarray = doc.getArray("rangeArray")
   return yarray.toArray();
 
 };
 
-export const saveRORange = (quill: React.RefObject<ReactQuill>, doc: Y.Doc) => {
+export const saveRORange = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, range:Range) => {
   if (quill.current) {
     const editor = quill.current.getEditor();
-    const range = editor.getSelection();
 
     if (range && range.length > 0) {
       editor.formatText(range.index, range.length, {
@@ -82,8 +89,7 @@ export const saveRangeWithText = (quill: React.RefObject<ReactQuill>, doc: Y.Doc
     const range = editor.getSelection();
 
     if (range && range.length > 0) {
-      const text = editor.getText(range.index, range.length); // Get the text in the selected range
-
+      const text = editor.getText(range.index, range.length);
 
       const voteRange: VoteRange = {
         index: range.index,
@@ -98,7 +104,7 @@ export const saveRangeWithText = (quill: React.RefObject<ReactQuill>, doc: Y.Doc
 };
 
 export const updateVoteRangeText = (doc: Y.Doc, text: string, newText: string) => {
-  const voteYarray = doc.getArray<VoteRange>("voteArray");
+  const voteYarray = voteRangesDoc.getArray<VoteRange>("voteArray");
   const voteRanges = voteYarray.toArray();
 
   const rangeIndex = voteRanges.findIndex(range => range.text === text);
@@ -113,9 +119,9 @@ export const updateVoteRangeText = (doc: Y.Doc, text: string, newText: string) =
 
     voteYarray.delete(rangeIndex, 1); // Remove the old range
     voteYarray.insert(rangeIndex, [updatedRange]); // Insert the updated range
-    console.log("Updated vote Array:", voteYarray.toArray());
+
   } else {
-    console.log("Range not found");
+
   }
 };
 
@@ -130,7 +136,7 @@ export const handleROSelectionChange = async (
     const end = selection.index + selection.length + 1;
     let ranges: Range[] = getYArray(doc);
 
-    console.log(ranges);
+
 
     const overlap = ranges.some((range) => {
       const rangeEnd = range.index + range.length;
@@ -139,16 +145,16 @@ export const handleROSelectionChange = async (
     });
 
     if (overlap) {
-      console.log("Current selection overlaps with an existing range");
+
       quill.current?.getEditor().blur();
     } else {
-      console.log("No overlap detected");
+
     }
   }
 };
 
 export const deleteRangeFromYArray = (doc: Y.Doc, newText: string, quill:any) => {
-  const voteYarray = doc.getArray<VoteRange>("voteArray");
+  const voteYarray = voteRangesDoc.getArray<VoteRange>("voteArray");
   const voteRanges = voteYarray.toArray();
 
   const voteRangeIndex = voteRanges.findIndex(range => range.text === newText);
@@ -156,25 +162,25 @@ export const deleteRangeFromYArray = (doc: Y.Doc, newText: string, quill:any) =>
   if (voteRangeIndex !== -1) {
     const voteRange = voteRanges[voteRangeIndex];
 
-    const yarray = doc.getArray<Range>("rangesArray");
+    const yarray = doc.getArray<Range>("rangeArray");
     const ranges = yarray.toArray();
 
     const rangeIndex = ranges.findIndex(range => range.index === voteRange.index && range.length === voteRange.length);
 
     if (rangeIndex !== -1) {
       const range = ranges[rangeIndex];
-      yarray.delete(rangeIndex, 1); // Remove the range from rangesArray
-      console.log("Deleted range from rangesArray:", yarray.toArray());
+      yarray.delete(rangeIndex, 1); // Remove the range from rangeArray
+
 
 
       quill.current?.getEditor().deleteText(range.index, range.length);
       quill.current?.getEditor().insertText(range.index, newText);
-      console.log("Updated editor text");
+
     } else {
-      console.log("Range not found in rangesArray");
+
     }
   } else {
-    console.log("Range not found in voteArray");
+
   }
 };
 
@@ -217,31 +223,79 @@ export const handleROChange = (
 
 export const handleRangeShift = (delta: DeltaStatic, quill: any, doc: Y.Doc) => {
   const editor = quill.current?.getEditor();
-  let ranges: Range[] = getYArray(doc);
+
+  let ranges: Range[] = doc.getArray<Range>("rangeArray").toArray();
+  console.log("Initial ranges from Yjs doc: ", ranges);
+
 
   const newBlockedRanges = ranges.map((range) => {
     let start = range.index;
     let end = range.index + range.length;
+    console.log(`Processing range: start=${start}, end=${end}`);
+
+    delta.ops?.forEach((op) => {
+      const retainLength = op.retain || 0;
+      console.log("Retain length:", retainLength);
+
+      const insertLength = op.insert && typeof op.insert === "string" ? op.insert.length : 0;
+      console.log("Insert length:", insertLength);
+
+      const deleteLength = op.delete || 0;
+      console.log("Delete length:", deleteLength);
+
+      const pos = op.retain || 0;
+      console.log("Operation position:", pos);
+
+      if (pos <= start) {
+        start += insertLength - deleteLength;
+        console.log(`Updated start position: ${start}`);
+      }
+    });
+
+    console.log(`Final range: start=${start}, length=${range.length}`);
+    return { index: start, length: range.length };
+  });
+
+  console.log("New blocked ranges:", newBlockedRanges);
+
+  const yArray = doc.getArray<Range>('rangeArray');
+  console.log("Yjs rangesArray before update:", yArray.toArray());
+
+  yArray.delete(0, yArray.length);
+  console.log("Yjs rangesArray after deletion:", yArray.toArray());
+
+  yArray.push(newBlockedRanges);
+  console.log("Yjs rangesArray after push:", yArray.toArray());
+
+  newBlockedRanges.pop();
+
+
+
+  let voteRanges: VoteRange[] = voteRangesDoc.getArray<VoteRange>("voteArray").toArray();
+
+  const newBlockedVoteRanges = voteRanges.map((voteRange) => {
+    let start = voteRange.index;
+    let end = voteRange.index + voteRange.length;
+    let text = voteRange.text;
 
     delta.ops?.forEach((op) => {
       const retainLength = op.retain || 0;
 
-      console.log(JSON.stringify(retainLength));
       const insertLength =
         op.insert && typeof op.insert === "string" ? op.insert.length : 0;
       const deleteLength = op.delete || 0;
-      const pos = editor.getSelection().index;
+      const pos = op.retain || 0;
 
       if (pos <= start) {
         start += insertLength - deleteLength;
-        end += insertLength - deleteLength;
       }
     });
 
-    return { index: start, length: end - start };
+    return { index: start, length: voteRange.length, text: text };
   });
 
-  const yArray = doc.getArray<Range>('rangesArray');
-  yArray.delete(0, yArray.length);
-  yArray.push(newBlockedRanges);
+  const voteYArray = voteRangesDoc.getArray<VoteRange>('voteArray');
+  voteYArray.delete(0, voteYArray.length);
+  voteYArray.push(newBlockedVoteRanges);
+  console.log(voteYArray.toArray());
 };

@@ -44,6 +44,7 @@ export default function Editor({
 
   const [text, setText] = useState("");
   const [selectedRange, setSelectedRange] = useState<Range | null>();
+  const [voteRange, setVoteRange] = useState<Range | null>();
   const [buttonPosition, setButtonPosition] = useState<Position>();
   const [showButton, setShowButton] = useState(false);
   const [textareaPosition, setTextareaPosition] = useState<Position>();
@@ -69,7 +70,11 @@ export default function Editor({
 
 
   useEffect(() => {
+
     const fetchInitialText = async () => {
+
+
+
       try {
         console.log(`Fetching initial text for room: ${room}`);
         const response = await fetch(`/api/getInitialText?room=${room}`);
@@ -77,11 +82,7 @@ export default function Editor({
 
         if (response.ok) {
           const ytext = provider.doc.getText("quill");
-          const yarray = provider.doc.getArray('rangesArray');
-          const voteYarray = provider.doc.getArray('voteArray');
 
-          yarray.delete(0,yarray.length);
-          voteYarray.delete(0,voteYarray.length);
           ytext.delete(0, ytext.length); // Clear existing content
           ytext.insert(0, data.text); // Insert fetched text
           setText(data.text); // Update local state
@@ -160,6 +161,7 @@ export default function Editor({
         const range = editor.getSelection();
 
         if (range) {
+          setVoteRange(range);
           const text = editor.getText(range.index, range.length);
 
           setSelectedText(text);
@@ -260,8 +262,7 @@ export default function Editor({
 
   const onChange = (content: string, delta: DeltaStatic, source: string, editor: any): void => {
     handleROChange(quill, content, delta, source);
-    handleRangeShift(delta,quill,provider.doc);
-    console.log(JSON.stringify(quill.current?.getEditor().getSelection()?.index))
+    handleRangeShift(delta,quill, provider.doc);
     setText(content);
   };
 
@@ -340,6 +341,7 @@ export default function Editor({
       text={selectedText}
       onCancel={handleHideTooltip}
       onSaveRange={saveRange}
+      range={voteRange}
     />
 
     </div>

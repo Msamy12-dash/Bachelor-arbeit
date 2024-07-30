@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment=" Improve vote UI + Fixing text blocking bugs">
+    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="Resolved merge conflicts with main">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MainPageComponent/Lobby.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainPageComponent/Lobby.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MainPageComponent/LobbyTop.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainPageComponent/LobbyTop.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/VoteComponent/TextBlocking.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VoteComponent/TextBlocking.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/party/editorserver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/party/editorserver.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
