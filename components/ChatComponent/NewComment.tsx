@@ -121,7 +121,9 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
   };
 
   handleTextareaFocus = (event: FocusEvent<HTMLTextAreaElement>) => {
-    //this.highlightSelectedText();
+    setTimeout(() => {
+      this.highlightSelectedText();
+    }, 0);
     this.setState({ isTextareaFocused: true });
   };
 
