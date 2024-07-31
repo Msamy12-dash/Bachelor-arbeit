@@ -1,5 +1,6 @@
 import React from 'react';
 import { Avatar, AvatarGroup } from '@nextui-org/react';
+
 import NotificationComponent from './NotificationComponent';
 
 // Define the type for the props
@@ -18,10 +19,10 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ userCount }) => {
     <>
       <AvatarGroup 
         isBordered 
-        max={3}
         css={{ cursor: "pointer" }}
-        total={userCount}
+        max={3}
         popoverTriggerType="hover"
+        renderCount={(count) => count > 3 ? <p className="text-sm text-gray-700 font-medium ms-2">+{count - 3} others</p> : null}
         renderPopoverContent={() => (
           <div>
             {users.map((user, index) => (
@@ -29,7 +30,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ userCount }) => {
             ))}
           </div>
         )}
-        renderCount={(count) => count > 3 ? <p className="text-sm text-gray-700 font-medium ms-2">+{count - 3} others</p> : null}
+        total={userCount}
       >
         {users.slice(0, 3).map((user, index) => (
           <Avatar key={index}  name="user" />

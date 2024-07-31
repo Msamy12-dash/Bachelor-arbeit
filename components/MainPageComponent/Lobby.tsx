@@ -1,40 +1,28 @@
-/* eslint-disable prettier/prettier */
-"use client";
-import { useEffect, useState } from "react";
-import usePartySocket from "partysocket/react";
-import { Rooms, SINGLETON_ROOM_ID } from "@/party/src/types";
-import CardContainer from "../MUPComponents/CardContainer";
-import { Button } from "@nextui-org/react";
-import { PARTYKIT_HOST } from "@/pages/env";
-import Quill from "react-quill";
+import React, { useState } from 'react';
+import usePartySocket from 'partysocket/react';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
+import UserAvatar from '../UserComponent/UserAvatar';
+
+import { Rooms, SINGLETON_ROOM_ID } from '@/party/src/types';
+import { PARTYKIT_HOST } from '@/pages/env';
 
 export default function Lobby({
   currentRoom,
   setCurrentRoom,
-  selectedText,
-  completeText,
-  editor
 }: {
   currentRoom: string;
   setCurrentRoom: (room: string) => void;
-  selectedText: string;
-  completeText: string;
-  editor: Quill & {
-    highlightText: (index: number, length: number, color: string) => void;
-    removeHighlight: (index: number, length: number) => void;
-    getSelection: () => { index: number; length: number } | null;
-  } | null;
 }) {
   const [rooms, setRooms] = useState<Rooms>({});
-  const [nextRoomId, setNextRoomId] = useState<number>(1);
+  const [newRoomName, setNewRoomName] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   usePartySocket({
-    // host: props.host, -- defaults to window.location.host if not set
     host: PARTYKIT_HOST,
-
+    room:SINGLETON_ROOM_ID,
     party: "rooms",
-    room: SINGLETON_ROOM_ID,
     onMessage(evt) {
       const data = JSON.parse(evt.data);
 
@@ -48,60 +36,61 @@ export default function Lobby({
   });
 
   const handleNewRoom = () => {
-    const newRoom = nextRoomId.toString().padStart(1, "0"); // Converts the number to a string with leading zeros
-
-    setRooms((prevRooms) => ({
-      ...prevRooms,
-      [newRoom]: 1, // Assuming the new room starts with 1 present user
-    }));
-    setCurrentRoom(newRoom);
-    setNextRoomId(nextRoomId + 1); // Increment the next room ID
+    if (newRoomName && !rooms[newRoomName]) {
+      setRooms((prevRooms) => ({
+        ...prevRooms,
+        [newRoomName]: 1, // Assuming '1' is the initial count of users
+      }));
+      setCurrentRoom(newRoomName);
+      setNewRoomName(''); // Reset the input field
+    } else {
+      // Trigger the snackbar if room name is already in use
+      setOpenSnackbar(true);
+    }
   };
 
+  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
+
+  const userCount = rooms[currentRoom] || 0;
+
   return (
-    <div className="flex flex-col w-full h-screen bg-gradient-to-b from-gray-100 to-gray-200">
-      {/* Top Section */}
-      <div className="top-section p-4 bg-white rounded-lg">
-        <h3 className="text-2xl font-bold mb-4">All Rooms</h3>
-        <ul className="flex flex-col space-y-4 mb-6">
-          {Object.entries(rooms).map(([room, count]) => {
-            return (
-              //Need to add: show Present: {count} next to each room
-              <li key={room} className="flex items-center justify-between p-4 bg-white rounded shadow">
-                <Button
-                  onClick={() => setCurrentRoom(room)}
-                  className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600"
-                >
-                  Room #{room}
-                </Button>
-                <span>
-                  Present <span className="font-bold">{count}</span>
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-        <Button
-          onClick={() => setCurrentRoom(Math.random().toString(36).substring(2, 8))}
-          className="bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 mb-6"
-        >
-          New Room
-        </Button>
-      </div>
-  
-      {/* Card Container Section */}
-      {currentRoom && (
-        <div className="card-container flex-1 overflow-hidden">
-          <CardContainer
-            key={currentRoom}
-            selectedText={selectedText}
-            room={currentRoom}
-            completeText={completeText}
-            editor={editor}
-          />
-        </div>
-      )}
-    </div>
+    <>
+      <UserAvatar userCount={userCount} />
+      <input
+        placeholder="Enter new room name"
+        type="text"
+        value={newRoomName}
+        onChange={(e) => setNewRoomName(e.target.value)}
+      />
+      <button onClick={handleNewRoom}>Create Room</button>
+      
+      <select
+        className=""
+        value={currentRoom}
+        onChange={(e) => setCurrentRoom(e.target.value)}
+      >
+        {Object.entries(rooms). map(([room, count]) => (
+          <option key={room} value={room}>
+            Room: {room}
+          </option>
+        ))}
+      </select>
+
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Position the Snackbar at the top center of the screen
+        autoHideDuration={1000} // Snackbar will disappear after 15 seconds
+        open={openSnackbar}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert severity="error" sx={{ width: '100%' }} onClose={handleCloseSnackbar}>
+          Room "{newRoomName}" already exists!
+        </Alert>
+      </Snackbar>
+    </>
   );
-  
 }

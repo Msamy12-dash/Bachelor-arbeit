@@ -11,10 +11,12 @@ export default class EditorServer implements Party.Server {
   yjsOptions: YPartyKitOptions = {
     persist: { mode: "snapshot" },
   };
+  connections: Record<string, number> | undefined;
+
   constructor(public room: Party.Room) {}
-
+  onStart?(): void | Promise<void>{}
   getOpts() {
-
+    this.handleLoadFromDB();
     // options must match when calling unstable_getYDoc and onConnect
     const opts: YPartyKitOptions = {
       readOnly: true,
@@ -69,6 +71,7 @@ export default class EditorServer implements Party.Server {
     }
 
     return new Y.Doc();
+    
   }
 
   async onClose(_: Party.Connection) {

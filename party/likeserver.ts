@@ -1,7 +1,7 @@
 import type * as Party from "partykit/server";
 
 import { json } from "./src/types";
-import { createUpdateMessage, DeleteReaction, parseReactionMessage } from "./src/VoteFunction";
+import { createUpdateMessage,  DeleteReaction,  parseReactionMessage } from "./src/VoteFunction";
 
 export default class likelerver implements Party.Server {
   options: Party.ServerOptions = { hibernate: true };
@@ -52,7 +52,7 @@ export default class likelerver implements Party.Server {
     this.room.storage.put("reactions", this.reactions);
   }
   async onClose(_connection: Party.Connection) {
-   _connection.id
+   
   }
 }
 

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Quill from "react-quill";
 import { Card, Button } from "@nextui-org/react";
 
-import LobbyTop from "../MainPageComponent/LobbyTop";
+import Lobby from "../MainPageComponent/Lobby";
 import CommentHandler from "../ChatComponent/CommentHandler";
 
 

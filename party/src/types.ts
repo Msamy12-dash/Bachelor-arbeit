@@ -41,3 +41,7 @@ const CORS = {
 };
 
 export const json = <T>(data: T, status = 200) => Response.json(data, { status, headers: CORS });
+interface Update {
+  roomId: string;
+  type: 'connect' | 'disconnect';
+}

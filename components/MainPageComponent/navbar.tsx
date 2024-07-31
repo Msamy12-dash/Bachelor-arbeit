@@ -9,7 +9,7 @@ import clsx from "clsx";
 import { useState } from "react";
 
 
-import LobbyTop from "./LobbyTop";
+import Lobby from "./Lobby";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/MainPageComponent/theme-switch";
@@ -45,7 +45,7 @@ export const Navbar = ({ currentRoom, setCurrentRoom }) => {
           <ThemeSwitch />
         </NavbarItem>
       </NavbarContent>
-          <LobbyTop currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
+          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
 
     </NextUINavbar>
   );

@@ -47,6 +47,7 @@
 		"mui": "^0.0.1",
 		"next": "^14.2.5",
 		"next-auth": "^4.24.7",
+		"next-pages-template": "file:",
 		"next-themes": "^0.2.1",
 		"ollama": "^0.5.2",
 		"partysocket": "1.0.1",
