@@ -10,7 +10,7 @@ import YPartykitProvider from "y-partykit/provider";
 import Tooltip from "../ToolTipsComponets/ToolTip";
 import { PARTYKIT_HOST } from "@/pages/env";
 import YPartyKitProvider from "y-partykit/provider";
-import { handleRangeShift } from "../ChatComponent/handleRangeShift"
+import { handleCommentRangeShift } from "../ChatComponent/handleCommentRangeShift"
 import { DeltaStatic } from "quill/index";
 
 interface Range {
@@ -160,7 +160,7 @@ export default function Editor({
   }
 
   const onChange = (content: string, delta: DeltaStatic, source: string, editor: any): void => {
-    handleRangeShift(delta, quillRef, yDoc);
+    handleCommentRangeShift(delta, quillRef, yDoc);
     setText(content)
   }
 

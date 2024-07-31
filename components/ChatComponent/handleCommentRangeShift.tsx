@@ -27,7 +27,7 @@ interface Comment {
   canReply: boolean;
 }
 
-export const handleRangeShift = (delta: DeltaStatic, quill: any, doc: Y.Doc) => {
+export const handleCommentRangeShift = (delta: DeltaStatic, quill: any, doc: Y.Doc) => {
   const editor = quill.current?.getEditor();
 
   let comments: Comment[] = doc.getArray<Comment>("comments").toArray();
