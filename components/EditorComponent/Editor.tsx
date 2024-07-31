@@ -2,11 +2,9 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import { QuillBinding } from "y-quill";
-import useYProvider from "y-partykit/react";
 import "react-quill/dist/quill.snow.css";
 import QuillCursors from "quill-cursors";
 import * as Y from "yjs";
-import YPartykitProvider from "y-partykit/provider";
 import Tooltip from "../ToolTipsComponets/ToolTip";
 import { PARTYKIT_HOST } from "@/pages/env";
 import YPartyKitProvider from "y-partykit/provider";

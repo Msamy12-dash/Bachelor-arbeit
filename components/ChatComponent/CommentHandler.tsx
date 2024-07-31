@@ -8,6 +8,7 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+import * as Y from "yjs";
 
 interface Comment {
   key: number;
@@ -27,16 +28,17 @@ interface Comment {
 
 export default function CommentHandler({
   room,
+  yDoc,
   textSpecificComment,
   setRange,
   editor,
-  
   promptList,
   setAIChanges,
   deleteSelectedComments,
   setDeleteSelectedComments
 }: Readonly<{
   room: string;
+  yDoc: Y.Doc;
   textSpecificComment: Comment | null;
   editor: Quill | null;
   setRange: Function;
@@ -393,7 +395,7 @@ export default function CommentHandler({
     </div>
           </TabPanel>
           <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
-            <PromptList promptList={promptList} />
+            <PromptList promptList={promptList} yDoc={yDoc} />
           </TabPanel>
         </TabContext>
       </Box>

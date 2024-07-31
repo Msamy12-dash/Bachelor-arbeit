@@ -126,6 +126,7 @@ export default function EditorPage({
           <CommentHandler
             editor={editor}
             room={currentRoom}
+            yDoc={yDoc}
             setRange={handleSetRange}
             textSpecificComment={textSpecificComment}
             setAIChanges={setAIChanges}
