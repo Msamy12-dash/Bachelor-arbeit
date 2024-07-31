@@ -59,13 +59,17 @@ export const parseReactionMessage = (message: string) => {
 
   export async function SetVote(req: Party.Request, room: Party.Room, setPoll: (poll: Poll) => void): Promise<any> {
     const pollData = await req.json() as Poll;
+    console.log(pollData.options)
     let poll = {
       ...pollData,
       votes: pollData.options.map(() => 0),
     };
   
     await savePoll(poll, room);
-    room.broadcast("vote now");
+    const roomId = room.id; // Assuming `room.id` holds the identifier for the room
+    const broadcastMessage = JSON.stringify({ message: "vote now", roomId });
+
+    room.broadcast(broadcastMessage);
     setPoll(poll);
   
     return json(poll);
@@ -73,7 +77,9 @@ export const parseReactionMessage = (message: string) => {
   
   // Standalone function to handle GET requests
   export  function CheckVote(poll: Poll | undefined): any {
+    console.log(poll)
     if (poll) {
+      
       return json(poll);
     }
   

@@ -6,7 +6,8 @@ import usePartySocket from "partysocket/react";
 
 import PollUI from "../voteComponent/VoteComponent";
 
-import { PARTYKIT_HOST } from "@/pages/env";
+import { PARTYKIT_HOST, PARTYKIT_URL } from "@/pages/env";
+import { Poll } from "@/party/src/types";
 
 function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
   return usePartySocket({
@@ -19,24 +20,38 @@ function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => voi
 
 const NotificationComponent: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
+  const [poll, setPoll] = useState<Poll | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [isPollModalOpen, setIsPollModalOpen] = useState(false);
-  const [notificationID, setNotificationID] = useState(0); // State for tracking notification ID.
+  const [notificationID, setNotificationID] = useState(0);
 
-  const onMessage = (event: MessageEvent) => {
-    const data = event.data;
+  const onMessage = async (event: MessageEvent) => {
+    const data = JSON.parse(event.data);
+    
+    if (data.message === "vote now") {
+      const response = await fetch(`${PARTYKIT_URL}/parties/vote/${data.pollId}`);
+      if (!response.ok) {
+        console.error("Failed to fetch poll data");
+        return;
+      }
+      const pollData = await response.json() as Poll;
+      setPoll({
+        ...pollData,
+        votes: pollData.votes || [],
+        options: pollData.options || []
+      });
 
-    if (data === "vote now") {
       setMessages(prev => [...prev, "Please cast your vote now!"]);
       setIsSnackbarOpen(true);
       setIsPollModalOpen(true);
       setTimeout(() => setIsSnackbarOpen(false), 3000);
-      setNotificationID(prevID => prevID + 1); // Increment the notification ID.
+      setNotificationID(prevID => prevID + 1);
     }
   };
 
-  const socket = useSocketConnection(notificationID.toString(), onMessage);
+  const id = notificationID.toString();
+  const socket = useSocketConnection(id, onMessage);
 
   useEffect(() => {
     const saved = localStorage.getItem("messages") || "[]";
@@ -53,10 +68,7 @@ const NotificationComponent: React.FC = () => {
 
   return (
     <div className="relative inline-block ml-4">
-      <button
-        aria-label={`You have ${messages.length} notifications`}
-        onClick={onOpen}
-      >
+      <button aria-label={`You have ${messages.length} notifications`} onClick={onOpen}>
         <NotificationsIcon style={{ fontSize: 24 }} />
         {messages.length > 0 && (
           <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full h-5 w-5 flex items-center justify-center text-xs">
@@ -68,18 +80,9 @@ const NotificationComponent: React.FC = () => {
         <ModalContent>
           <ModalHeader>Notifications</ModalHeader>
           <ModalBody>
-            {messages.length === 0 ? (
-              <p>No notifications</p>
-            ) : (
+            {messages.length === 0 ? <p>No notifications</p> : (
               <div>
-                <p>Please cast your vote now!</p>
-                {isPollModalOpen && (
-                  <PollUI
-                    id={`poll-${notificationID}`}
-                    initialVotes={[0, 0]}
-                    options={["SOCCER IN ITSELF DOES", "The origins of football in England can be traced back to as early as the eighth century."]}
-                  />
-                )}
+                {poll && <PollUI id={id} initialVotes={poll.votes} options={poll.options} />}
               </div>
             )}
           </ModalBody>

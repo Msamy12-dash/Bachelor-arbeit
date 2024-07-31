@@ -1,3 +1,4 @@
+
 import type * as Party from "partykit/server";
 
 import { json, Poll } from "./src/types";
@@ -13,10 +14,11 @@ export default class VoteServer implements Party.Server {
     this.room.storage.setAlarm(Date.now() + 10 * 60 * 1000);
   }
 
-  async onRequest(req: Party.Request) {
-    switch (req.method) {
+  async onRequest(_req: Party.Request) {
+    
+    switch (_req.method) {
       case "POST":
-        return SetVote(req, this.room, this.setPoll.bind(this));
+        return SetVote(_req, this.room, this.setPoll.bind(this));
       case "GET":
         return CheckVote(this.poll);
       default:
@@ -28,12 +30,13 @@ export default class VoteServer implements Party.Server {
     this.poll = poll;
   }
 
-  async onMessage(message: string) {
+  async onMessage(message: string , sender: Party.Connection) {
+    
     ReceivingVotes(message, this.poll, this.room, this.setPoll.bind(this));
+    
   }
 
   async onAlarm() {
-    console.log("vote is over");
     this.room.storage.setAlarm(Date.now() + 10 * 60 * 1000);
   }
 }
