@@ -66,8 +66,8 @@ export const parseReactionMessage = (message: string) => {
     };
   
     await savePoll(poll, room);
-    const roomId = room.id; // Assuming `room.id` holds the identifier for the room
-    const broadcastMessage = JSON.stringify({ message: "vote now", roomId });
+    const roomId = room.id; // Assuming room.id holds the identifier for the room
+    const broadcastMessage = JSON.stringify({ message: "vote now", roomId ,poll});
 
     room.broadcast(broadcastMessage);
     setPoll(poll);
@@ -105,3 +105,116 @@ export const parseReactionMessage = (message: string) => {
       updatePoll(poll);
     }
   }
+
+/** import type * as Party from "partykit/server";
+
+import { json, Poll, ReactionSchema, ReactionUpdateSchema } from "./types";
+
+export const parseReactionMessage = (message: string) => {
+    return ReactionSchema.parse(JSON.parse(message));
+  };
+  
+  export const createReactionMessage = (kind: string) => {
+    return JSON.stringify(
+      ReactionSchema.parse({
+        type: "reaction",
+        kind,
+      })
+    );
+  };
+  
+  export const parseUpdateMessage = (message: string) => {
+    return ReactionUpdateSchema.parse(JSON.parse(message));
+  };
+  
+  export const createUpdateMessage = (reactions: Record<string, number>) => {
+    return JSON.stringify(
+      ReactionUpdateSchema.parse({
+        type: "update",
+        reactions,
+      })
+    );
+  };
+  
+  export const DeleteVote = (reactions: Record<string, number>) => {
+     for (let index = 0; index < reactions.length; index++) {
+       reactions[index] = 0;
+      
+     }
+  };
+
+  export const parseVoteMessage = (message: string) => {
+    return ReactionSchema.parse(JSON.parse(message));
+  };
+  
+  export const createVoteMessage = (kind: string) => { 
+    return JSON.stringify(
+      ReactionSchema.parse({
+        type: "reaction",
+        kind,
+      })
+    );
+  };
+
+  export const DeleteReaction = (reactions: Record<string, number>) => {
+    for (let index = 0; index < reactions.length; index++) {
+      reactions[index] = 0;
+     
+    }
+ };
+
+  
+
+ export async function SetVote(req: Party.Request, room: Party.Room, setPoll: (poll: Poll) => void): Promise<any> {
+  const pollData = await req.json() as Poll;
+
+  console.log("Received poll data:", pollData);
+  
+  let poll: Poll = {
+    ...pollData,
+    votes: pollData.options.map(() => 0),
+  };
+  
+  await savePoll(poll, room);
+  setPoll(poll);
+  const broadcastMessage = JSON.stringify({ message: "Vote now", roomId: room.id });
+
+  room.broadcast(broadcastMessage);
+
+  return json(poll);
+}
+
+export function CheckVote(poll: Poll | undefined): any {
+  console.log("Checking poll state:", poll);
+  if (poll) {
+    return json(poll);
+  } else {
+    console.error("No active poll to return.");
+
+    return json({ error: "No active poll" });
+  }
+}
+
+export async function savePoll(poll: Poll, room: Party.Room) {
+  console.log("Saving poll to storage");
+  await room.storage.put("poll", poll);
+}
+
+export async function ReceivingVotes(message: string, poll: Poll | undefined, room: Party.Room, updatePoll: (poll: Poll) => void) {
+  if (!poll) {
+    console.warn("No active poll to receive votes.");
+
+    return;
+  }
+
+  const event = JSON.parse(message);
+
+  console.log("Processing vote:", event);
+  
+  if (event.type === "vote") {
+    poll.votes![event.option] += 1;
+    room.broadcast(JSON.stringify(poll));
+    await savePoll(poll, room);
+    updatePoll(poll);
+  }
+}*/

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import * as Y from "yjs";
 
-import { saveRangeWithText, updateVoteRangeText, deleteRangeFromYArray } from "../VoteComponent/TextBlocking";
-import { sendvote } from "../VoteComponent/VoteClientFunctions";
 
 import CustomMenu from "./AIInteractionComponent";
+import { deleteRangeFromYArray, saveRangeWithText, updateVoteRangeText } from "../VoteComponent/TextBlocking";
+import { sendvote } from "../voteComponent/VoteClientFunctions";
 
 interface TooltipProps {
   show: boolean;

@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import Snackbar from "@mui/material/Snackbar";
-import usePartySocket from "partysocket/react";
 
 import PollOptions from "../voteComponent/VoteOptions";
 
-import { PARTYKIT_HOST } from "@/pages/env";
 import { Poll } from "@/party/src/types";
+import { PARTYKIT_HOST } from "@/pages/env";
+import usePartySocket from "partysocket/react";
 
-// Custom hook to create and handle WebSocket connection
-function useSocketConnection(onMessage: (event: MessageEvent) => void) {
+ function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
   return usePartySocket({
     host: PARTYKIT_HOST,
-    room: "1",
+    room: ID,
     party: "vote",
     onMessage,
   });
 }
+
+// Custom hook to create and handle WebSocket connection
+
 
 const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[] }> = ({ id, options, initialVotes }) => {
   const [votes, setVotes] = useState<number[]>(initialVotes ?? []);
@@ -39,7 +41,7 @@ const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[] 
     }
   };
 
-  const socket = useSocketConnection(onMessage);
+  const socket = useSocketConnection(id,onMessage);
 
   const sendVote = (optionIndex: number) => {
     if (vote === null) {

@@ -6,7 +6,7 @@ import usePartySocket from "partysocket/react";
 
 import PollUI from "../voteComponent/VoteComponent";
 
-import { PARTYKIT_HOST, PARTYKIT_URL } from "@/pages/env";
+import { PARTYKIT_HOST } from "@/pages/env";
 import { Poll } from "@/party/src/types";
 
 function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
@@ -28,18 +28,14 @@ const NotificationComponent: React.FC = () => {
 
   const onMessage = async (event: MessageEvent) => {
     const data = JSON.parse(event.data);
+    console.log(data);
     
     if (data.message === "vote now") {
-      const response = await fetch(`${PARTYKIT_URL}/parties/vote/${data.pollId}`);
-      if (!response.ok) {
-        console.error("Failed to fetch poll data");
-        return;
-      }
-      const pollData = await response.json() as Poll;
+      const { poll } = data;
       setPoll({
-        ...pollData,
-        votes: pollData.votes || [],
-        options: pollData.options || []
+        ...poll,
+        votes: poll.votes || [],
+        options: poll.options || []
       });
 
       setMessages(prev => [...prev, "Please cast your vote now!"]);
@@ -103,3 +99,8 @@ const NotificationComponent: React.FC = () => {
 };
 
 export default NotificationComponent;
+export type Poll = {
+  title: string;
+  options: string[];
+  votes?: number[];
+};
