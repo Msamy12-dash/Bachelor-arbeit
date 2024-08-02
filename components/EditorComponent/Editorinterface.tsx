@@ -132,6 +132,7 @@ export default function EditorPage({
             promptList={prompts}
             deleteSelectedComments={deleteSelectedComments}
             setDeleteSelectedComments={setDeleteSelectedComments}
+            yProvider={yProvider}
           />
         </Card>
 

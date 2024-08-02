@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Button, Spinner } from "@nextui-org/react";
 import { useTheme } from "next-themes";
-import * as Y from "yjs";
-
+import YPartyKitProvider from "y-partykit/provider";
 
 interface CardData {
   id: string;
@@ -16,27 +15,26 @@ interface CardData {
 
 export default function MUPCard({
   cardData,
-  room,
   onTextChange,
   onResponseChange,
   onSubmittingChange,
   onDiscard,
-  yDoc,
   setPrompts,
+  yProvider,
 }: Readonly<{
   cardData: CardData;
-  room: string;
   onTextChange: (id: string, newText: string) => void;
   onResponseChange: (id: string, newResponse: string) => void;
   onSubmittingChange: (id: string, isSubmitting: boolean) => void;
   onDiscard: (id: string) => void;
-  yDoc: Y.Doc;
   setPrompts: Function;
+  yProvider: YPartyKitProvider;
 }>) {
   const [loading, setLoading] = useState(false);
-  const [inputText, setInputText] = useState('')
-
+  const [inputText, setInputText] = useState(cardData.promptText || "");
   const { theme } = useTheme();
+  const yDoc = yProvider?.doc;
+  const yPrompts = yDoc?.getArray("prompts");
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
@@ -85,17 +83,8 @@ export default function MUPCard({
   };
 
   const handleSave = () => {
-    const savedPrompts = JSON.parse(
-      localStorage.getItem("savedPrompts") || "[]"
-    );
-    const updatedPrompts = [...savedPrompts, inputText];
-
-    localStorage.setItem("savedPrompts", JSON.stringify(updatedPrompts));
-    setPrompts(updatedPrompts);
-    const ytext = yDoc.getText("promptList");
-      ytext.setAttribute("savePrompt", JSON.stringify(updatedPrompts));
-      console.log("🚀 ~ handleSave ~ ytext:", ytext.getAttribute("savePrompt"));
-    setInputText("");
+    console.log("----- called")
+    yPrompts.push([inputText]);
   };
 
   return (
@@ -110,10 +99,14 @@ export default function MUPCard({
       />
       <Button
         className={`inline-flex items-center justify-center w-full px-6 py-3 text-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-md ${
-          cardData.submitting ? "cursor-not-allowed" : "hover:from-blue-600 hover:to-indigo-600"
+          cardData.submitting
+            ? "cursor-not-allowed"
+            : "hover:from-blue-600 hover:to-indigo-600"
         } transition-all duration-300`}
         onClick={handleSubmitToAI}
-        disabled={cardData.submitting || cardData.promptText.trim().length === 0}
+        disabled={
+          cardData.submitting || cardData.promptText.trim().length === 0
+        }
       >
         {loading ? (
           <div className="flex items-center justify-center space-x-2">
@@ -125,18 +118,20 @@ export default function MUPCard({
         )}
       </Button>
       {cardData.responseText && (
-         <div className="mt-4 p-4 bg-gray-50 border border-gray-300 rounded-lg box -border">
-         {JSON.stringify(cardData.responseText)}
-       </div>
+        <div className="mt-4 p-4 bg-gray-50 border border-gray-300 rounded-lg box-border">
+          {typeof cardData.responseText === "string"
+            ? cardData.responseText
+            : ""}
+        </div>
       )}
       <div className="mt-4 flex space-x-2 w-full">
-        <Button 
+        <Button
           className="flex-grow flex-shrink min-w-0 px-2 py-3 text-lg text-white bg-green-500 rounded-full shadow-md hover:bg-green-600 transition-all duration-300"
           onClick={handleSave}
         >
           Save
         </Button>
-        <Button 
+        <Button
           className="flex-grow flex-shrink min-w-0 px-2 py-3 text-lg text-white bg-red-500 rounded-full shadow-md hover:bg-red-600 transition-all duration-300"
           onClick={handleDiscard}
         >

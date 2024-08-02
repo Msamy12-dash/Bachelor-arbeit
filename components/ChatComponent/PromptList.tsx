@@ -1,5 +1,5 @@
 // promptList.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   List,
   ListItem,
@@ -10,82 +10,81 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import styles from "./promptList.module.css"; // Importing CSS for additional styles
-import * as Y from "yjs";
-import useYProvider from "y-partykit/react";
-import { SINGLETON_ROOM_ID } from "@/party/types";
 
-export default function PromptList({ promptList }: { promptList: string[] }) {
-  const [prompts, setPrompts] = useState<string[]>([]);
+import styles from "./promptList.module.css"; // Importing CSS for additional styles
+
+import YPartyKitProvider from "y-partykit/provider";
+
+export default function PromptList({
+  yProvider,
+}: {
+  promptList: string[];
+  yProvider: YPartyKitProvider;
+}) {
+  const [prompts, setPrompts] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [editContent, setEditContent] = useState<string>("");
-  const ydoc = new Y.Doc();
+  const yProviderDoc = yProvider?.doc;
+  const yProviderArr = yProviderDoc?.getArray("prompts");
+  console.log("yProvider------",yProvider)
 
-  const provider = useYProvider({
-    host: "localhost:1999", // optional, defaults to window.location.host
-    party: "editorserver",
-    room: SINGLETON_ROOM_ID,
-    doc: ydoc,
-  });
-  const savedText = localStorage.getItem("savedPrompts");
-
+  const loadPrompts = useCallback(() => {
+    const savedPrompts = yProviderArr?.toArray() || [];
+    setPrompts(savedPrompts);
+  }, [yProviderArr]);
 
   useEffect(() => {
-    console.log("🚀 ~ useEffect ~ savedText:-----", savedText);
+    loadPrompts();
 
-    if (savedText) {
-      try {
-        const ytext = provider.doc.getText("promptList");
+    const handleUpdate = () => {
+      loadPrompts();
+    };
 
-        const getFromYdoc = ytext.getAttribute("savePrompt");
-      
-        const parsedPrompts = JSON.parse(savedText);
-        if (Array.isArray(parsedPrompts)) {
-          setPrompts(parsedPrompts);
-        }
-      } catch (error) {
-        console.error(
-          "Failed to parse saved prompts from local storage:",
-          error
-        );
-      }
-    }
-  }, [savedText, promptList]);
+    yProviderArr?.observe(handleUpdate);
+    return () => yProviderArr?.unobserve(handleUpdate);
+  }, [yProviderArr, loadPrompts]);
 
-  const handleDelete = (index: number) => {
-    const updatedPrompts = prompts.filter((_, i) => i !== index);
-    setPrompts(updatedPrompts);
-    localStorage.setItem("savedPrompts", JSON.stringify(updatedPrompts));
-  };
+  const handleDelete = useCallback(
+    (index: number) => {
+      yProviderArr.delete(index, 1); // Delete 1 item at the specified index
+      loadPrompts(); // Reload prompts to reflect the deletion
+    },
+    [yProviderArr, loadPrompts]
+  );
 
-  const handleEdit = (index: number) => {
-    setIsEditing(index);
-    setEditContent(prompts[index]);
-  };
+  const handleEdit = useCallback(
+    (index: number) => {
+      setIsEditing(index);
+      setEditContent(prompts[index]);
+    },
+    [prompts]
+  );
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setEditContent(e.target.value);
-  };
+  const handleContentChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setEditContent(e.target.value);
+    },
+    []
+  );
 
-  const saveEdit = () => {
+  const saveEdit = useCallback(() => {
     if (isEditing !== null) {
-      const updatedPrompts = [...prompts];
-      updatedPrompts[isEditing] = editContent;
-      setPrompts(updatedPrompts);
-      localStorage.setItem("savedPrompts", JSON.stringify(updatedPrompts));
+      yProviderArr.delete(isEditing, 1); // Delete the old prompt
+      yProviderArr.insert(isEditing, [editContent]); // Insert the updated prompt
       setIsEditing(null);
       setEditContent("");
+      loadPrompts(); // Reload prompts to reflect the update
     }
-  };
+  }, [isEditing, editContent, yProviderArr, loadPrompts]);
 
-  const cancelEdit = () => {
+  const cancelEdit = useCallback(() => {
     setIsEditing(null);
     setEditContent("");
-  };
+  }, []);
 
   return (
     <Container style={{ padding: 0 }}>
-      <Typography gutterBottom variant="h6">
+      <Typography gutterBottom variant="h6" align="center">
         Prompt List
       </Typography>
       <div className={styles.scrollableList}>
@@ -104,8 +103,8 @@ export default function PromptList({ promptList }: { promptList: string[] }) {
                         />
                       ) : (
                         <ListItemText
-                          primary={prompt}
                           className={styles.textWrap}
+                          primary={prompt}
                         />
                       )}
                     </div>
@@ -113,14 +112,14 @@ export default function PromptList({ promptList }: { promptList: string[] }) {
                       {isEditing === index ? (
                         <>
                           <button
-                            onClick={saveEdit}
                             className={`btn-save ${styles.btnSave}`}
+                            onClick={saveEdit}
                           >
                             Save
                           </button>
                           <button
+                            className={` btn-cancel ${styles.btnCancel}`}
                             onClick={cancelEdit}
-                            className={`btn-cancel  ${styles.btnCancel}`}
                           >
                             Cancel
                           </button>
@@ -128,10 +127,10 @@ export default function PromptList({ promptList }: { promptList: string[] }) {
                       ) : (
                         <>
                           <IconButton onClick={() => handleEdit(index)}>
-                            <EditIcon />
+                            <EditIcon color="success" />
                           </IconButton>
                           <IconButton onClick={() => handleDelete(index)}>
-                            <DeleteIcon />
+                            <DeleteIcon color="warning" />
                           </IconButton>
                         </>
                       )}
@@ -145,8 +144,8 @@ export default function PromptList({ promptList }: { promptList: string[] }) {
       </div>
       {prompts.length === 0 && (
         <Typography
-          variant="body1"
           style={{ textAlign: "center", marginTop: "20px" }}
+          variant="body1"
         >
           No prompts available.
         </Typography>

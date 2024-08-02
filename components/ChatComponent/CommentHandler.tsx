@@ -8,6 +8,7 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+import YPartyKitProvider from "y-partykit/provider";
 
 interface Comment {
   key: number;
@@ -30,6 +31,7 @@ export default function CommentHandler({
   textSpecificComment,
   setRange,
   editor,
+  yProvider,
   
   promptList,
   setAIChanges,
@@ -44,6 +46,7 @@ export default function CommentHandler({
   setAIChanges: Function;
   deleteSelectedComments: boolean;
   setDeleteSelectedComments: Function;
+  yProvider:YPartyKitProvider;
 }>) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
@@ -393,7 +396,7 @@ export default function CommentHandler({
     </div>
           </TabPanel>
           <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
-            <PromptList promptList={promptList} />
+            <PromptList promptList={promptList} yProvider={yProvider}/>
           </TabPanel>
         </TabContext>
       </Box>

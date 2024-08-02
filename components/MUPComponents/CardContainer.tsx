@@ -128,28 +128,30 @@ export default function CardContainer({
   if (isLoading) return <div>Loading...</div>;
 
   return (
-        <div className="flex flex-col bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg shadow-lg overflow-y-auto relative h-full">
-          <div className="flex flex-col items-center mb-2 mx-4">
-            <Button
-              className={`inline-flex items-center justify-center w-full m-6 px-6 py-6 text-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full ${
-                selectedText
-                  ? "hover:from-blue-600 hover:to-indigo-600"
-                  : "opacity-60 cursor-not-allowed"
-              } transition-all duration-300`}
-              onClick={handleAddCard}
-              disabled={!selectedText}
-              style={{
-                minWidth: "200px",
-                maxWidth: "100%",
-                wordWrap: "break-word",
-              }}
-            >
-              Add Card with Selected Text
-            </Button>
-          </div>
-          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 px-2 pb-6">
-            <div className="flex flex-col space-y-6">
-              {cards.map((card) => (
+    <div className="flex flex-col bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg shadow-lg overflow-y-auto relative h-full">
+      <div className="flex flex-col items-center mb-2 mx-4">
+        <Button
+          className={`inline-flex items-center justify-center w-full m-6 px-6 py-6 text-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full ${
+            selectedText
+              ? "hover:from-blue-600 hover:to-indigo-600"
+              : "opacity-60 cursor-not-allowed"
+          } transition-all duration-300`}
+          onClick={handleAddCard}
+          disabled={!selectedText}
+          style={{
+            minWidth: "200px",
+            maxWidth: "100%",
+            wordWrap: "break-word",
+          }}
+        >
+          Add Card with Selected Text
+        </Button>
+      </div>
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 px-2 pb-6">
+        <div className="flex flex-col space-y-6">
+          {yProvider &&
+            cards.map((card, index) => (
+              <div key={index}>
                 <MUPCard
                   key={card.id}
                   cardData={card}
@@ -158,12 +160,13 @@ export default function CardContainer({
                   onResponseChange={handleResponseChange}
                   onSubmittingChange={handleSubmittingChange}
                   onDiscard={handleDiscardCard}
-                  yDoc={yDoc}
+                  yProvider={yProvider}
                   setPrompts={setPrompts}
                 />
-              ))}
-            </div>
-          </div>
+              </div>
+            ))}
         </div>
+      </div>
+    </div>
   );
 }
