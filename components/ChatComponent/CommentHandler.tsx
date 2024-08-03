@@ -1,6 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import CommentList from './CommentList';
+// CommentHandlers
+import React, { useState, useEffect } from "react";
+import CommentList from "./CommentList";
 import Quill from "react-quill";
+import PromptList from "./PromptList";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
 import colors from "../../highlightColors.js"
@@ -9,13 +16,13 @@ interface Comment {
   key: number;
   name: string;
   content: string;
-  date: string; 
+  date: string;
   upvotes: number;
   isTextSpecific: boolean;
   shortenedSelectedText: string;
   index: number;
   length: number;
-  history: string[]; 
+  history: string[];
   replies: Comment[];
   parentKey: number | null;
   canReply: boolean;
@@ -43,22 +50,28 @@ interface CommentHandlerProps {
 }
 
 export default function CommentHandler({
+  room,
   setRange,
   editor,
-  setAIChanges,
-  deleteSelectedComments,
-  setDeleteSelectedComments,
-  promptList,
   yDoc,
   yProvider,
   selectedText,
   selectedRange,
+  promptList,
+  setAIChanges,
+  deleteSelectedComments,
+  setDeleteSelectedComments,
   highlightText,
   removeHighlight
-}: Readonly<CommentHandlerProps>) {
+}: Readonly<CommentHandlerProps>){
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
+  const [value, setValue] = React.useState("1");
   const [checkedKeys, setCheckedKeys] = useState<number[]>([]);
+
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue);
+  };
 
   useEffect(() => {
     if (yDoc) {
@@ -77,6 +90,7 @@ export default function CommentHandler({
     }
   }, [yDoc]);
 
+  
   const getNewKey = async (): Promise<number> => {
     const ymap = yDoc.getMap('keys');
     const currentKey = Number(ymap.get('currentKey') || 0);
@@ -84,7 +98,7 @@ export default function CommentHandler({
     ymap.set('currentKey', newKey);
     return newKey;
   };
-
+  
   const handleHighlightText = (index: number, length: number, color: string) => {
     if (highlightText) {
       highlightText(index, length, color);
@@ -101,7 +115,9 @@ export default function CommentHandler({
     const newKey = await getNewKey();
     let canReply = true;
 
+    // Check if it's a subsubcomment -> can't reply
     if (comment.parentKey !== null) {
+      // Find the comment with the matching parentkey
       const parentKey = comment.parentKey;
       const parentComment = comments.find(comment => comment.key === parentKey);
       if (parentComment === undefined) {
@@ -137,11 +153,13 @@ export default function CommentHandler({
       const addReplyToComment = (commentsArray: Comment[], keyToFind: number, replyToAdd: Comment): Comment[] => {
         return commentsArray.map(comment => {
           if (comment.key === keyToFind) {
+            // Add new comment as a reply to this comment
             return {
               ...comment,
               replies: [...comment.replies, replyToAdd],
             };
           } else if (comment.replies.length > 0) {
+            // Recursively check in replies
             return {
               ...comment,
               replies: addReplyToComment(comment.replies, keyToFind, replyToAdd)
@@ -156,7 +174,23 @@ export default function CommentHandler({
     } 
   };
 
-  const incrementUpvote = (IncrementComment: Comment) => {
+  useEffect(() => {
+
+    if(deleteSelectedComments){
+      for (let key of checkedKeys){
+        //console.log(key);
+        let comment = comments.find(comment => comment.key === key);
+        if(comment){
+          deleteComment(comment!);
+        }
+      }
+
+      setDeleteSelectedComments(false);
+    }
+  }, [deleteSelectedComments])
+
+
+  const incrementUpvote = async (IncrementComment: Comment) => {
     const yarray = yDoc.getArray<Comment>("comments");
 
     const updateUpvote = (comments: Comment[]): Comment[] => {
@@ -175,13 +209,12 @@ export default function CommentHandler({
         return comment;
       });
     };
-
     const updatedComments = updateUpvote(yarray.toArray());
     yarray.delete(0, yarray.length);
     yarray.push(updatedComments);
   };
 
-  const deleteComment = (DeleteComment: Comment) => {
+  const deleteComment = async (DeleteComment: Comment) => {
     const yarray = yDoc.getArray<Comment>("comments");
 
     const removeComment = (comments: Comment[]): Comment[] => {
@@ -205,6 +238,7 @@ export default function CommentHandler({
   
     const updatedComments = removeComment(yarray.toArray());
 
+    //Highlight overlapping comments again
     updatedComments.forEach(comment => {
       const commentEnd = comment.index + comment.length;
       const deleteCommentEnd = DeleteComment.index + DeleteComment.length;
@@ -222,7 +256,7 @@ export default function CommentHandler({
     yarray.push(updatedComments);
   };
 
-  const editComment = (EditComment: Comment, newContent: string) => {
+  const editComment = async (EditComment: Comment, newContent: string) => {
     const yarray = yDoc.getArray<Comment>("comments");
 
     const updateComment = (comments: Comment[]): Comment[] => {
@@ -244,14 +278,25 @@ export default function CommentHandler({
 
   const getRange = (index: number, length: number) => {
     console.log(index, length);
-    setRange({index: index, length: length});
+    setRange({ index: index, length: length });
   };
 
   return (
-    <div className="comments text-center block">
+    <div className="comments">
+      <Box sx={{ width: "100%", typography: "body1" }}>
+        <TabContext value={value}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <TabList onChange={handleChange} aria-label="lab API tabs example">
+              <Tab label="Comment" value="1" />
+              <Tab label="Prompt List" value="2" />
+            </TabList>
+          </Box>
+          <TabPanel value="1">
+          <div className="comments text-center block">
       <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
-     
-      
+      <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
+        {showComments ? "Hide Comments" : "Show Comments"}
+      </button>
       {showComments && (
         <div className="mt-8">
           <CommentList
@@ -269,9 +314,17 @@ export default function CommentHandler({
             //promptList={promptList}
             highlightText={handleHighlightText}
             removeHighlight={handleRemoveHighlight}
-          />
+        />
         </div>
       )}
     </div>
+          </TabPanel>
+          <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
+            <PromptList promptList={promptList} />
+          </TabPanel>
+        </TabContext>
+      </Box>
+      </div>
+
   );
 }

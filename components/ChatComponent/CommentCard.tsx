@@ -25,11 +25,6 @@ interface Comment {
   canReply: boolean;
 }
 
-interface Range {
-  index: number;
-  length: number;
-}
-
 interface CommentCardProps {
   comment: Comment;
   editor: Quill | null;

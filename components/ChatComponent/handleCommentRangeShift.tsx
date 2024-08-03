@@ -1,15 +1,6 @@
-import { DeltaStatic, OpTypes } from "quill";
-import Delta from "quill-delta"
-import ReactQuill from "react-quill";
-import { isTemplateExpression } from "typescript";
+import { DeltaStatic } from "quill/index";
 import * as Y from "yjs";
 
-
-
-interface Range {
-  index: number;
-  length: number;
-}
 
 interface Comment {
   key: number;
@@ -40,7 +31,7 @@ export const handleCommentRangeShift = (delta: DeltaStatic, quill: any, doc: Y.D
 
     console.log(`Processing range: start=${start}, end=${end}`);
 
-    delta.ops?.forEach((op: OpTypes.Op) => {
+    delta.ops?.forEach((op) => {
       if (op.retain !== undefined) {
         currentPos += op.retain;
       } else if (op.insert) {

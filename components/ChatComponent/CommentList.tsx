@@ -4,7 +4,7 @@ import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
-import { Spinner, Button } from "@nextui-org/react";
+import { Spinner, Button, button } from "@nextui-org/react";
 import {requestResponseForMCP, requestChangesSummaryForMCP} from "../../OllamaSinglePromptFunction/ollamaMCPFunction"
 
 interface Comment {
@@ -62,7 +62,6 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     loading: false,
     sortBy: "release"
   };
-
   
 
   toggleTextarea = () => {
@@ -220,12 +219,12 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
           </div>
           {showTextarea && (
             <NewComment 
-              addComment={(comment: Comment) => this.handleAddComment(comment)} 
-              selectedText={this.props.selectedText} 
-              selectedRange={this.props.selectedRange}
-              cancel={this.toggleTextarea} 
-              highlightText={this.props.highlightText}
-              removeHighlight={this.props.removeHighlight}
+            addComment={(comment: Comment) => this.handleAddComment(comment)} 
+            selectedText={this.props.selectedText} 
+            selectedRange={this.props.selectedRange}
+            cancel={this.toggleTextarea} 
+            highlightText={this.props.highlightText}
+            removeHighlight={this.props.removeHighlight}
             />
           )}
           <div className="comment-list">

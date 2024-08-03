@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+// Editor 
 "use client";
 import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
@@ -11,34 +13,19 @@ import CardContainer from "../MUPComponents/CardContainer";
 import YPartyKitProvider from "y-partykit/provider";
 import * as Y from "yjs";
 
-interface Comment {
-  key: number;
-  name: string;
-  content: string;
-  date: string;
-  upvotes: number;
-  isTextSpecific: boolean;
-  shortenedSelectedText: string;
-  index: number;
-  length: number;
-  history: string[];
-  replies: Comment[];
-  parentKey: number | null;
-  canReply: boolean;
-}
-
 interface Range {
   index: number;
   length: number;
 }
 
-interface MCP_AI_responses {
+interface MCP_AI_responses{
   summary: string;
   changes: string;
 }
 
 function getRandomColor() {
   const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
+
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
@@ -60,30 +47,36 @@ export default function EditorPage({
     });
   }, []);
 
-  const [textSpecificComment, setTextSpecificComment] = useState<Comment | null>(null);
-  const [editor, setEditor] = useState<(Quill & {
-    highlightText: (index: number, length: number, color: string) => void;
-    removeHighlight: (index: number, length: number) => void;
-    getSelection: () => { index: number; length: number } | null;
-  }) | null>(null);
+  const [editor, setEditor] = useState<
+    | (Quill & {
+      highlightText: (index: number, length: number, color: string) => void;
+      removeHighlight: (index: number, length: number) => void;
+      getSelection: () => { index: number; length: number } | null;
+      })
+    | null
+  >(null);
   const [selectedText, setSelectedText] = useState<string>("");
   const [completeText, setCompleteText] = useState<string>("");
   const [showAIChangesDiv, setShowAIChangesDiv] = useState<boolean>(false);
-  const [AIChanges, setAIChanges] = useState<MCP_AI_responses | null>(null);
-  const [isChecked, setIsChecked] = useState<boolean>(true);
+  const [AIChanges, setAIChanges] = useState<MCP_AI_responses | null>();
+  const [isChecked, setIsChecked] = useState<boolean>(true); 
   const [isCommentsVisible, setIsCommentsVisible] = useState<boolean>(true);
   const [deleteSelectedComments, setDeleteSelectedComments] = useState<boolean>(false);
   const [selectedRange, setSelectedRange] = useState<Range | null>();
 
   const [commentWidth, setCommentWidth] = useState<number>(300);
 
+
+
   useEffect(() => {
+    // If there is new MCP Response
     if(AIChanges != null){
       setShowAIChangesDiv(true);
     }
   }, [AIChanges]);
 
   function handleSetRange(range: Range) {
+    // for 'Show in Editor'-Button functionality
     editor?.editor?.setSelection(range);
     editor?.editor?.root.scrollIntoView({ behavior: "smooth", block: "center" });
   }
@@ -94,19 +87,24 @@ export default function EditorPage({
   }
 
   function handleAcceptOnClick(){
-    if (AIChanges) {
-      editor?.editor?.setText(AIChanges.changes);
-    }
+    editor?.editor?.setText(AIChanges!.changes);
     setAIChanges(null);
     setShowAIChangesDiv(false);
 
+    // When user wants selected comments to be deleted
     if(isChecked){
       setDeleteSelectedComments(true);
     }
   }
 
   function handleCheckboxOnChange (event: ChangeEvent<HTMLInputElement>){
-    setIsChecked(event.target.checked);
+
+    // if checkbox is checked
+    if(event.target.checked){
+      setIsChecked(true);
+    }else{
+      setIsChecked(false);
+    }
   }
 
   function toggleCommentsVisibility() {
@@ -116,7 +114,7 @@ export default function EditorPage({
   return (
     <>
       <div style={{ display: "flex", height: "100vh" }}>
-        {isCommentsVisible && (
+      {isCommentsVisible && (
           <Resizable
             width={commentWidth}
             height={Infinity}
@@ -154,7 +152,7 @@ export default function EditorPage({
           </Resizable>
         )}
 
-        <Card style={{ flexGrow: 1, padding: "20px", transition: "width 0.3s", position: "relative" }}>
+<Card style={{ flexGrow: 1, padding: "20px", transition: "width 0.3s", position: "relative" }}>
           {!isCommentsVisible && (
             <Button
               onClick={toggleCommentsVisibility}
@@ -169,7 +167,6 @@ export default function EditorPage({
             yDoc={yDoc}
             yProvider={yProvider}
             userColor={userColor}
-            setTextSpecificComment={setTextSpecificComment}
             setEditor={setEditor}
             selectedText={selectedText}
             setSelectedText={setSelectedText}
@@ -204,6 +201,7 @@ export default function EditorPage({
             selectedText={selectedText}
             completeText={completeText}
             editor={editor}
+            setPrompts={setPrompts}
           />
         </Card>
       </div>

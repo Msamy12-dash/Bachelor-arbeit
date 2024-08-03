@@ -10,7 +10,7 @@ import YPartykitProvider from "y-partykit/provider";
 import Tooltip from "../ToolTipsComponets/ToolTip";
 import { PARTYKIT_HOST } from "@/pages/env";
 import YPartyKitProvider from "y-partykit/provider";
-import { handleCommentRangeShift } from "../ChatComponent/handleCommentRangeShift"
+import { handleCommentRangeShift } from "../ChatComponent/handleCommentRangeShift";
 import { DeltaStatic } from "quill/index";
 
 interface Range {
@@ -41,7 +41,6 @@ export default function Editor({
   yDoc: Y.Doc;
   yProvider: YPartyKitProvider;
   userColor: string;
-  setTextSpecificComment: Function;
   setEditor: Function;
   selectedText: string;
   setSelectedText: (text: string) => void;
@@ -82,10 +81,10 @@ export default function Editor({
       
       // Create a binding between Yjs and the Quill editor
       const binding = new QuillBinding(ytext, editor, yProvider.awareness);
-  
+
       editor.setContents(ytext.toDelta());
       isInitialLoadRef.current = false;
-
+  
       // Set local user state in Yjs awareness system
       yProvider.awareness.setLocalStateField("user", {
         name: "Typing...",
@@ -116,6 +115,7 @@ export default function Editor({
 
       // Get positions of Editor itself and selected range (in pixels)
       const bounds = quillRef.current!.getEditor().getBounds(selection!.index);
+
     } else {
       setSelectedText("");
     }
