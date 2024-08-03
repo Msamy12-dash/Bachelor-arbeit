@@ -60,6 +60,7 @@ export default function Editor({
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const quillRef = useRef<ReactQuill>(null);
+  const isInitialLoadRef = useRef(true);
 
   useEffect(() => {
     if (!yDoc) return;
@@ -82,6 +83,9 @@ export default function Editor({
       // Create a binding between Yjs and the Quill editor
       const binding = new QuillBinding(ytext, editor, yProvider.awareness);
   
+      editor.setContents(ytext.toDelta());
+      isInitialLoadRef.current = false;
+
       // Set local user state in Yjs awareness system
       yProvider.awareness.setLocalStateField("user", {
         name: "Typing...",
@@ -160,8 +164,10 @@ export default function Editor({
   }
 
   const onChange = (content: string, delta: DeltaStatic, source: string, editor: any): void => {
-    handleCommentRangeShift(delta, quillRef, yDoc);
-    setText(content)
+    if (!isInitialLoadRef.current && source === 'user') {
+      handleCommentRangeShift(delta, quillRef, yDoc);
+    }
+    setText(content);
   }
 
   return (
