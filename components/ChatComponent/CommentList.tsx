@@ -4,7 +4,7 @@ import NewComment from "./NewComment";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
-import { Spinner, Button } from "@nextui-org/react";
+import { Spinner, Button, button } from "@nextui-org/react";
 import {requestResponseForMCP, requestChangesSummaryForMCP} from "../../OllamaSinglePromptFunction/ollamaMCPFunction"
 
 interface Comment {
@@ -23,8 +23,15 @@ interface Comment {
   canReply: boolean;
 }
 
+interface Range {
+  index: number;
+  length: number;
+}
+
 interface CommentListProps {
   comments: Comment[];
+  selectedText: string;
+  selectedRange: Range | null | undefined;
   editor: Quill|null;
   addComment: (comment: Comment) => void;
   incrementUpvote: (comment: Comment) => void;
@@ -33,6 +40,8 @@ interface CommentListProps {
   getRange: (index: number, length: number) => void;
   setAIChanges: Function;
   setCheckedKeys: Function;
+  highlightText: (index:number, length: number, color: string) => void;
+  removeHighlight: (index:number, length: number) => void;
 }
 
 interface CommentListState {
@@ -41,6 +50,7 @@ interface CommentListState {
   showAllSubcomments: boolean;
   checkedKeys: number[];
   loading: boolean;
+  sortBy: "release" | "upvotes";
 }
 
 class CommentList extends Component<CommentListProps, CommentListState>  {
@@ -49,9 +59,9 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     showSubcomments: true,
     showAllSubcomments: true,
     checkedKeys: [],
-    loading: false
+    loading: false,
+    sortBy: "release"
   };
-
   
 
   toggleTextarea = () => {
@@ -64,6 +74,12 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
 
   toggleAllSubcomments = () => {
     this.setState((prevState) => ({ showAllSubcomments: !prevState.showAllSubcomments }));
+  };
+
+  toggleSortBy = () => {
+    this.setState((prevState) => ({
+      sortBy: prevState.sortBy === "release" ? "upvotes" : "release",
+    }));
   };
 
   handleAddComment = (comment: Comment) => {
@@ -132,9 +148,15 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
 
 
   renderCommentsRecursive = (comments: Comment[], level = 0) => {
-    const { showSubcomments, showAllSubcomments } = this.state;
+    const { showSubcomments, showAllSubcomments, sortBy } = this.state;
 
-    comments.sort((a, b) => b.key - a.key);
+    comments.sort((a, b) => {
+      if (sortBy === "upvotes") {
+        return b.upvotes - a.upvotes;
+      } else {
+        return b.key - a.key;
+      }
+    });
 
     return comments.map((comment) => {
       const classNames = `comment comment-level-${level} text-center block`;
@@ -152,6 +174,8 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
             editor={this.props.editor}
             newChecked={this.newChecked}
             unchecked={this.unchecked}
+            highlightText={this.props.highlightText}
+            removeHighlight={this.props.removeHighlight}
           />
           {showSubs && (
             <div className={`replies replies-level-${level} ml-5`}>
@@ -170,10 +194,19 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
 
   render() {
     const { comments } = this.props;
-    const { showTextarea, showAllSubcomments } = this.state;
+    const { showTextarea, showAllSubcomments, sortBy } = this.state;
     return (
       <div>
         <div className="comment-list-container h-[35vw] overflow-auto">
+          <div className="flex justify-center items-center mb-2">
+            <div className="text-lg font-semibold mr-2">Sort by:</div>
+            <button
+              onClick={this.toggleSortBy}
+              className="text-black bg-white border border-black rounded-full py-2 px-4 font-semibold hover:bg-gray-200"
+            >
+              {sortBy === "release" ? "Release" : "Upvotes"}
+            </button>
+          </div>
           {comments.length > 0 && (
           <button className="toggle-all-subcomments-btn mb-2" onClick={this.toggleAllSubcomments}>
             {showAllSubcomments ? 'Hide Subcomments' : 'Show All Subcomments'}
@@ -185,7 +218,14 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
             </IconButton>
           </div>
           {showTextarea && (
-            <NewComment addComment={(comment: Comment) => this.handleAddComment(comment)} cancel={this.toggleTextarea} />
+            <NewComment 
+            addComment={(comment: Comment) => this.handleAddComment(comment)} 
+            selectedText={this.props.selectedText} 
+            selectedRange={this.props.selectedRange}
+            cancel={this.toggleTextarea} 
+            highlightText={this.props.highlightText}
+            removeHighlight={this.props.removeHighlight}
+            />
           )}
           <div className="comment-list">
           { this.renderCommentsRecursive(comments)}
