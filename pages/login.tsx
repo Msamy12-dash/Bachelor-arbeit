@@ -8,7 +8,7 @@ import { PARTYKIT_HOST, PARTYKIT_URL } from "./env";
 import { PartySocket } from "partysocket";
 
 
-export default function Login({ updateUser, roomserverPartySocket }: { updateUser: Function; roomserverPartySocket: PartySocket }) {
+export default function Login({ setUser, roomserverPartySocket }: { setUser: Function; roomserverPartySocket: PartySocket }) {
   const [username, setUsername] = useState("");
   const [role, setRole] = useState<Role>(Role.User);
   const [error, setError] = useState("");
@@ -36,7 +36,7 @@ export default function Login({ updateUser, roomserverPartySocket }: { updateUse
       }
 
       console.log("User:", user);
-      updateUser(user); // Use the updateUser function with the full user object
+      setUser(user); // Use the updateUser function with the full user object
       router.push("/");
     } catch (error: any) {
       setError(`Login failed: ${error.message}`);
