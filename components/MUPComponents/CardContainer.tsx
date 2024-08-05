@@ -24,6 +24,7 @@ export default function CardContainer({
   yProvider,
   selectedText,
   completeText,
+  setPrompts,
   editor,
 }: Readonly<{
   currentRoom: string;
@@ -31,6 +32,7 @@ export default function CardContainer({
   yProvider: YPartyKitProvider;
   selectedText: string;
   completeText: string;
+  setPrompts: Function;
   editor:
     | (Quill & {
         highlightText: (index: number, length: number, color: string) => void;
@@ -156,6 +158,8 @@ export default function CardContainer({
                   onResponseChange={handleResponseChange}
                   onSubmittingChange={handleSubmittingChange}
                   onDiscard={handleDiscardCard}
+                  yDoc={yDoc}
+                  setPrompts={setPrompts}
                 />
               ))}
             </div>

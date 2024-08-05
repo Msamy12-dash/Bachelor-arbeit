@@ -37,6 +37,7 @@ interface CommentHandlerProps {
   room: string;
   editor: Quill | null;
   setRange: Function;
+  promptList: string[];
   setAIChanges: Function;
   deleteSelectedComments: boolean;
   setDeleteSelectedComments: Function;
