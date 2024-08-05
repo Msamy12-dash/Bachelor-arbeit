@@ -17,14 +17,16 @@
 		"@emotion/react": "^11.11.4",
 		"@emotion/styled": "^11.11.5",
 		"@floating-ui/react": "^0.26.19",
+		"@mui/base": "^5.0.0-beta.40",
 		"@mui/icons-material": "^5.15.21",
 		"@mui/lab": "^5.0.0-alpha.165",
 		"@mui/material": "^5.15.21",
+		"@mui/system": "^5.16.6",
 		"@next-auth/prisma-adapter": "^1.0.7",
 		"@nextui-org/react": "^2.4.2",
 		"@prisma/client": "^5.16.2",
 		"@react-aria/visually-hidden": "3.8.12",
-		"@types/node": "^20.14.10",
+		"@types/node": "^22.1.0",
 		"@types/react": "18.3.3",
 		"@types/react-dom": "18.3.0",
 		"@typescript-eslint/parser": "^7.16.0",
@@ -63,7 +65,8 @@
 		"ws": "^8.18.0",
 		"y-partykit": "^0.0.29",
 		"y-quill": "^1.0.0",
-		"yjs": "^13.6.18"
+		"yjs": "^13.6.18",
+		"zod": "^3.23.8"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.24.7",
