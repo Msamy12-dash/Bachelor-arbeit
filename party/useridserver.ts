@@ -1,22 +1,28 @@
 import type * as Party from "partykit/server";
-import { User, Role, SINGLETON_ROOM_ID } from "./types";
+import { User, Role, SINGLETON_ROOM_ID, UserCore } from "./types";
 
 export default class useridserver implements Party.Server {
-  users: User[];
+  users: UserCore[];
+
+  readonly options = {
+    hibernate: false
+  };
 
   constructor(readonly room: Party.Room) {
     this.users = [];
   }
 
   async onStart(): Promise<void> {
-    console.log("UserIdServer started");
+    
     await this.loadUsersFromDatabase();
+    console.log("UserIdServer has started. Users loaded:", this.users);
   }
 
   async onRequest(req: Party.Request): Promise<Response> {
     console.log(`Received ${req.method} request to ${req.url}`);
 
     if (req.method === "OPTIONS") {
+      //console.log("Received OPTIONS request:", req, "\n-----------------------------------------------");
       return new Response(null, {
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -47,8 +53,6 @@ export default class useridserver implements Party.Server {
             },
           });
         }
-
-        console.log("Received body:", body);
 
         const { username, role } = body;
         const user = await this.getOrCreateUser(username, role);
@@ -92,35 +96,36 @@ export default class useridserver implements Party.Server {
   }
 
   private async getOrCreateUser(username: string, role: Role): Promise<User> {
-    let user = this.users.find((u) => u.name === username);
-    if (!user) {
-      user = {
+    let userCore = this.users.find((u) => u.name === username);
+    if (!userCore) {
+      userCore = {
         id: username,
         name: username,
-        color: this.getRandomColor(),
-        role: role,
       };
-      this.users.push(user);
-      await this.saveUserToDatabase(user);
+      this.users.push(userCore);
+      await this.saveUserToDatabase(userCore);
     }
+
+    const user: User = {
+      id: userCore.id,
+      name: userCore.name,
+      role: role,
+    };
+
     return user;
   }
 
-  private getRandomColor(): string {
-    return "#" + Math.floor(Math.random() * 16777215).toString(16);
-  }
-
-  private async saveUserToDatabase(user: User): Promise<void> {
+  private async saveUserToDatabase(userCore: UserCore): Promise<void> {
     try {
       const response = await fetch("http://localhost:3000/api/saveUser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
+        body: JSON.stringify(userCore),
       });
       if (!response.ok) {
         throw new Error("Failed to save user");
       }
-      console.log("User saved to database:", user);
+      console.log("User saved to database:", userCore);
     } catch (error) {
       console.error("Error saving user to database:", error);
     }

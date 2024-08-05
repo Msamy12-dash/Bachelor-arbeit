@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import useYProvider from "y-partykit/react";
 import MUPCard from "./MUPCard";
 import { Button } from "@nextui-org/react";
 import Quill from "react-quill";

@@ -1,26 +1,45 @@
-import { signIn } from 'next-auth/react';
-import { useState } from 'react';
-import { getOrCreateUser } from '@/lib/userUtils';
-import { Role } from '@/party/types';
+import { signIn } from "next-auth/react";
+import { useState } from "react";
+import { getOrCreateUser } from "@/lib/userUtils";
+import { Role, SINGLETON_ROOM_ID } from "@/party/types";
+import { useRouter } from "next/router";
+import { setCookie } from "cookies-next";
+import { PARTYKIT_HOST, PARTYKIT_URL } from "./env";
+import { PartySocket } from "partysocket";
 
-export default function Login() {
-  const [name, setName] = useState('');
+
+export default function Login({ setUser, roomserverPartySocket }: { setUser: Function; roomserverPartySocket: PartySocket }) {
+  const [username, setUsername] = useState("");
   const [role, setRole] = useState<Role>(Role.User);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const user = await getOrCreateUser(name, role as Role);
-      // You might want to store the user in a context or global state here
-      await signIn('credentials', {
-        redirect: false,
-        name: user.name,
-        role: user.role,
-        id: user.id,
+      const user = await getOrCreateUser(username, role as Role);
+      console.log("User:", user);
+      console.log("connId:", roomserverPartySocket.id);
+      console.log("userId:", user.id);
+      // Check if user is already active
+      const response = await fetch(`${PARTYKIT_URL}/parties/roomserver/${SINGLETON_ROOM_ID}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'checkAndAddUser', connectionId: roomserverPartySocket.id, userId: user.id }),
       });
-    } catch (error) {
-      setError((error as Error).message);
+      console.log("response:", response);
+      const data = await response.json();
+      console.log("data:", data);
+
+      if (!data.success) {
+        throw new Error("User is already logged in");
+      }
+
+      console.log("User:", user);
+      setUser(user); // Use the updateUser function with the full user object
+      router.push("/");
+    } catch (error: any) {
+      setError(`Login failed: ${error.message}`);
     }
   };
 
@@ -33,8 +52,8 @@ export default function Login() {
           <input
             type="text"
             className="p-2 text-lg border rounded-md w-full"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             placeholder="Name"
             required
           />
@@ -47,9 +66,13 @@ export default function Login() {
             <option value={Role.User}>User</option>
             <option value={Role.Admin}>Admin</option>
           </select>
-          <button type="submit" className="p-2 text-lg bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          <button
+            type="submit"
+            className="p-2 text-lg bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
             Login
           </button>
+          {error && <p>{error}</p>}
         </form>
       </div>
     </div>

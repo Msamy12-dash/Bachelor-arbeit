@@ -50,12 +50,15 @@ export enum Role {
   User = "user",
 }
 
-export type User = {
+export type UserCore = {
   id: string;
   name: string;
-  color: string;
+};
+
+export type User = UserCore & {
   role: Role;
 };
+
 export const SINGLETON_ROOM_ID = "index";
 export const LOCAL_HOST = "http://localhost:1999";
 

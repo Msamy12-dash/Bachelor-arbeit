@@ -2,7 +2,6 @@ import type * as Party from "partykit/server";
 import { onConnect, type YPartyKitOptions } from "y-partykit";
 import * as Y from "yjs";
 import { Buffer } from "buffer";
-import { connect } from "http2";
 import { SINGLETON_ROOM_ID } from "./types";
 
 export default class EditorServer implements Party.Server {
@@ -12,20 +11,49 @@ export default class EditorServer implements Party.Server {
     persist: { mode: "snapshot" },
   };
 
+  static async onBeforeConnect(
+    req: Party.Request,
+    lobby: Party.Lobby,
+    ctx: Party.ExecutionContext
+  ) {
+    console.log("onBeforeConnect req url:", req.url);
+    //return new Response("Access denied", { status: 403 });
+
+
+    // // Extract the URL from the request
+    // const url = new URL(req.url);
+
+    // // Get the connection ID from the query parameter '_pk'
+    // const connectionID = url.searchParams.get("_pk");
+
+    // if (!connectionID) {
+    //   console.log("Connection denied: No connection ID found.");
+    //   return new Response("Access denied", { status: 403 });
+    // }
+
+    // const userIDInUse = await this.isUserIDAlreadyInUse(connectionID, lobby);
+
+    // if (userIDInUse) {
+    //   console.log(
+    //     `Connection denied: User ID ${connectionID} is already in use.`
+    //   );
+    //   return new Response("Access denied", { status: 403 });
+    // }
+  }
+
   async onConnect(conn: Party.Connection) {
     const partyName = this.room.name;
     const roomId = this.room.id;
     const existingConnections = this.room.getConnections();
-    const numberOfExistingConnections = [...existingConnections].length;
-    const connectionID = conn.id;
-    const clientAlreadyConnected = [...existingConnections].some(
-      (c) => c.id === connectionID
+    const numberOfExistingConnections: string[] = [];
+    Array.from(existingConnections).forEach((c: Party.Connection) =>
+      numberOfExistingConnections.push(c.id)
     );
-    console.log(`onConnect at ${partyName}/${roomId}:
-  Number of connections: ${numberOfExistingConnections},
-  Connection ID: ${connectionID},
-  Client already connected: ${clientAlreadyConnected}
-  `);
+    const connectionID = conn.id;
+    console.log(`* onConnect at ${partyName}/${roomId}:
+    Connection ID: ${connectionID},
+    Number of connections: ${numberOfExistingConnections}
+-----------------------------------------------`);
 
     await this.updateCount();
 
@@ -40,6 +68,50 @@ export default class EditorServer implements Party.Server {
         timeout: 5000,
       },
     });
+  }
+
+  async onClose(conn: Party.Connection) {
+    const partyName = this.room.name;
+    const roomId = this.room.id;
+    const existingConnections = this.room.getConnections();
+    const numberOfExistingConnections: string[] = [];
+    Array.from(existingConnections).forEach((c: Party.Connection) =>
+      numberOfExistingConnections.push(c.id)
+    );
+    const connectionID = conn.id;
+    console.log(`* onConnect at ${partyName}/${roomId}:
+    Connection ID: ${connectionID},
+    Number of connections: ${numberOfExistingConnections}
+-----------------------------------------------`);
+
+    await this.updateCount();
+  }
+
+  static async isUserIDAlreadyInUse(
+    connectionID: string,
+    lobby: Party.Lobby
+  ): Promise<boolean> {
+    try {
+      const response = await lobby.parties.roomserver
+        .get(SINGLETON_ROOM_ID)
+        .fetch({
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch active user IDs. Status: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      const activeUserIds = new Set(data.activeUserIds);
+      return activeUserIds.has(connectionID);
+    } catch (error) {
+      console.error("Error checking if user ID is already in use:", error);
+      return false;
+    }
   }
 
   async handleLoadFromDB() {
@@ -65,24 +137,6 @@ export default class EditorServer implements Party.Server {
     return new Y.Doc();
   }
 
-  async onClose(conn: Party.Connection) {
-    const partyName = this.room.name;
-    const roomId = this.room.id;
-    const existingConnections = this.room.getConnections();
-    const numberOfExistingConnections = [...existingConnections].length;
-    const connectionID = conn.id;
-    const clientAlreadyConnected = [...existingConnections].some(
-      (c) => c.id === connectionID
-    );
-    console.log(`onClose at ${partyName}/${roomId}:
-  Number of connections: ${numberOfExistingConnections},
-  Connection ID: ${connectionID},
-  Client already connected: ${clientAlreadyConnected}
-  `);
-
-    await this.updateCount();
-  }
-
   async handleYDocChange(doc: Y.Doc) {
     const update = Y.encodeStateAsUpdate(doc);
     const base64State = Buffer.from(update).toString("base64");
@@ -102,7 +156,6 @@ export default class EditorServer implements Party.Server {
       }
     } catch (error) {
       console.error("Error saving state:", error);
-      // Rethrow the error if you want it to be handled by the caller
       throw error;
     }
   }

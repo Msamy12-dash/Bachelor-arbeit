@@ -12,33 +12,30 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import styles from "./promptList.module.css"; // Importing CSS for additional styles
 import * as Y from "yjs";
-import useYProvider from "y-partykit/react";
 import { SINGLETON_ROOM_ID } from "@/party/types";
 
-export default function PromptList({ promptList }: { promptList: string[] }) {
+export default function PromptList({
+  promptList,
+  yDoc,
+}: {
+  promptList: string[];
+  yDoc: Y.Doc;
+}) {
   const [prompts, setPrompts] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [editContent, setEditContent] = useState<string>("");
-  const ydoc = new Y.Doc();
 
-  const provider = useYProvider({
-    host: "localhost:1999", // optional, defaults to window.location.host
-    party: "editorserver",
-    room: SINGLETON_ROOM_ID,
-    doc: ydoc,
-  });
   const savedText = localStorage.getItem("savedPrompts");
-
 
   useEffect(() => {
     console.log("🚀 ~ useEffect ~ savedText:-----", savedText);
 
     if (savedText) {
       try {
-        const ytext = provider.doc.getText("promptList");
+        const ytext = yDoc.getText("promptList");
 
         const getFromYdoc = ytext.getAttribute("savePrompt");
-      
+
         const parsedPrompts = JSON.parse(savedText);
         if (Array.isArray(parsedPrompts)) {
           setPrompts(parsedPrompts);
