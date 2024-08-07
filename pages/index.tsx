@@ -76,7 +76,7 @@ export default function IndexPage({
 
   return (
     <DefaultLayout currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} rooms={rooms} setRooms={setRooms}>
-      <EditorPage currentRoom={currentRoom} yDoc={yDoc} yProvider={yProvider} />
+      <EditorPage currentRoom={currentRoom} yDoc={yDoc} yProvider={yProvider} user={user} />
     </DefaultLayout>
   );
 }

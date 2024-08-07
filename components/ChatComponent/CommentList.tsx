@@ -6,6 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
 import { Spinner, Button, button } from "@nextui-org/react";
 import {requestResponseForMCP, requestChangesSummaryForMCP} from "../../OllamaSinglePromptFunction/ollamaMCPFunction"
+import { Role, User } from "@/party/types";
 
 interface Comment {
   key: number;
@@ -21,6 +22,8 @@ interface Comment {
   replies: Comment[];
   parentKey: number | null;
   canReply: boolean;
+  user: User | null;
+  likedBy: string[];
 }
 
 interface Range {
@@ -34,7 +37,7 @@ interface CommentListProps {
   selectedRange: Range | null | undefined;
   editor: Quill|null;
   addComment: (comment: Comment) => void;
-  incrementUpvote: (comment: Comment) => void;
+  incrementUpvote: (comment: Comment, decrement: boolean) => void;
   deleteComment: (comment: Comment) => void;
   editComment: (comment: Comment, newContent: string) => void;
   getRange: (index: number, length: number) => void;
@@ -42,6 +45,7 @@ interface CommentListProps {
   setCheckedKeys: Function;
   highlightText: (index:number, length: number, color: string) => void;
   removeHighlight: (index:number, length: number) => void;
+  user: User | null;
 }
 
 interface CommentListState {
@@ -165,7 +169,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
       return (
         <div key={comment.key} className={classNames}>
           <CommentCard
-            onIncrement={() => this.props.incrementUpvote(comment)}
+            onIncrement={(comment, decrement) => this.props.incrementUpvote(comment, decrement)}
             onDelete={(comment) => this.props.deleteComment(comment)}
             onEdit={(comment, newContent) => this.props.editComment(comment, newContent)}
             addComment={(newcomment) => this.props.addComment(newcomment)}
@@ -176,6 +180,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
             unchecked={this.unchecked}
             highlightText={this.props.highlightText}
             removeHighlight={this.props.removeHighlight}
+            user={this.props.user}
           />
           {showSubs && (
             <div className={`replies replies-level-${level} ml-5`}>
@@ -225,6 +230,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
             cancel={this.toggleTextarea} 
             highlightText={this.props.highlightText}
             removeHighlight={this.props.removeHighlight}
+            user={this.props.user}
             />
           )}
           <div className="comment-list">

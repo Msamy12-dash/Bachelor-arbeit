@@ -1,4 +1,5 @@
 import React, { Component, ChangeEvent, FocusEvent } from 'react';
+import { Role, User } from "@/party/types";
 
 interface NewCommentProps {
     addComment: (comment: Comment) => void;
@@ -7,6 +8,7 @@ interface NewCommentProps {
     selectedRange: Range | null | undefined;
     highlightText: (index:number, length: number, color: string) => void;
     removeHighlight: (index:number, length: number) => void;
+    user: User | null;
 }
 
 interface Range {
@@ -34,6 +36,8 @@ interface Comment {
   replies: Comment[];
   parentKey: number | null;
   canReply: boolean;
+  user: User | null;
+  likedBy: string[];
 }
 
 class NewComment extends Component<NewCommentProps, NewCommentState> {
@@ -99,7 +103,7 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
       const date = new Date().toLocaleDateString();
       const comment: Comment = {
         key: 0,
-        name: name,
+        name: this.props.user?.name || "Unknown",
         content: content,
         date: date,
         upvotes: 0,
@@ -111,6 +115,8 @@ class NewComment extends Component<NewCommentProps, NewCommentState> {
         replies: [],
         parentKey: null,
         canReply: true,
+        user: this.props.user,
+        likedBy: []
       };
 
       this.props.addComment(comment); // Nur den Hauptkommentar hinzufügen

@@ -12,6 +12,7 @@ import "react-resizable/css/styles.css";
 import CardContainer from "../MUPComponents/CardContainer";
 import YPartyKitProvider from "y-partykit/provider";
 import * as Y from "yjs";
+import { Role, User } from "@/party/types";
 
 interface Range {
   index: number;
@@ -33,10 +34,12 @@ export default function EditorPage({
   currentRoom,
   yDoc,
   yProvider,
+  user,
 }: {
   currentRoom: string;
   yDoc: Y.Doc;
   yProvider: YPartyKitProvider;
+  user: User | null;
 }) {
   const [prompts, setPrompts] = useState<string[]>([]);
   const userColor = useMemo(() => getRandomColor(), []);
@@ -175,6 +178,7 @@ export default function EditorPage({
                   yProvider={yProvider}
                   highlightText={editor?.highlightText}
                   removeHighlight={editor?.removeHighlight}
+                  user={user}
                 />
               </Card>
             </div>

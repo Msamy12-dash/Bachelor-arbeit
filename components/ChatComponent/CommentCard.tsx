@@ -8,6 +8,7 @@ import ReplyIcon from '@mui/icons-material/Reply';
 import NewComment from './NewComment';
 import Quill from "react-quill";
 import { useTheme } from 'next-themes';
+import { Role, User } from "@/party/types";
 
 interface Comment {
   key: number;
@@ -23,6 +24,8 @@ interface Comment {
   replies: Comment[];
   parentKey: number | null;
   canReply: boolean;
+  user: User | null;
+  likedBy: string[];
 }
 
 interface CommentCardProps {
@@ -30,16 +33,17 @@ interface CommentCardProps {
   editor: Quill | null;
   onEdit: (comment: Comment, newContent: string) => void;
   onDelete: (comment: Comment) => void;
-  onIncrement: (comment: Comment) => void; 
+  onIncrement: (comment: Comment, decrement: boolean) => void; 
   addComment: (comment: Comment) => void;
   onGetRange: (index: number, length: number) => void;
   newChecked: (key: number) => void;
   unchecked: (key: number) => void;
   highlightText: (index:number, length: number, color: string) => void;
   removeHighlight: (index:number, length: number) => void;
+  user: User | null;
 }
 
-const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDelete, onIncrement, addComment, onGetRange, newChecked, unchecked, highlightText, removeHighlight }) => {
+const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDelete, onIncrement, addComment, onGetRange, newChecked, unchecked, highlightText, removeHighlight, user }) => {
   const { theme } = useTheme();
 
   const [isEditing, setIsEditing] = React.useState(false);
@@ -48,6 +52,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
   const [showHistory, setShowHistory] = React.useState(false);
   const [showReplyTextarea, setShowReplyTextarea] = React.useState(false);
   const [parentKey, setParentKey] = React.useState<number | null>(null);
+  const [isLiked, setIsLiked] = React.useState<boolean>(comment.likedBy.includes(user?.id || ""));
 
   const enableEditMode = () => {
     setIsEditing(true);
@@ -100,6 +105,22 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
     }
   }
 
+  const handleLike = (comment: Comment) => {
+    if (!user) return;
+
+    const userIdIndex = comment.likedBy.indexOf(user.id);
+
+    if (userIdIndex > -1) {
+      comment.likedBy.splice(userIdIndex, 1);
+      setIsLiked(false);
+      onIncrement(comment, true);
+    } else {
+      comment.likedBy.push(user.id);
+      setIsLiked(true);
+      onIncrement(comment, false);
+    }
+  }
+
 
 
   return (
@@ -118,7 +139,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
             <h5 className="card-title text-lg font-semibold">{comment.name}</h5>
 
             <div className="EditDeleteHistory">
-            {!isEditing && (
+            {(user && comment.user && user.id === comment.user.id || user?.role === "admin") && !isEditing && (
               <>
                 <IconButton onClick={enableEditMode} className="text-gray-500 hover:text-gray-700">
                   <EditIcon />
@@ -133,8 +154,8 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
                 <HistoryIcon />
               </IconButton>
             )}
-            <IconButton onClick={() => onIncrement(comment)} className="text-gray-500 hover:text-gray-700">
-              <ThumbUpIcon />
+            <IconButton onClick={() => handleLike(comment)}>
+              <ThumbUpIcon className={`${isLiked ? 'text-blue-500 hover:text-blue-700' : 'text-gray-500 hover:text-gray-700'}`}/>
             </IconButton>
             {comment.canReply && (
               <IconButton onClick={() => toggleReplyTextarea()} className="text-gray-500 hover:text-gray-700">
@@ -176,6 +197,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
             cancel={toggleReplyTextarea}
             highlightText={highlightText}
             removeHighlight={removeHighlight}
+            user={user}
           />
         )}
 

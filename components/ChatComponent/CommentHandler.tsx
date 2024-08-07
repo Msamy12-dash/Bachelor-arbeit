@@ -11,6 +11,7 @@ import TabPanel from "@mui/lab/TabPanel";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
 import colors from "../../highlightColors.js"
+import { Role, User } from "@/party/types";
 
 interface Comment {
   key: number;
@@ -26,6 +27,8 @@ interface Comment {
   replies: Comment[];
   parentKey: number | null;
   canReply: boolean;
+  user: User | null;
+  likedBy: string[];
 }
 
 interface Range {
@@ -47,6 +50,7 @@ interface CommentHandlerProps {
   selectedRange: Range | null | undefined;
   highlightText: ((index: number, length: number, color: string) => void) | undefined;
   removeHighlight: ((index: number, length: number) => void) | undefined; 
+  user: User | null;
 }
 
 export default function CommentHandler({
@@ -62,7 +66,8 @@ export default function CommentHandler({
   deleteSelectedComments,
   setDeleteSelectedComments,
   highlightText,
-  removeHighlight
+  removeHighlight,
+  user
 }: Readonly<CommentHandlerProps>){
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
@@ -138,7 +143,9 @@ export default function CommentHandler({
       history: [],
       replies: [],
       parentKey: comment.parentKey,
-      canReply: canReply
+      canReply: canReply,
+      user: comment.user,
+      likedBy: comment.likedBy
     };
 
     const yarray = yDoc.getArray<Comment>("comments");
@@ -190,16 +197,25 @@ export default function CommentHandler({
   }, [deleteSelectedComments])
 
 
-  const incrementUpvote = async (IncrementComment: Comment) => {
+  const incrementUpvote = async (IncrementComment: Comment, decrement: boolean) => {
     const yarray = yDoc.getArray<Comment>("comments");
 
     const updateUpvote = (comments: Comment[]): Comment[] => {
       return comments.map(comment => {
         if (comment.key === IncrementComment.key) {
-          return {
-            ...comment,
-            upvotes: comment.upvotes + 1
-          };
+          if(decrement) {
+            return {
+              ...comment,
+              upvotes: comment.upvotes - 1,
+              likedBy: IncrementComment.likedBy
+            };
+          } else {
+            return {
+              ...comment,
+              upvotes: comment.upvotes + 1,
+              likedBy: IncrementComment.likedBy
+            }
+          }
         } else if (comment.replies.length > 0) {
           return {
             ...comment,
@@ -314,6 +330,7 @@ export default function CommentHandler({
             //promptList={promptList}
             highlightText={handleHighlightText}
             removeHighlight={handleRemoveHighlight}
+            user={user}
         />
         </div>
       )}
