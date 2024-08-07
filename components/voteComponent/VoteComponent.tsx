@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import Snackbar from "@mui/material/Snackbar";
+import usePartySocket from "partysocket/react";
 
 import PollOptions from "../voteComponent/VoteOptions";
 
 import { Poll } from "@/party/src/types";
 import { PARTYKIT_HOST } from "@/pages/env";
-import usePartySocket from "partysocket/react";
 
  function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
   return usePartySocket({
@@ -28,7 +28,7 @@ const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[] 
 
   const onMessage = (event: MessageEvent) => {
     const data = event.data;
-
+      console.log("PollUI")
     if (data === "vote now") {
       setIsSnackbarOpen(true);  // Ensure to open the snackbar when a message is received
       setTimeout(() => setIsSnackbarOpen(false), 3000); // Auto close snackbar after 3 seconds

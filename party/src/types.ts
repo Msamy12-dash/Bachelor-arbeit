@@ -18,6 +18,7 @@ export const ReactionUpdateSchema = z.object({
 
 
 export type Poll = {
+  id: any;
   title: string;
   options: string[];
   votes?: number[];
@@ -26,7 +27,18 @@ export type Poll = {
 export type Rooms = {
   [key: string]: number;
 };
+export const notFound = () => error("Not found", 404);
+export const error = (err: string | { message: string }, status = 500) => {
+  console.error("Error response", err);
 
+  return json(
+    {
+      ok: false,
+      error: typeof err === "string" ? err : err.message ?? "Unknown error",
+    },
+    status
+  );
+};
 // To connect to the server
 
 

@@ -4,8 +4,11 @@ import dynamic from "next/dynamic";
 import Quill from "react-quill";
 import { Card, Button } from "@nextui-org/react";
 
-import Lobby from "../MainPageComponent/Lobby";
 import CommentHandler from "../ChatComponent/CommentHandler";
+import LikeConnector from "../LikeComment/LikeConnector";
+import { PARTYKIT_HOST } from "@/pages/env";
+import usePartySocket from "partysocket/react";
+
 
 
 
@@ -38,13 +41,16 @@ interface MCP_AI_responses{
   changes: string;
 }
 
+
 function getRandomColor() {
   const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
 
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-export default function EditorPage({ currentRoom }) {
+ export default function EditorPage({ currentRoom }) {
+
+
   const [ setCurrentRoom] = useState("default");
   const userColor = useMemo(() => getRandomColor(), []);
   const Editor = useMemo(() => {
@@ -155,7 +161,9 @@ export default function EditorPage({ currentRoom }) {
 
 
         </Card>
-        <Card style={{ width: "20%", padding: "10px" }} />
+        <Card style={{ width: "20%", padding: "10px" }} >
+        <LikeConnector roomID={"1"} />
+        </Card>
       </div>
     </>
   );

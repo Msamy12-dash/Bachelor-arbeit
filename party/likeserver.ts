@@ -10,6 +10,7 @@ export default class likelerver implements Party.Server {
   reactions: Record<string, number> = {};
 
   async onStart() {
+    this.room.storage.deleteAll();
     // load reactions from storage on startup
     this.reactions = (await this.room.storage.get("reactions")) ?? {};
   }

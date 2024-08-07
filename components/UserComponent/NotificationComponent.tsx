@@ -1,74 +1,65 @@
 import React, { useEffect, useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
-import Snackbar from "@mui/material/Snackbar";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import usePartySocket from "partysocket/react";
 
-import PollUI from "../voteComponent/VoteComponent";
-
+import VoteCard from "../voteComponent/VoteCard";
 import { PARTYKIT_HOST } from "@/pages/env";
-import { Poll } from "@/party/src/types";
 
 function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
   return usePartySocket({
     host: PARTYKIT_HOST,
-    room: ID,
-    party: "vote",
+    room: "active-connections",
+    party: "notificationserver",
     onMessage,
   });
 }
 
 const NotificationComponent: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [poll, setPoll] = useState<Poll | null>(null);
+  const [connectionKeys, setConnectionKeys] = useState<string[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [isPollModalOpen, setIsPollModalOpen] = useState(false);
-  const [notificationID, setNotificationID] = useState(0);
+  const [newNotification, setNewNotification] = useState(false); // New state to track notification status
 
-  const onMessage = async (event: MessageEvent) => {
-    const data = JSON.parse(event.data);
-    console.log(data);
-    
-    if (data.message === "vote now") {
-      const { poll } = data;
-      setPoll({
-        ...poll,
-        votes: poll.votes || [],
-        options: poll.options || []
-      });
+  const onMessage = (event: MessageEvent) => {
+    let data;
 
-      setMessages(prev => [...prev, "Please cast your vote now!"]);
-      setIsSnackbarOpen(true);
-      setIsPollModalOpen(true);
-      setTimeout(() => setIsSnackbarOpen(false), 3000);
-      setNotificationID(prevID => prevID + 1);
+    try {
+      data = JSON.parse(event.data);
+    } catch (error) {
+      console.error("Failed to parse message:", error);
+      console.log("Received message:", event.data);
+      return;
+    }
+
+    if (data.connectionKeys && JSON.stringify(data.connectionKeys) !== JSON.stringify(connectionKeys)) {
+      setConnectionKeys(data.connectionKeys);
+      setNewNotification(true); // Only set true if new keys are different
     }
   };
 
-  const id = notificationID.toString();
-  const socket = useSocketConnection(id, onMessage);
+  useSocketConnection("0", onMessage);
 
   useEffect(() => {
-    const saved = localStorage.getItem("messages") || "[]";
-    setMessages(JSON.parse(saved));
+    const saved = localStorage.getItem("connectionKeys") || "[]";
+    setConnectionKeys(JSON.parse(saved));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("messages", JSON.stringify(messages));
-  }, [messages]);
-
-  const closePollModal = () => {
-    setIsPollModalOpen(false);
-  };
+    localStorage.setItem("connectionKeys", JSON.stringify(connectionKeys));
+  }, [connectionKeys]);
 
   return (
     <div className="relative inline-block ml-4">
-      <button aria-label={`You have ${messages.length} notifications`} onClick={onOpen}>
+      <button aria-label={`You have ${connectionKeys.length} notifications`} onClick={() => {
+        onOpen();
+        if (newNotification) {
+          setNewNotification(false); // Reset notification state
+        }
+      }}>
         <NotificationsIcon style={{ fontSize: 24 }} />
-        {messages.length > 0 && (
+        {connectionKeys.length > 0 && (
           <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full h-5 w-5 flex items-center justify-center text-xs">
-            {messages.length}
+            {connectionKeys.length}
           </span>
         )}
       </button>
@@ -76,9 +67,13 @@ const NotificationComponent: React.FC = () => {
         <ModalContent>
           <ModalHeader>Notifications</ModalHeader>
           <ModalBody>
-            {messages.length === 0 ? <p>No notifications</p> : (
+            {connectionKeys.length === 0 ? (
+              <p>No notifications</p>
+            ) : (
               <div>
-                {poll && <PollUI id={id} initialVotes={poll.votes} options={poll.options} />}
+                {connectionKeys.map((key) => (
+                  <VoteCard key={key} pollId={key} />
+                ))}
               </div>
             )}
           </ModalBody>
@@ -87,20 +82,8 @@ const NotificationComponent: React.FC = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        autoHideDuration={3000}
-        message="New notification received!"
-        open={isSnackbarOpen}
-        onClose={() => setIsSnackbarOpen(false)}
-      />
     </div>
   );
 };
 
 export default NotificationComponent;
-export type Poll = {
-  title: string;
-  options: string[];
-  votes?: number[];
-};

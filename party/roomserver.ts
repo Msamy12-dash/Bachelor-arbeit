@@ -29,7 +29,7 @@ export default class RoomServer implements Party.Server {
 
        this.rooms[room] = count;
        this.room.broadcast(JSON.stringify({ type: "rooms", rooms: this.rooms }));
-
+        
        return Response.json({ ok: true });
      }
  

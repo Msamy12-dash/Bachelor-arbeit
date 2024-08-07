@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
+import Snackbar from "@mui/material/Snackbar";
 import * as Y from "yjs";
 
-
-import CustomMenu from "./AIInteractionComponent";
 import { deleteRangeFromYArray, saveRangeWithText, updateVoteRangeText } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../voteComponent/VoteClientFunctions";
+
+import CustomMenu from "./AIInteractionComponent";
 
 interface TooltipProps {
   show: boolean;
@@ -22,12 +23,16 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
   const [suggestButtonDisabled, setSuggestButtonDisabled] = useState(true);
   const [votingInProgress, setVotingInProgress] = useState(false);
   const [inputText, setInputText] = useState('');
-  const [voteID, setVoteID] = useState(0); // State to track the ID
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
   useEffect(() => {
     // Update input text with selected text when the component mounts or text changes
     setInputText(text);
   }, [text]);
+
+  const generateRandomId = () => {
+    return Math.random().toString(36).substring(2, 15);
+  };
 
   const handleEditClick = () => {
     onSaveRange();
@@ -47,18 +52,19 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
     const pollOptions = [selectedText, modifiedText];
 
     const examplePoll = {
-      title: "Vote on the Text",
+      id: "Vote on the Text",
       options: pollOptions,
       votes: [0, 0]
     };
 
-    sendvote(voteID.toString(), examplePoll); // Convert ID to string
-    setVoteID(voteID + 1); // Increment the ID
+    const randomId = generateRandomId();
+    sendvote(randomId, examplePoll);
     setVotingInProgress(true);
     setInputDisabled(true);
     setSuggestButtonDisabled(true);
 
     updateVoteRangeText(doc, selectedText, modifiedText);
+    setIsSnackbarOpen(true); // Show Snackbar on vote click
   };
 
   const handleEndVoteClick = () => {
@@ -138,6 +144,13 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
           </div>
         </CardBody>
       </Card>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={3000}
+        message="New notification received!"
+        open={isSnackbarOpen}
+        onClose={() => setIsSnackbarOpen(false)}
+      />
     </div>
   );
 };

@@ -23,3 +23,7 @@ export async function sendvote(ID:string,poll: Poll) {
         "Content-Type": "application/json",
       },
     });}catch(error){};**/}
+
+    
+    
+    

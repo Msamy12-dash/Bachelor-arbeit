@@ -7,6 +7,7 @@
     "rooms":"party/roomserver.ts",
     "vote": "party/voteserver.ts",
     "likeserver":"party/likeserver.ts",
+    "notificationserver":"party/NotificationServer.ts"
 
   }
 }

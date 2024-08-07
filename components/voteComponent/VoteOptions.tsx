@@ -1,9 +1,8 @@
-
 "use client";
 
 export default function PollOptions({
   options,
-  votes,
+  votes = [],
   vote,
   setVote,
 }: {
@@ -12,8 +11,8 @@ export default function PollOptions({
   vote: number | null;
   setVote: (option: number) => void;
 }) {
-  const totalVotes = votes.reduce((a, b) => a + b, 0);
-  const mostVotes = Math.max(...votes);
+  const totalVotes = votes.length > 0 ? votes.reduce((a, b) => a + b, 0) : 0;
+  const mostVotes = votes.length > 0 ? Math.max(...votes) : 0;
 
   return (
     <ul className="flex flex-col space-y-4">
@@ -29,7 +28,7 @@ export default function PollOptions({
                   : "vote-bg"
               }`}
               style={{
-                width: `${((votes[index] ?? 0) / totalVotes) * 100}%`
+                width: `${totalVotes > 0 ? ((votes[index] ?? 0) / totalVotes) * 100 : 0}%`
               }}
             />
             <div className="select-none w-full flex items-center justify-between px-4 z-20">

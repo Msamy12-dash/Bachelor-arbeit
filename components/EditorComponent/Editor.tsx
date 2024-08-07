@@ -66,7 +66,7 @@ export default function Editor({
     party: "editorserver",
     host: PARTYKIT_HOST,
   });
-
+  
 
   useEffect(() => {
     const fetchInitialText = async () => {

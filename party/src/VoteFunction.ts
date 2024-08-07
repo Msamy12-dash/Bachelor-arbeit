@@ -1,6 +1,7 @@
 import type * as Party from "partykit/server";
 
 import { json, Poll, ReactionSchema, ReactionUpdateSchema } from "./types";
+import { type } from "os";
 
 export const parseReactionMessage = (message: string) => {
     return ReactionSchema.parse(JSON.parse(message));
@@ -59,6 +60,7 @@ export const parseReactionMessage = (message: string) => {
 
   export async function SetVote(req: Party.Request, room: Party.Room, setPoll: (poll: Poll) => void): Promise<any> {
     const pollData = await req.json() as Poll;
+
     console.log(pollData.options)
     let poll = {
       ...pollData,
@@ -68,6 +70,7 @@ export const parseReactionMessage = (message: string) => {
     await savePoll(poll, room);
     const roomId = room.id; // Assuming room.id holds the identifier for the room
     const broadcastMessage = JSON.stringify({ message: "vote now", roomId ,poll});
+        await updatevote("connect",room,poll);
 
     room.broadcast(broadcastMessage);
     setPoll(poll);
@@ -105,6 +108,38 @@ export const parseReactionMessage = (message: string) => {
       updatePoll(poll);
     }
   }
+
+  async function updatevote(type: "connect" | "disconnect",room: Party.Room,poll: Poll) {
+    try {
+      // get handle to a shared room instance of the "connections" party
+      const connectionsParty = room.context.parties.notificationserver;
+
+      if (!connectionsParty) {
+        throw new Error("Connections party not found");
+      }
+
+      const connectionsRoomId = "active-connections";
+      const connectionsRoom = connectionsParty.get(connectionsRoomId);
+
+      if (!connectionsRoom) {
+        throw new Error(`Connections room with id ${connectionsRoomId} not found`);
+      }
+
+      // notify room by making an HTTP POST request
+      await connectionsRoom.fetch({
+        method: "POST",
+        body: JSON.stringify({
+          type,
+          connectionId: room.id,
+          roomId: room.id,
+          poll:poll
+        }),
+      });
+    } catch (error) {
+      console.error(`Error updating connections for type ${type}:`, error);
+    }
+  }
+
 
 /** import type * as Party from "partykit/server";
 
