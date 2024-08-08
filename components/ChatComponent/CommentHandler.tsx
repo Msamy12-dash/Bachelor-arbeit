@@ -302,46 +302,46 @@ export default function CommentHandler({
       <Box sx={{ width: "100%", typography: "body1" }}>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={handleChange} aria-label="lab API tabs example">
-              <Tab label="Comment" value="1" />
-              <Tab label="Prompt List" value="2" />
+            <TabList
+              onChange={handleChange}
+              aria-label="lab API tabs example"
+              sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}
+            >
+              <Tab label="Comment" value="1" sx={{ flex: 1 }} />
+              <Tab label="Prompt List" value="2" sx={{ flex: 1 }} />
             </TabList>
           </Box>
-          <TabPanel value="1">
-          <div className="comments text-center block">
-      <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
-      <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
-        {showComments ? "Hide Comments" : "Show Comments"}
-      </button>
-      {showComments && (
-        <div className="mt-8">
-          <CommentList
-            comments={comments}
-            selectedText={selectedText}
-            selectedRange={selectedRange}
-            incrementUpvote={incrementUpvote}
-            deleteComment={deleteComment}
-            editComment={editComment}
-            addComment={addComment}
-            editor={editor}
-            getRange={getRange}
-            setAIChanges={setAIChanges}
-            setCheckedKeys={setCheckedKeys}
-            //promptList={promptList}
-            highlightText={handleHighlightText}
-            removeHighlight={handleRemoveHighlight}
-            user={user}
-        />
-        </div>
-      )}
-    </div>
+          <TabPanel value="1" sx={{ paddingTop: 6 }}>
+            <div className="text-center block">
+              <div className="Comment-font text-xl font-bold">Comments</div>
+              
+              {showComments && (
+                <div className="mt-4">
+                  <CommentList
+                    comments={comments}
+                    selectedText={selectedText}
+                    selectedRange={selectedRange}
+                    incrementUpvote={incrementUpvote}
+                    deleteComment={deleteComment}
+                    editComment={editComment}
+                    addComment={addComment}
+                    editor={editor}
+                    getRange={getRange}
+                    setAIChanges={setAIChanges}
+                    setCheckedKeys={setCheckedKeys}
+                    highlightText={handleHighlightText}
+                    removeHighlight={handleRemoveHighlight}
+                    user={user}
+                  />
+                </div>
+              )}
+            </div>
           </TabPanel>
-          <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
+          <TabPanel value="2" sx={{ padding: "10px 0" }}>
             <PromptList promptList={promptList} yDoc={yDoc} />
           </TabPanel>
         </TabContext>
       </Box>
-      </div>
-
+    </div>
   );
-}
+};

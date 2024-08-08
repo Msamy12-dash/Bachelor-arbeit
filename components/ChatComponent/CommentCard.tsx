@@ -184,7 +184,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
         ) : (
           <div>
             <p className="card-text">{comment.content}</p>
-            <div className='flex justify-between items-center pb-2 mt-2'>
+            <div className='flex justify-between items-center mr-6 ml-6 pb-2 mt-2'>
             </div>
           </div>
         )}

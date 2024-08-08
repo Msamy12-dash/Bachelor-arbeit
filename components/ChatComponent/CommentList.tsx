@@ -204,7 +204,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
       <div>
         <div className="comment-list-container h-[35vw] overflow-auto">
           <div className="flex justify-center items-center mb-2">
-            <div className="text-lg font-semibold mr-2">Sort by:</div>
+          <div className="text-lg font-normal mr-2">Sort by:</div>
             <button
               onClick={this.toggleSortBy}
               className="text-black bg-white border border-black rounded-full py-2 px-4 font-semibold hover:bg-gray-200"

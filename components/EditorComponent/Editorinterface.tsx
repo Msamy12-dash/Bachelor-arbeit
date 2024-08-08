@@ -1,6 +1,3 @@
-/* eslint-disable prettier/prettier */
-// Editor
-"use client";
 import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import Quill from "react-quill";
@@ -26,7 +23,6 @@ interface MCP_AI_responses {
 
 function getRandomColor() {
   const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
-
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
@@ -67,7 +63,6 @@ export default function EditorPage({
   const [deleteSelectedComments, setDeleteSelectedComments] =
     useState<boolean>(false);
   const [selectedRange, setSelectedRange] = useState<Range | null>();
-
   const [commentWidth, setCommentWidth] = useState<number>(300);
 
   useEffect(() => {
@@ -159,9 +154,12 @@ export default function EditorPage({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  width: '10px',   
+                  height: '24px',  
+                  padding: '0',
                 }}
               >
-                <FaArrowRight size={24} />
+                <FaArrowRight size={12} />
               </Button>
               <Card style={{ width: "100%", padding: "10px", height: "100%" }}>
                 <CommentHandler
@@ -204,9 +202,12 @@ export default function EditorPage({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                width: '24px',   
+                height: '24px',  
+                padding: '0',  
               }}
             >
-              <FaArrowLeft size={24} />
+              <FaArrowLeft size={12} />
             </Button>
           )}
           <Editor
