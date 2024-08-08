@@ -6,10 +6,13 @@ interface ReadOnlyContext {
   quill: any;
 }
 interface Range {
+  id: number;
+  current: boolean;
   index: number;
   length: number;
 }
 interface VoteRange {
+  id: number;
   index: number;
   length: number;
   text: string;
@@ -20,30 +23,50 @@ const voteRangesDoc = new Y.Doc();
 export const deleteAll = (quill: React.RefObject<ReactQuill> , doc : Y.Doc) => {
   const yarray = doc.getArray('rangeArray');
   const voteYarray = voteRangesDoc.getArray('voteArray');
+
   yarray.delete(0,yarray.length);
   voteYarray.delete(0,voteYarray.length);
 
   const editor = quill.current?.getEditor();
+
   editor?.formatText(0,editor?.getLength(),{ background: false });
 
 };
 
-export const addElementToYArray = (doc: Y.Doc, element: Range) => {
+export const addElementToYArray = (doc: Y.Doc, element: Omit<Range,"id"|"current">) => {
   const yarray = doc.getArray<Range>("rangeArray");
+  const currentRanges = yarray.toArray();
+  const maxIdRange = currentRanges.reduce(
+    (maxRange, range) => (range.id > maxRange.id ? range : maxRange),
+    { id: 0, current: false, index: 0, length: 0 }
+  );
 
-
+  if (maxIdRange.id !== 0) {
+    const updatedRange = { ...maxIdRange, current: false };
+    yarray.delete(currentRanges.indexOf(maxIdRange), 1);
+    yarray.insert(currentRanges.indexOf(maxIdRange), [updatedRange]);
+  }
 
   const newRange: Range = {
+    id: maxIdRange.id + 1,
+    current: true,
     index: element.index,
     length: element.length,
   };
 
   yarray.push([newRange])
 };
-export const addElementToVoteYArray = (doc: Y.Doc, element: VoteRange) => {
+export const addElementToVoteYArray = (doc: Y.Doc, element: Omit<VoteRange, "id">) => {
   const voteYarray = voteRangesDoc.getArray<VoteRange>("voteArray");
+  const currentRanges = voteYarray.toArray();
+  const maxIdRange = currentRanges.reduce(
+    (maxRange, range) => (range.id > maxRange.id ? range : maxRange),
+    { id: 0, index: 0, length: 0 }
+  );
+
 
   const newRange: VoteRange = {
+    id: maxIdRange.id + 1,
     index: element.index,
     length: element.length,
     text: element.text
@@ -54,33 +77,39 @@ export const addElementToVoteYArray = (doc: Y.Doc, element: VoteRange) => {
 
 const getYArray = (doc: Y.Doc): any[] => {
   const yarray = doc.getArray("rangeArray")
+
   return yarray.toArray();
 
 };
 
-export const saveRORange = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, range:Range) => {
+export const saveRORange = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, range?:Omit<Range, "id"|"current">) => {
   if (quill.current) {
     const editor = quill.current.getEditor();
 
-    if (range && range.length > 0) {
-      editor.formatText(range.index, range.length, {
-        background: "#ffcccc"
-      });
-      // const text = editor.getText(range.index, range.length);
 
-      // editor.insertText(range.index + range.length, "  " + text, {
-      //   color: "green",
-      //   underline: true,
-      // });
 
-      addElementToYArray(doc, range);
+      if (range && range.length > 0) {
 
-      // rangeListRef.current.push({
-      //   index: range.index,
-      //   length: range.length,
-      // });
+          editor.formatText(range.index, range.length, {
+            background: "#ffcccc"
+          });
+
+        // const text = editor.getText(range.index, range.length);
+
+        // editor.insertText(range.index + range.length, "  " + text, {
+        //   color: "green",
+        //   underline: true,
+        // });
+
+        addElementToYArray(doc, range);
+
+        // rangeListRef.current.push({
+        //   index: range.index,
+        //   length: range.length,
+        // });
+      }
     }
-  }
+
 };
 
 export const saveRangeWithText = (quill: React.RefObject<ReactQuill>, doc: Y.Doc) => {
@@ -92,6 +121,7 @@ export const saveRangeWithText = (quill: React.RefObject<ReactQuill>, doc: Y.Doc
       const text = editor.getText(range.index, range.length);
 
       const voteRange: VoteRange = {
+        id: 1,
         index: range.index,
         length: range.length,
         text: text
@@ -112,6 +142,7 @@ export const updateVoteRangeText = (doc: Y.Doc, text: string, newText: string) =
   if (rangeIndex !== -1) {
     const voteRange = voteRanges[rangeIndex];
     const updatedRange: VoteRange = {
+      id : voteRange.id,
       index: voteRange.index,
       length: voteRange.length,
       text: newText
@@ -169,6 +200,7 @@ export const deleteRangeFromYArray = (doc: Y.Doc, newText: string, quill:any) =>
 
     if (rangeIndex !== -1) {
       const range = ranges[rangeIndex];
+
       yarray.delete(rangeIndex, 1); // Remove the range from rangeArray
 
 
@@ -225,48 +257,30 @@ export const handleRangeShift = (delta: DeltaStatic, quill: any, doc: Y.Doc) => 
   const editor = quill.current?.getEditor();
 
   let ranges: Range[] = doc.getArray<Range>("rangeArray").toArray();
-  console.log("Initial ranges from Yjs doc: ", ranges);
-
 
   const newBlockedRanges = ranges.map((range) => {
     let start = range.index;
     let end = range.index + range.length;
-    console.log(`Processing range: start=${start}, end=${end}`);
+
 
     delta.ops?.forEach((op) => {
       const retainLength = op.retain || 0;
-      console.log("Retain length:", retainLength);
-
       const insertLength = op.insert && typeof op.insert === "string" ? op.insert.length : 0;
-      console.log("Insert length:", insertLength);
-
       const deleteLength = op.delete || 0;
-      console.log("Delete length:", deleteLength);
-
       const pos = op.retain || 0;
-      console.log("Operation position:", pos);
 
       if (pos <= start) {
         start += insertLength - deleteLength;
-        console.log(`Updated start position: ${start}`);
       }
     });
 
-    console.log(`Final range: start=${start}, length=${range.length}`);
-    return { index: start, length: range.length };
+    return { id:range.id ,current: range.current,index: start, length: range.length };
   });
 
-  console.log("New blocked ranges:", newBlockedRanges);
-
   const yArray = doc.getArray<Range>('rangeArray');
-  console.log("Yjs rangesArray before update:", yArray.toArray());
 
   yArray.delete(0, yArray.length);
-  console.log("Yjs rangesArray after deletion:", yArray.toArray());
-
   yArray.push(newBlockedRanges);
-  console.log("Yjs rangesArray after push:", yArray.toArray());
-
   newBlockedRanges.pop();
 
 
@@ -291,11 +305,33 @@ export const handleRangeShift = (delta: DeltaStatic, quill: any, doc: Y.Doc) => 
       }
     });
 
-    return { index: start, length: voteRange.length, text: text };
+    return { id:voteRange.id, index: start, length: voteRange.length, text: text };
   });
 
   const voteYArray = voteRangesDoc.getArray<VoteRange>('voteArray');
+
   voteYArray.delete(0, voteYArray.length);
   voteYArray.push(newBlockedVoteRanges);
   console.log(voteYArray.toArray());
+};
+
+export const deleteCurrent = (quill: React.RefObject<ReactQuill>, doc: Y.Doc) => {
+  const yarray = doc.getArray<Range>("rangeArray");
+  const ranges = yarray.toArray();
+
+  // Find the range with `current` set to `true`
+  const currentRangeIndex = ranges.findIndex((range) => range.current);
+
+  if (currentRangeIndex !== -1) {
+    const currentRange = ranges[currentRangeIndex];
+
+    // Delete the current range from the YArray
+    yarray.delete(currentRangeIndex, 1);
+
+    // Clear the formatting in the editor for the deleted range
+    const editor = quill.current?.getEditor();
+    if (editor) {
+      editor.formatText(currentRange.index, currentRange.length, { background: false });
+    }
+  }
 };

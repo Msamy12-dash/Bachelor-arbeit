@@ -174,6 +174,8 @@ export default function Editor({
               maxWidth: maxWidth,
             });
             setShowTooltip(true);
+            saveRORange(quill,provider.doc, range);
+
           } else {
             // setShowTooltip(false);
           }
@@ -341,7 +343,6 @@ export default function Editor({
       text={selectedText}
       onCancel={handleHideTooltip}
       onSaveRange={saveRange}
-      range={voteRange}
     />
 
     </div>

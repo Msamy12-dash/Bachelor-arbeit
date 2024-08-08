@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import * as Y from "yjs";
 
-import { saveRangeWithText, updateVoteRangeText, deleteRangeFromYArray, deleteAll,saveRORange } from "../VoteComponent/TextBlocking";
+import {
+  saveRangeWithText,
+  updateVoteRangeText,
+  deleteRangeFromYArray,
+  deleteAll,
+  saveRORange,
+  deleteCurrent
+} from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 import Draggable from 'react-draggable';
 
@@ -23,10 +30,9 @@ interface TooltipProps {
   onCancel: () => void;
   quill: any;
   doc: Y.Doc;
-  range : Range;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, onCancel, quill, doc, range }) => {
+const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, onCancel, quill, doc }) => {
   const [inputDisabled, setInputDisabled] = useState(true);
   const [suggestButtonDisabled, setSuggestButtonDisabled] = useState(true);
   const [votingInProgress, setVotingInProgress] = useState(false);
@@ -39,14 +45,15 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
   }, [text]);
 
   const handleEditClick = () => {
-    saveRORange(quill,doc,range);
+    //saveRORange(quill,doc,range);
     setInputDisabled(false);
     setSuggestButtonDisabled(false);
     saveRangeWithText(quill, doc);
   };
 
   const handleCancelClick = () => {
-    deleteAll(quill, doc);
+    //deleteAll(quill, doc);
+    deleteCurrent(quill, doc);
     setInputDisabled(true);
     onCancel();
   };
@@ -69,6 +76,8 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
     setSuggestButtonDisabled(true);
 
     updateVoteRangeText(doc, selectedText, modifiedText);
+
+    onCancel();
   };
 
   const handleEndVoteClick = () => {
@@ -135,11 +144,6 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
                 onChange={handleInputChange}
               />
           </div>
-          {votingInProgress && (
-            <div className="mb-4 text-red-500">
-              Voting in progress
-            </div>
-          )}
           <div className="flex flex-wrap gap-4 items-center">
             <CustomMenu disabled={suggestButtonDisabled} onInsertTrialText={handleInsertTrialText} onSaveRange={onSaveRange} />
             <Button
@@ -150,15 +154,9 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
             >
               Edit
             </Button>
-            {votingInProgress ? (
-              <Button color="success" onClick={handleEndVoteClick}>
-                End Vote
-              </Button>
-            ) : (
-              <Button color="success" onClick={handleVoteClick}>
+              <Button color="success" disabled={true} onClick={handleVoteClick}>
                 Vote
               </Button>
-            )}
             <Button color="danger" onClick={handleCancelClick}>Cancel</Button>
           </div>
         </CardBody>
