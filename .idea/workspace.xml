@@ -4,14 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment=" Improve vote UI + Fixing text blocking bugs">
+    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="Tooltip bug-fix and Range shift bug-fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MainPageComponent/Lobby.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainPageComponent/Lobby.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MainPageComponent/LobbyTop.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainPageComponent/LobbyTop.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/party/editorserver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/party/editorserver.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/VoteComponent/TextBlocking.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VoteComponent/TextBlocking.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,22 +75,11 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.1.2\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Bach-Projekt\\inlp2024\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RunManager">
-    <configuration default="true" type="JetRunConfigurationType">
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <option name="filePath" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -161,6 +147,8 @@
       <workItem from="1721639798003" duration="377000" />
       <workItem from="1721657366242" duration="1284000" />
       <workItem from="1721921966704" duration="1768000" />
+      <workItem from="1722334107834" duration="1115000" />
+      <workItem from="1722971213584" duration="19429000" />
     </task>
     <task id="LOCAL-00001" summary=" Improve vote UI + Fixing text blocking bugs">
       <option name="closed" value="true" />
@@ -170,7 +158,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721601575857</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Tooltip bug-fix and Range shift bug-fix">
+      <option name="closed" value="true" />
+      <created>1722334202471</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1722334202471</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -190,6 +186,7 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value=" Improve vote UI + Fixing text blocking bugs" />
-    <option name="LAST_COMMIT_MESSAGE" value=" Improve vote UI + Fixing text blocking bugs" />
+    <MESSAGE value="Tooltip bug-fix and Range shift bug-fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Tooltip bug-fix and Range shift bug-fix" />
   </component>
 </project>
