@@ -10,7 +10,7 @@ import Quill from "react-quill";
 import { useTheme } from 'next-themes';
 import { Role, User } from "@/party/types";
 
-interface Comment {
+export interface Comment {
   key: number;
   name: string;
   content: string;
@@ -52,7 +52,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
   const [showHistory, setShowHistory] = React.useState(false);
   const [showReplyTextarea, setShowReplyTextarea] = React.useState(false);
   const [parentKey, setParentKey] = React.useState<number | null>(null);
-  const [isLiked, setIsLiked] = React.useState<boolean>(comment.likedBy.includes(user?.id || ""));
+  const [isLiked, setIsLiked] = React.useState<boolean>();
 
   const enableEditMode = () => {
     setIsEditing(true);

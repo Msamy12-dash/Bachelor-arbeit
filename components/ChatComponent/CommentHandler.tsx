@@ -12,24 +12,7 @@ import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
 import colors from "../../highlightColors.js"
 import { Role, User } from "@/party/types";
-
-interface Comment {
-  key: number;
-  name: string;
-  content: string;
-  date: string;
-  upvotes: number;
-  isTextSpecific: boolean;
-  shortenedSelectedText: string;
-  index: number;
-  length: number;
-  history: string[];
-  replies: Comment[];
-  parentKey: number | null;
-  canReply: boolean;
-  user: User | null;
-  likedBy: string[];
-}
+import { Comment } from "./CommentCard";
 
 interface Range {
   index: number;
