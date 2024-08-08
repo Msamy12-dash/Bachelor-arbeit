@@ -33,10 +33,12 @@ export default function EditorPage({
   currentRoom,
   yDoc,
   yProvider,
+  selectedModel
 }: {
   currentRoom: string;
   yDoc: Y.Doc;
   yProvider: YPartyKitProvider;
+  selectedModel: string;
 }) {
   const [prompts, setPrompts] = useState<string[]>([]);
   const userColor = useMemo(() => getRandomColor(), []);
@@ -64,7 +66,7 @@ export default function EditorPage({
   const [deleteSelectedComments, setDeleteSelectedComments] =
     useState<boolean>(false);
   const [selectedRange, setSelectedRange] = useState<Range | null>();
-
+  const [range, setRange] = useState<Range>();
   const [commentWidth, setCommentWidth] = useState<number>(300);
 
   useEffect(() => {
@@ -175,6 +177,7 @@ export default function EditorPage({
                   yProvider={yProvider}
                   highlightText={editor?.highlightText}
                   removeHighlight={editor?.removeHighlight}
+                  selectedModel={selectedModel}
                 />
               </Card>
             </div>
@@ -217,6 +220,7 @@ export default function EditorPage({
             setCompleteText={setCompleteText}
             selectedRange={selectedRange}
             setSelectedRange={setSelectedRange}
+            setRange={setRange}
           />
           {showAIChangesDiv && AIChanges && (
             <Card
@@ -286,6 +290,8 @@ export default function EditorPage({
             completeText={completeText}
             editor={editor}
             setPrompts={setPrompts}
+            selectedModel={selectedModel}
+            range={range}
           />
         </Card>
       </div>
