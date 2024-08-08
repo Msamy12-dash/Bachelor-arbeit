@@ -52,7 +52,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
   const [showHistory, setShowHistory] = React.useState(false);
   const [showReplyTextarea, setShowReplyTextarea] = React.useState(false);
   const [parentKey, setParentKey] = React.useState<number | null>(null);
-  const [isLiked, setIsLiked] = React.useState<boolean>();
+  const [isLiked, setIsLiked] = React.useState<boolean>((comment.likedBy ?? []).includes(user?.id || ""));
 
   const enableEditMode = () => {
     setIsEditing(true);
