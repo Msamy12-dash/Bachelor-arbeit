@@ -55,6 +55,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
     //deleteAll(quill, doc);
     deleteCurrent(quill, doc);
     setInputDisabled(true);
+    setSuggestButtonDisabled(true);
     onCancel();
   };
 
@@ -154,7 +155,12 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
             >
               Edit
             </Button>
-              <Button color="success" disabled={true} onClick={handleVoteClick}>
+              <Button
+                className={inputDisabled ? "bg-gray-300" : ""}
+                color="success"
+                onClick={handleVoteClick}
+                disabled={inputDisabled}
+              >
                 Vote
               </Button>
             <Button color="danger" onClick={handleCancelClick}>Cancel</Button>

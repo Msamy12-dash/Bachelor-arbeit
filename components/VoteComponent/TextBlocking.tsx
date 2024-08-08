@@ -20,6 +20,19 @@ interface VoteRange {
 
 const voteRangesDoc = new Y.Doc();
 
+
+const forceSpacesAroundRange = (editor: any, range: Range) => {
+
+    editor.insertText(range.index, "  ",{
+      background: false
+    });
+    range.index += 2;
+    editor.insertText(range.index + range.length, "  ",{
+      background: false
+    });
+};
+
+
 export const deleteAll = (quill: React.RefObject<ReactQuill> , doc : Y.Doc) => {
   const yarray = doc.getArray('rangeArray');
   const voteYarray = voteRangesDoc.getArray('voteArray');
@@ -33,7 +46,7 @@ export const deleteAll = (quill: React.RefObject<ReactQuill> , doc : Y.Doc) => {
 
 };
 
-export const addElementToYArray = (doc: Y.Doc, element: Omit<Range,"id"|"current">) => {
+export const addElementToYArray = (doc: Y.Doc, element: Omit<Range,"id"|"current">,quill? :React.RefObject<ReactQuill> ) => {
   const yarray = doc.getArray<Range>("rangeArray");
   const currentRanges = yarray.toArray();
   const maxIdRange = currentRanges.reduce(
@@ -53,6 +66,11 @@ export const addElementToYArray = (doc: Y.Doc, element: Omit<Range,"id"|"current
     index: element.index,
     length: element.length,
   };
+
+  const editor = quill?.current?.getEditor();
+  if (editor) {
+    forceSpacesAroundRange(editor, newRange);
+  }
 
   yarray.push([newRange])
 };
@@ -93,20 +111,7 @@ export const saveRORange = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, rang
           editor.formatText(range.index, range.length, {
             background: "#ffcccc"
           });
-
-        // const text = editor.getText(range.index, range.length);
-
-        // editor.insertText(range.index + range.length, "  " + text, {
-        //   color: "green",
-        //   underline: true,
-        // });
-
-        addElementToYArray(doc, range);
-
-        // rangeListRef.current.push({
-        //   index: range.index,
-        //   length: range.length,
-        // });
+        addElementToYArray(doc, range, quill);
       }
     }
 
