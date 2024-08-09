@@ -1,24 +1,23 @@
 import React from 'react';
-import { Avatar, AvatarGroup } from '@nextui-org/react';
+import { useOnlineUsers } from '@/contexts/OnlineUsersContext';  // Ensure the correct import path
 
 export default function UserAvatar() {
+  const { onlineUsers } = useOnlineUsers();  // Use the context to get online users
+
+  console.log("UserAvatar received users:", onlineUsers);
+
+  if (onlineUsers.length === 0) {
+    return <p>No users online</p>;
+  }
+
   return (
-    <AvatarGroup
-      isBordered
-      max={3}
-      renderCount={(count) => (
-        <p className="text-small text-foreground font-medium ms-2">
-          +{count} others
-        </p>
-      )}
-      total={10}
-    >
-        <Avatar src="https://i.pravatar.cc/150?u=a042581f4e29026024d" />
-      <Avatar src="https://i.pravatar.cc/150?u=a04258a2462d826712d" />
-      <Avatar src="https://i.pravatar.cc/150?u=a042581f4e29026704d" />
-      <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026302d" />
-      <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026702d" />
-      <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026708c" />
-    </AvatarGroup>
+    <div>
+      <h3>Online Users:</h3>
+      <ul>
+        {onlineUsers.map(user => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
