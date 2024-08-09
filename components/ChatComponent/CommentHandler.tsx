@@ -47,6 +47,7 @@ interface CommentHandlerProps {
   selectedRange: Range | null | undefined;
   highlightText: ((index: number, length: number, color: string) => void) | undefined;
   removeHighlight: ((index: number, length: number) => void) | undefined; 
+  selectedModel: string;
 }
 
 export default function CommentHandler({
@@ -62,7 +63,8 @@ export default function CommentHandler({
   deleteSelectedComments,
   setDeleteSelectedComments,
   highlightText,
-  removeHighlight
+  removeHighlight,
+  selectedModel
 }: Readonly<CommentHandlerProps>){
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
@@ -314,6 +316,7 @@ export default function CommentHandler({
             //promptList={promptList}
             highlightText={handleHighlightText}
             removeHighlight={handleRemoveHighlight}
+            selectedModel={selectedModel}
         />
         </div>
       )}
