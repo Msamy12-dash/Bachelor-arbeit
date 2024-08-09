@@ -340,3 +340,14 @@ export const deleteCurrent = (quill: React.RefObject<ReactQuill>, doc: Y.Doc) =>
     }
   }
 };
+
+export const getCurrentId = (doc: Y.Doc): number | null => {
+  const yarray = doc.getArray<Range>("rangeArray");
+  const ranges = yarray.toArray();
+
+  // Find the range with `current` set to true
+  const currentRange = ranges.find(range => range.current);
+
+  // Return the `id` of the found range, or `null` if no such range is found
+  return currentRange ? currentRange.id : 0;
+};

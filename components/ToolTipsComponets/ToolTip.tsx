@@ -9,7 +9,8 @@ import {
   deleteRangeFromYArray,
   deleteAll,
   saveRORange,
-  deleteCurrent
+  deleteCurrent,
+  getCurrentId
 } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 import Draggable from 'react-draggable';
@@ -70,8 +71,11 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
     const modifiedText = inputText;
     const pollOptions = [selectedText, modifiedText];
 
+    const rangeId = getCurrentId(doc);
+
     const examplePoll = {
       id: "Vote on the Text",
+      title: "any",
       options: pollOptions,
       votes: [0, 0]
     };
