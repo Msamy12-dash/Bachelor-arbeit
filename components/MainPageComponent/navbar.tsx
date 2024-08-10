@@ -71,12 +71,16 @@ export const Navbar = ({
       </NavbarContent>
 
      {/* Choose Model Section */}
-     <p className="text-small">Choose AI Model: </p>
-      <Dropdown>
-        <DropdownTrigger>
-          <Button color="primary" variant="bordered" className="w-32 m-4">
+     <p className="text-small text-blue-500 font-semibold w-full text-end">Choose AI Model: </p>
+      <Dropdown className="p-5">
+        <DropdownTrigger >
+          <Button color="primary" variant="bordered" className="w-32">
+            <span className=" ml-2 ">
             {selectedModel}
+
             <ArrowDropDown/>
+
+            </span>
           </Button>
         </DropdownTrigger>
         

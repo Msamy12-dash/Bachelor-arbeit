@@ -116,19 +116,21 @@ export default function MUPCard({
         </IconButton>
         
       </div>
-       <p>Selected Text: </p>
+       <p className="text-lg underline">Selected Text: </p>
        <div className="mb-4 p-2 bg-gray-50">
          <p className="text-small font-medium">{cardData.selectedTextOnMUPCard}</p>
+       <button className=" mt-2 mb-2 inline-flex items-center justify-center px-6 py-1 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md rounded-lg" onClick={handleSave}>
+        Add to favourites</button>
+
        </div>
        <p>Prompt:</p>
-       <button className="underline float-right" onClick={handleSave}>Add to favourites</button>
        <textarea
          className="w-full p-4 mb-4 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 box-border"
          value={cardData.promptText}
          onChange={handleTextChange}
        />
       <Button
-        className={`mb-4 inline-flex items-center justify-center px-6 py-3 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md ${
+        className={`mb-4 inline-flex items-center justify-center ml-7 px-6 py-3 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md ${
           cardData.submitting ? "cursor-not-allowed" : "hover:from-blue-600 hover:to-indigo-600"
         } transition-all duration-300`}
         onClick={handleSubmitToAI}
