@@ -16,7 +16,6 @@ import {
   handleRangeShift,
   handleROChange, handleRORelSelectionChange,
   handleROSelectionChange,
-  initializeGlobalCounter,
   saveRelRange,
   saveRORange
 } from "../VoteComponent/TextBlocking";
@@ -77,8 +76,6 @@ export default function Editor({
   
 
   useEffect(() => {
-
-    initializeGlobalCounter(provider.doc);
 
     const fetchInitialText = async () => {
 

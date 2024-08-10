@@ -23,16 +23,11 @@ interface RelRange{
   current: boolean;
   start: Y.RelativePosition;
   end: Y.RelativePosition;
+  oldText: string;
+  newText?: string;
 }
 
 const voteRangesDoc = new Y.Doc();
-
-export const initializeGlobalCounter = (doc: Y.Doc) => {
-  const globalMap = doc.getMap("global");
-  if (!globalMap.has("rangeIdCounter")) {
-    globalMap.set("rangeIdCounter", 0);
-  }
-};
 
 const forceSpacesAroundRange = (editor: any, range: Range) => {
 
@@ -384,7 +379,6 @@ export const setCurrentRangeForUser = (rangeId:any ,provider:YPartyKitProvider )
 export const addRelRangeToDoc = (doc: Y.Doc, start: number, length: number, ytext: Y.Text,provider:YPartyKitProvider) => {
   const yMap = doc.getMap<RelRange>("relRanges");
 
-  // Find the max id in the map and increment it by one, or set id to 0 if the map is empty
   let currentId = 0;
   if (yMap.size > 0) {
     const maxId = Array.from(yMap.values()).reduce((max, range) => {
@@ -392,6 +386,11 @@ export const addRelRangeToDoc = (doc: Y.Doc, start: number, length: number, ytex
     }, 0);
     currentId = maxId + 1;
   }
+
+  const oldText = ytext.toString().substring(start, start + length);
+
+
+
   const startRelPos = Y.createRelativePositionFromTypeIndex(ytext, start);
   const endRelPos = Y.createRelativePositionFromTypeIndex(ytext, start + length);
 
@@ -400,7 +399,10 @@ export const addRelRangeToDoc = (doc: Y.Doc, start: number, length: number, ytex
     current: true,
     start: startRelPos,
     end: endRelPos,
+    oldText: oldText,
   };
+
+
 
    yMap.set(currentId.toString(), newRelRange);
 
@@ -408,7 +410,7 @@ export const addRelRangeToDoc = (doc: Y.Doc, start: number, length: number, ytex
 
 };
 
-// Retrieves a range's start and end positions from the Y.Doc using relative positions
+
 export const getRelRangeFromDoc = (doc: Y.Doc, id: number, ytext: Y.Text): { start: number, end: number } | null => {
   const yMap = doc.getMap<RelRange>("relRanges");
   const relRange = yMap.get(id.toString());
@@ -425,7 +427,7 @@ export const getRelRangeFromDoc = (doc: Y.Doc, id: number, ytext: Y.Text): { sta
   return null;
 };
 
-// Deletes a relative range using its ID
+
 export const deleteRelRange = (doc: Y.Doc, id: number, quill: React.RefObject<ReactQuill>, ytext: Y.Text) => {
   const yMap = doc.getMap<RelRange>("relRanges");
   const relRange = getRelRangeFromDoc(doc, id, ytext);
@@ -440,7 +442,6 @@ export const deleteRelRange = (doc: Y.Doc, id: number, quill: React.RefObject<Re
   }
 };
 
-// Updates the positions of all ranges when the document changes (handled automatically by Y.js)
 export const handleRelRangeShift = (doc: Y.Doc, ytext: Y.Text) => {
   const yMap = doc.getMap<RelRange>("relRanges");
 
@@ -456,14 +457,22 @@ export const handleRelRangeShift = (doc: Y.Doc, ytext: Y.Text) => {
   });
 };
 
-// Save the relative range with a background color
 export const saveRelRange = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, provider: YPartyKitProvider, range?: Omit<Range, "id" | "current">) => {
 
   if (quill.current) {
     const editor = quill.current.getEditor();
     const ytext = doc.getText("quill");
 
+
+
     if (range && range.length > 0) {
+      if (range.index == 0) {
+        editor.insertText(range.index, " ", { background: false });
+        range.index += 1;
+      }
+      if(range.index + range.length + 1 >= editor.getLength()){
+        editor.insertText(editor.getLength(), " ", { background: false });
+      }
       editor.formatText(range.index, range.length, { background: "#ffcccc" });
       addRelRangeToDoc(doc, range.index, range.length, ytext,provider);
     }
@@ -471,7 +480,6 @@ export const saveRelRange = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, pro
 
 };
 
-// Deletes the current range using the relative positions
 export const deleteCurrentRelRange = (doc: Y.Doc, provider: YPartyKitProvider, quill: React.RefObject<ReactQuill>) => {
   const currentId = getCurrentId(doc, provider);
   const ytext = provider.doc.getText('quill');
@@ -511,5 +519,50 @@ export const handleRORelSelectionChange = async (
     }
   }
 };
+
+const forceSpacesAroundRelRange = (doc: Y.Doc, relRange: RelRange, quill: React.RefObject<ReactQuill>, ytext: Y.Text) => {
+  const editor = quill.current?.getEditor();
+
+  if (editor) {
+    const startPos = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc);
+    const endPos = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc);
+
+    if (startPos && endPos && startPos.type === ytext && endPos.type === ytext) {
+      let start = startPos.index;
+      let end = endPos.index;
+
+      // Add space before the range if it's not already there
+      if (start > 0) {
+        const textBefore = editor.getText(start - 1, 1);
+        if (textBefore !== " ") {
+          editor.insertText(start, " ", { background: false });
+          start += 1; // Adjust start position
+          end += 1; // Adjust end position
+        }
+      }
+
+      // Add space after the range if it's not already there
+      if (end < editor.getLength()) {
+        const textAfter = editor.getText(end, 1);
+        if (textAfter !== " ") {
+          editor.insertText(end, " ", { background: false });
+          end += 1; // Adjust end position
+        }
+      }
+
+      // Update the relative positions in the Y.js doc
+      const newStartRelPos = Y.createRelativePositionFromTypeIndex(ytext, start);
+      const newEndRelPos = Y.createRelativePositionFromTypeIndex(ytext, end);
+
+      relRange.start = newStartRelPos;
+      relRange.end = newEndRelPos;
+
+      // Update the relRange in the Y.Map
+      const yMap = doc.getMap<RelRange>("relRanges");
+      yMap.set(relRange.id.toString(), relRange);
+    }
+  }
+};
+
 
 
