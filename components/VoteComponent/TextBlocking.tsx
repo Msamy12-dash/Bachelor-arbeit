@@ -564,5 +564,30 @@ const forceSpacesAroundRelRange = (doc: Y.Doc, relRange: RelRange, quill: React.
   }
 };
 
+export const saveNewTextForCurrentRange = (
+  doc: Y.Doc,
+  provider: YPartyKitProvider,
+  newText: string
+) => {
+  const currentId = getCurrentId(doc, provider);
+
+  if (currentId !== null) {
+    const yMap = doc.getMap<RelRange>("relRanges");
+
+    const relRange = yMap.get(currentId.toString());
+
+    if (relRange) {
+      relRange.newText = newText;
+
+      yMap.set(currentId.toString(), relRange);
+    } else {
+      console.error(`RelRange with ID ${currentId} not found.`);
+    }
+  } else {
+    console.error("No current ID found for the user.");
+  }
+};
+
+
 
 

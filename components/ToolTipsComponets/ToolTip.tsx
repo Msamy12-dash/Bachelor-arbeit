@@ -11,7 +11,7 @@ import {
   deleteAll,
   saveRORange,
   deleteCurrent,
-  getCurrentId, saveRelRange, deleteCurrentRelRange
+  getCurrentId, saveRelRange, deleteCurrentRelRange, saveNewTextForCurrentRange
 } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 import Draggable from 'react-draggable';
@@ -74,6 +74,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
     const selectedText = text;
     const modifiedText = inputText;
     const pollOptions = [selectedText, modifiedText];
+    saveNewTextForCurrentRange(doc, provider, modifiedText);
 
     const rangeId = getCurrentId(doc,provider);
 
