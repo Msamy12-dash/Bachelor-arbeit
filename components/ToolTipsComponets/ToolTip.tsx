@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Avatar, Button, Card, CardBody, CardHeader } from "@nextui-org/react";
+import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
+import Snackbar from "@mui/material/Snackbar";
 import * as Y from "yjs";
-import Draggable from 'react-draggable';
-import { IconButton } from "@mui/material";
+import YPartyKitProvider from "y-partykit/provider";
 
 import {
   saveRangeWithText,
   updateVoteRangeText,
   deleteRangeFromYArray,
-  deleteCurrent
-} from "../voteComponent/TextBlocking";
+  deleteAll,
+  saveRORange,
+  deleteCurrent,
+  getCurrentId, saveRelRange, deleteCurrentRelRange, saveNewTextForCurrentRange
+} from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
+import Draggable from 'react-draggable';
 
+import CloseIcon from '@mui/icons-material/Close';
 
 import CustomMenu from "./AIInteractionComponent";
-
+import { IconButton } from "@mui/material";
 
 interface Range {
   index: number;
@@ -24,18 +29,20 @@ interface TooltipProps {
   show: boolean;
   text: string;
   position: { x: number; y: number; maxWidth: number };
-  onSaveRange: () => void;
+  onsaveRelRange: () => void;
   onCancel: () => void;
   quill: any;
   doc: Y.Doc;
+  provider:YPartyKitProvider;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, onCancel, quill, doc }) => {
+const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange, onCancel, quill, doc,provider }) => {
   const [inputDisabled, setInputDisabled] = useState(true);
   const [suggestButtonDisabled, setSuggestButtonDisabled] = useState(true);
   const [votingInProgress, setVotingInProgress] = useState(false);
   const [inputText, setInputText] = useState('');
   const [voteID, setVoteID] = useState(0); // State to track the ID
+  const [currentRangeID, setCurrentRangeID] = useState(0);
 
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
@@ -60,7 +67,8 @@ const User ={
 
   const handleCancelClick = () => {
     //deleteAll(quill, doc);
-    deleteCurrent(quill, doc);
+    //deleteCurrent(quill, doc, provider);
+    deleteCurrentRelRange( doc, provider,quill);
     setInputDisabled(true);
     setSuggestButtonDisabled(true);
     onCancel();
@@ -71,13 +79,16 @@ const User ={
     const modifiedText = inputText;
     const pollOptions = [selectedText, modifiedText];
     const randomId = generateRandomId();
+    saveNewTextForCurrentRange(doc, provider, modifiedText);
+
+    const rangeId = getCurrentId(doc,provider);
 
     const examplePoll = {
       room_id :randomId,
       id: "Vote on the Text",
       options: pollOptions,
       votes: [0, 0],
-      bolck_id : 1,
+      bolck_id : rangeId,
       user: User
     };
 
@@ -138,8 +149,8 @@ const User ={
             {!inputDisabled && (
               <IconButton
                 size="small"
-                style={{ position: 'absolute', top: '-10px', right: '10px' }}
                 onClick={handleClearText}
+                style={{ position: 'absolute', top: '-10px', right: '10px' }}
               >
                 {/*<CloseIcon fontSize="small" />*/}
                 <span className="text-sm text-blue-500 cursor-pointer">
@@ -149,16 +160,16 @@ const User ={
             )}
               <textarea
                 className="max-w-full p-2 border border-gray-300 rounded-md"
+                style={{ width: '100%', height: '100px', resize: 'vertical', overflow: 'auto' }}
                 defaultValue={text}
                 disabled={inputDisabled}
                 placeholder="Enter your text"
-                style={{ width: '100%', height: '100px', resize: 'vertical', overflow: 'auto' }}
                 value={inputText}
                 onChange={handleInputChange}
               />
           </div>
           <div className="flex flex-wrap gap-4 items-center">
-            <CustomMenu disabled={suggestButtonDisabled} onInsertTrialText={handleInsertTrialText} onSaveRange={onSaveRange} />
+            <CustomMenu disabled={suggestButtonDisabled} onInsertTrialText={handleInsertTrialText} onSaveRange={onsaveRelRange} />
             <Button
               className={!inputDisabled ? "bg-gray-300" : ""}
               color="primary"
@@ -170,8 +181,8 @@ const User ={
               <Button
                 className={inputDisabled ? "bg-gray-300" : ""}
                 color="success"
-                disabled={inputDisabled}
                 onClick={handleVoteClick}
+                disabled={inputDisabled}
               >
                 Vote
               </Button>
