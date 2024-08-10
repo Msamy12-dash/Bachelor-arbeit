@@ -119,8 +119,7 @@ export default function MUPCard({
        <p className="text-lg underline">Selected Text: </p>
        <div className="mb-4 p-2 bg-gray-50">
          <p className="text-small font-medium">{cardData.selectedTextOnMUPCard}</p>
-       <button className=" mt-2 mb-2 inline-flex items-center justify-center px-6 py-1 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md rounded-lg" onClick={handleSave}>
-        Add to favourites</button>
+       
 
        </div>
        <p>Prompt:</p>
@@ -129,8 +128,9 @@ export default function MUPCard({
          value={cardData.promptText}
          onChange={handleTextChange}
        />
+     
       <Button
-        className={`mb-4 inline-flex items-center justify-center ml-7 px-6 py-3 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md ${
+        className={`mb-4 inline-flex items-center justify-center ml-9 px-6 py-3 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md ${
           cardData.submitting ? "cursor-not-allowed" : "hover:from-blue-600 hover:to-indigo-600"
         } transition-all duration-300`}
         onClick={handleSubmitToAI}
@@ -147,6 +147,9 @@ export default function MUPCard({
           "Submit to AI"
         )}
       </Button>
+
+      <button className="  mb-2 ml-4 inline-flex items-center justify-center px-6 py-1 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md rounded-lg" onClick={handleSave}>
+      Add to favourites</button>
       
        {cardData.responseText && (
         <div>

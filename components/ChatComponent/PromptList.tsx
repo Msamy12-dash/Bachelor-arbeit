@@ -11,8 +11,6 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
-import styles from "./promptList.module.css"; // Importing CSS for additional styles
-
 import YPartyKitProvider from "y-partykit/provider";
 
 export default function PromptList({
@@ -26,7 +24,6 @@ export default function PromptList({
   const [editContent, setEditContent] = useState<string>("");
   const yProviderDoc = yProvider?.doc;
   const yProviderArr = yProviderDoc?.getArray("prompts");
-  console.log("yProvider------",yProvider)
 
   const loadPrompts = useCallback(() => {
     const savedPrompts = yProviderArr?.toArray() || [];
@@ -87,38 +84,38 @@ export default function PromptList({
       <Typography gutterBottom variant="h6" align="center">
         Prompt List
       </Typography>
-      <div className={styles.scrollableList}>
+      <div className="max-h-[35vw] overflow-y-auto p-2.5 bg-[#f9f9f9] border border-[#ddd] rounded-lg shadow-md">
         <List>
           {prompts.map((prompt, index) => (
             <ListItem key={index}>
-              <div className={`card ${styles.card}`}>
-                <div className={styles.cardBody}>
-                  <div className={styles.cardTop}>
-                    <div className={styles.nameDate}>
+              <div className="flex w-full bg-white border border-[#ddd] rounded-lg mb-2.5 shadow-md">
+                <div className="flex-1 p-2.5">
+                  <div className="flex justify-between items-center w-full">
+                    <div className="flex-1 break-words">
                       {isEditing === index ? (
                         <textarea
-                          className={styles.editTextarea}
+                          className="w-full text-center p-2 border border-[#ddd] rounded-md shadow-inner"
                           value={editContent}
                           onChange={handleContentChange}
                         />
                       ) : (
                         <ListItemText
-                          className={styles.textWrap}
+                          className="break-words text-center p-2.5 rounded-md bg-[#f1f1f1]"
                           primary={prompt}
                         />
                       )}
                     </div>
-                    <div className={styles.editDeleteHistory}>
+                    <div className="flex flex-col ml-2.5">
                       {isEditing === index ? (
                         <>
                           <button
-                            className={`btn-save ${styles.btnSave}`}
+                            className="m-1.5 p-1.5 rounded-md border-none cursor-pointer transition-colors ease-in-out duration-300 bg-[#4caf50] text-white hover:bg-[#45a049]"
                             onClick={saveEdit}
                           >
                             Save
                           </button>
                           <button
-                            className={` btn-cancel ${styles.btnCancel}`}
+                            className="m-1.5 p-1.5 rounded-md border-none cursor-pointer transition-colors ease-in-out duration-300 bg-[#f44336] text-white hover:bg-[#e53935]"
                             onClick={cancelEdit}
                           >
                             Cancel
