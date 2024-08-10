@@ -12,7 +12,14 @@ import { DeltaStatic } from "quill/index";
 import YPartyKitProvider from "y-partykit/provider";
 
 import Tooltip from "../ToolTipsComponets/ToolTip";
-import { handleRangeShift, handleROChange, handleROSelectionChange, saveRORange } from "../VoteComponent/TextBlocking";
+import {
+  handleRangeShift,
+  handleROChange, handleRORelSelectionChange,
+  handleROSelectionChange,
+  initializeGlobalCounter,
+  saveRelRange,
+  saveRORange
+} from "../VoteComponent/TextBlocking";
 
 import { PARTYKIT_HOST } from "@/pages/env";
 
@@ -71,6 +78,8 @@ export default function Editor({
 
   useEffect(() => {
 
+    initializeGlobalCounter(provider.doc);
+
     const fetchInitialText = async () => {
 
 
@@ -126,7 +135,7 @@ export default function Editor({
 
     const readOnlyContext = { quill };
 
-    handleROSelectionChange(quill, range, "user",provider.doc);
+    handleRORelSelectionChange(quill, range,provider.doc,provider.doc.getText("quill"));
 
     // If text is selected
     if (range && range.length > 0) {
@@ -174,7 +183,7 @@ export default function Editor({
               maxWidth: maxWidth,
             });
             setShowTooltip(true);
-            saveRORange(quill,provider.doc, range);
+            saveRelRange(quill,provider.doc,provider, range);
 
           } else {
             // setShowTooltip(false);
@@ -264,12 +273,12 @@ export default function Editor({
 
   const onChange = (content: string, delta: DeltaStatic, source: string, editor: any): void => {
     handleROChange(quill, content, delta, source);
-    handleRangeShift(delta,quill, provider.doc);
+    //handleRangeShift(delta,quill, provider.doc);
     setText(content);
   };
 
   const saveRange = ():void=>{
-    saveRORange(quill,provider.doc);
+    saveRelRange(quill,provider.doc,provider);
   }
 
   const handleHideTooltip = () => {
@@ -342,7 +351,8 @@ export default function Editor({
       show={showTooltip}
       text={selectedText}
       onCancel={handleHideTooltip}
-      onSaveRange={saveRange}
+      onsaveRelRange={saveRange}
+      provider={provider}
     />
 
     </div>

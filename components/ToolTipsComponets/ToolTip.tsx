@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import Snackbar from "@mui/material/Snackbar";
 import * as Y from "yjs";
+import YPartyKitProvider from "y-partykit/provider";
 
 import {
   saveRangeWithText,
@@ -10,7 +11,7 @@ import {
   deleteAll,
   saveRORange,
   deleteCurrent,
-  getCurrentId
+  getCurrentId, saveRelRange, deleteCurrentRelRange
 } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 import Draggable from 'react-draggable';
@@ -28,18 +29,20 @@ interface TooltipProps {
   show: boolean;
   text: string;
   position: { x: number; y: number; maxWidth: number };
-  onSaveRange: () => void;
+  onsaveRelRange: () => void;
   onCancel: () => void;
   quill: any;
   doc: Y.Doc;
+  provider:YPartyKitProvider;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, onCancel, quill, doc }) => {
+const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange, onCancel, quill, doc,provider }) => {
   const [inputDisabled, setInputDisabled] = useState(true);
   const [suggestButtonDisabled, setSuggestButtonDisabled] = useState(true);
   const [votingInProgress, setVotingInProgress] = useState(false);
   const [inputText, setInputText] = useState('');
   const [voteID, setVoteID] = useState(0); // State to track the ID
+  const [currentRangeID, setCurrentRangeID] = useState(0);
 
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
@@ -60,7 +63,8 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
 
   const handleCancelClick = () => {
     //deleteAll(quill, doc);
-    deleteCurrent(quill, doc);
+    //deleteCurrent(quill, doc, provider);
+    deleteCurrentRelRange( doc, provider,quill);
     setInputDisabled(true);
     setSuggestButtonDisabled(true);
     onCancel();
@@ -71,7 +75,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
     const modifiedText = inputText;
     const pollOptions = [selectedText, modifiedText];
 
-    const rangeId = getCurrentId(doc);
+    const rangeId = getCurrentId(doc,provider);
 
     const examplePoll = {
       id: "Vote on the Text",
@@ -157,7 +161,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
               />
           </div>
           <div className="flex flex-wrap gap-4 items-center">
-            <CustomMenu disabled={suggestButtonDisabled} onInsertTrialText={handleInsertTrialText} onSaveRange={onSaveRange} />
+            <CustomMenu disabled={suggestButtonDisabled} onInsertTrialText={handleInsertTrialText} onSaveRange={onsaveRelRange} />
             <Button
               className={!inputDisabled ? "bg-gray-300" : ""}
               color="primary"
