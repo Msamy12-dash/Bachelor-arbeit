@@ -1,10 +1,11 @@
-import { getLLMResponse } from "./ollamaPrompting.js";
+import { getOllamaResponse } from "./ollamaPrompting.js";
+import {getOpenAIResponse} from "./OpenAIPrompting.js";
 
 //Builds Prompt for adequate multi-comment-prompting response.
 //userComments is an array of strings
 //needs additional array to send the text its referring to.
 export function buildPromptForMCP(completeText, userComments, userCommentsContext) { 
-  
+    
     let task = `Rewrite the base text that follows this prompt in double quotes by synthesizing the ${userComments.length} comments listed below and applying their meaining all at once. The base text you need to rewrite is: 
     
     "${completeText}"`;
@@ -12,7 +13,7 @@ export function buildPromptForMCP(completeText, userComments, userCommentsContex
     let context = `The company you work for has described your next project in the following way.`;
     
     let persona = `You are a linguistics professor that specializes in the application of synthesized feedback on texts. 
-In your job, you have multiple comments that grant feedback on a base text, more specifically regarding either the whole text or only specific sections of it. Then you need to synthesize the gist of the comments and apply them to the base text.`;
+    In your job, you have multiple comments that grant feedback on a base text, more specifically regarding either the whole text or only specific sections of it. Then you need to synthesize the gist of the comments and apply them to the base text.`;
     
     let format = `Let your response only be the rewritten version of the base text and no other text or symbols.`;
 
@@ -35,27 +36,28 @@ In your job, you have multiple comments that grant feedback on a base text, more
     for (let i = 0; i < userComments.length; i++) {
         formattedUserFeedback.push(`
 
-${buildUserContextStringHelper(userCommentsContext, i)}
+        ${buildUserContextStringHelper(userCommentsContext, i)}
 
-      Comment ${i + 1}:
+        Comment ${i + 1}:
 
         "${userComments[i]}"
-`)
+        `)
     }
+
 
     formattedUserFeedback = formattedUserFeedback.join("");
 
     let prompt = `${persona}
     
-${context}
+      ${context}
 
-${task}
-    
-${formattedUserFeedback}
+      ${task}
+          
+      ${formattedUserFeedback}
 
-${format}
+      ${format}
 
-${tone}`;
+      ${tone}`;
 
     //for testing pruposes
     console.log(prompt); 
@@ -63,18 +65,39 @@ ${tone}`;
   }
   
   // This is the function that gets called by the server API
-  export async function requestResponseForMCP(completeText, userComments, userCommentsContext) {
-    try {
-      return await getLLMResponse(buildPromptForMCP(completeText, userComments, userCommentsContext));  
-    } catch (error) {
-      console.error('Error:', error.message || error);
-      return error;
+  export async function requestResponseForMCP(model, completeText, userComments, userCommentsContext) {
+
+    // If Ollama is selected
+    if(model == "Ollama"){
+      try {
+        return await getOllamaResponse(buildPromptForMCP(completeText, userComments, userCommentsContext));  
+      } catch (error) {
+        console.error('Error:', error.message || error);
+        return error;
+      }
+    }
+
+    // If OpenAI is selected
+    if(model == "OpenAI"){
+      try {
+        return await getOpenAIResponse(buildPromptForMCP(completeText, userComments, userCommentsContext));  
+      } catch (error) {
+        console.error('Error:', error.message || error);
+        return error;
+      }
+    }
+
+
+    // If Mistral is selected
+    if(model == "Mistral"){
+      
     }
   }
+  
 
   
   // request a summary on what AI has changed based on the selected comments
-  export async function requestChangesSummaryForMCP(prevText, newText){
+  export async function requestChangesSummaryForMCP(model, prevText, newText){
     // build prompt
     
     let task = "You are an expert for analyzing changes within two versions of the same text. I will give you two versions of the same text. The old version is 'Text 1'. The new version is 'Text 2'. Your Task is to give me an overview what has changed between the two texts. Respond in a short form where you summarize the biggest changes in a maximum of 10 sentences."
@@ -83,10 +106,31 @@ ${tone}`;
     let text2 = `Text 2: \n ${newText}\n \n`;
 
     let prompt = task + text1 + text2;
-    try {
-      return await getLLMResponse(prompt);  
-    } catch (error) {
-      console.error('Error:', error.message || error);
-      return error;
+
+    // If Ollama is selected
+    if(model == "Ollama"){
+      try {
+        return await getOllamaResponse(prompt);  
+      } catch (error) {
+        console.error('Error:', error.message || error);
+        return error;
+      }
     }
+
+    // If OpenAI is selected
+    if(model == "OpenAI"){
+      try {
+        return await getOpenAIResponse(prompt);  
+      } catch (error) {
+        console.error('Error:', error.message || error);
+        return error;
+      }
+    }
+
+
+    // If Mistral is selected
+    if(model == "Mistral"){
+      
+    }
+    
   }

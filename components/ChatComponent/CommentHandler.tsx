@@ -8,7 +8,9 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
+import colors from "../../highlightColors.js"
 
 interface Comment {
   key: number;
@@ -26,97 +28,90 @@ interface Comment {
   canReply: boolean;
 }
 
-export default function CommentHandler({
-  room,
-  textSpecificComment,
-  setRange,
-  editor,
-  yProvider,
-  
-  promptList,
-  setAIChanges,
-  deleteSelectedComments,
-  setDeleteSelectedComments
-}: Readonly<{
+interface Range {
+  index: number;
+  length: number;
+}
+
+interface CommentHandlerProps {
   room: string;
-  textSpecificComment: Comment | null;
   editor: Quill | null;
   setRange: Function;
   promptList: string[];
   setAIChanges: Function;
   deleteSelectedComments: boolean;
   setDeleteSelectedComments: Function;
-  yProvider:YPartyKitProvider;
-}>) {
+  yDoc: Y.Doc;
+  yProvider: YPartyKitProvider;
+  selectedText: string;
+  selectedRange: Range | null | undefined;
+  highlightText: ((index: number, length: number, color: string) => void) | undefined;
+  removeHighlight: ((index: number, length: number) => void) | undefined; 
+  selectedModel: string;
+}
+
+export default function CommentHandler({
+  room,
+  setRange,
+  editor,
+  yDoc,
+  yProvider,
+  selectedText,
+  selectedRange,
+  promptList,
+  setAIChanges,
+  deleteSelectedComments,
+  setDeleteSelectedComments,
+  highlightText,
+  removeHighlight,
+  selectedModel
+}: Readonly<CommentHandlerProps>){
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
   const [value, setValue] = React.useState("1");
+  const [checkedKeys, setCheckedKeys] = useState<number[]>([]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
-  const [checkedKeys, setCheckedKeys] = useState<number[]>([]);
-  
 
-  const fetchCurrentKey = async (): Promise<number> => {
-    try {
-      const response = await fetch('/api/get-key');
-      if (!response.ok) {
-        throw new Error('Failed to fetch key');
-      }
-      const data = await response.json();
-      return data.currentKey;
-    } catch (error) {
-      console.error('Failed to fetch key:', error);
-      return 0;
-    }
-  };
-  
-  const updateKey = async (newKey: number) => {
-    try {
-      const response = await fetch('/api/update-key', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ currentKey: newKey }),
-      });      
-      if (!response.ok) {
-        throw new Error('Failed to update key');
-      }
-      const data = await response.json();
-      console.log('Key updated successfully:', data);
-    } catch (error) {
-      console.error('Failed to update key:', error);
-    }
-  };
+  useEffect(() => {
+    if (yDoc) {
+      const yarray = yDoc.getArray<Comment>("comments");
 
+      const updateComments = () => {
+        setComments(yarray.toArray());
+      };
+
+      yarray.observe(updateComments);
+      updateComments();
+
+      return () => {
+        yarray.unobserve(updateComments);
+      };
+    }
+  }, [yDoc]);
+
+  
   const getNewKey = async (): Promise<number> => {
-    const currentKey = await fetchCurrentKey();
+    const ymap = yDoc.getMap('keys');
+    const currentKey = Number(ymap.get('currentKey') || 0);
     const newKey = currentKey + 1;
-    await updateKey(newKey);
+    ymap.set('currentKey', newKey);
     return newKey;
   };
-
-  // Function to save a new comment in MongoDB
-  const saveComment = async (comment: Comment) => {
-    try {
-      const response = await fetch('/api/save-comment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comment }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to save comment');
-      }
-      const data = await response.json();
-      console.log('Comment saved successfully:', data);
-    } catch (error) {
-      console.error('Failed to save comment:', error);
+  
+  const handleHighlightText = (index: number, length: number, color: string) => {
+    if (highlightText) {
+      highlightText(index, length, color);
     }
   };
+
+  const handleRemoveHighlight = (index: number, length: number) => {
+    if (removeHighlight) {
+      removeHighlight(index, length);
+    }
+  }
 
   const addComment = async (comment: Comment) => {
     const newKey = await getNewKey();
@@ -148,13 +143,14 @@ export default function CommentHandler({
       canReply: canReply
     };
 
-    // Save comment in Database
-    saveComment(newComment);
+    const yarray = yDoc.getArray<Comment>("comments");
+
+    if (newComment.isTextSpecific) {
+      handleHighlightText(newComment.index, newComment.length, colors.currentMUPSectionDYellow);
+    }
 
     if (comment.parentKey === null) {
-      // If parentkey is null, add the new comment as a root comment
-      setComments(prevComments => [...prevComments, newComment]);
-      // Save only main comments
+      yarray.push([newComment]);
     } else {
       const addReplyToComment = (commentsArray: Comment[], keyToFind: number, replyToAdd: Comment): Comment[] => {
         return commentsArray.map(comment => {
@@ -174,39 +170,11 @@ export default function CommentHandler({
           return comment;
         });
       };
-      const updatedComments = addReplyToComment(comments, comment.parentKey, newComment);
-      setComments(updatedComments);
+      const updatedComments = addReplyToComment(yarray.toArray(), comment.parentKey, newComment);
+      yarray.delete(0, yarray.length);
+      yarray.push(updatedComments);
     } 
   };
-
-  useEffect(() => {
-    // Fetch comments from the API when the component mounts
-    const fetchComments = async () => {
-      try {
-        const response = await fetch("/api/fetch-comments");
-        if (!response.ok) {
-          throw new Error("Failed to fetch comments");
-        }
-        const data = await response.json();
-        setComments(data);
-  
-      } catch (error) {
-  
-      }
-    };
-
-    fetchComments();
-  }, []);
-
-
-
-  useEffect(() => {
-    if (textSpecificComment != null) {
-      addComment(textSpecificComment);
-    }
-  }, [textSpecificComment]);
-
-
 
   useEffect(() => {
 
@@ -225,6 +193,8 @@ export default function CommentHandler({
 
 
   const incrementUpvote = async (IncrementComment: Comment) => {
+    const yarray = yDoc.getArray<Comment>("comments");
+
     const updateUpvote = (comments: Comment[]): Comment[] => {
       return comments.map(comment => {
         if (comment.key === IncrementComment.key) {
@@ -241,29 +211,14 @@ export default function CommentHandler({
         return comment;
       });
     };
-    const updatedComments = updateUpvote(comments);
-    setComments(updatedComments);
-
-    try {
-      // API call to update the comment in MongoDB
-      const response = await fetch('/api/increment-comment', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comment: IncrementComment }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update comment');
-      }
-      const data = await response.json();
-      console.log('Comment updated successfully:', data);
-    } catch (error) {
-      console.error('Failed to update comment:', error);
-    }
+    const updatedComments = updateUpvote(yarray.toArray());
+    yarray.delete(0, yarray.length);
+    yarray.push(updatedComments);
   };
 
   const deleteComment = async (DeleteComment: Comment) => {
+    const yarray = yDoc.getArray<Comment>("comments");
+
     const removeComment = (comments: Comment[]): Comment[] => {
       return comments.reduce((acc, comment) => {
         if (comment.key === DeleteComment.key && comment.parentKey === DeleteComment.parentKey) {
@@ -278,31 +233,34 @@ export default function CommentHandler({
         }
       }, [] as Comment[]);
     };
-  
-    const updatedComments = removeComment(comments);
-    setComments(updatedComments);
-    
 
-    try {
-      // API call to delete the comment in MongoDB
-      const response = await fetch('/api/delete-comment', {
-        method: 'DELETE',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ comment: DeleteComment }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete comment");
-      }
-      const data = await response.json();
-      console.log("Comment deleted successfully:", data);
-    } catch (error) {
-      console.error("Failed to delete comment:", error);
+    if (DeleteComment.isTextSpecific) {
+      handleRemoveHighlight(DeleteComment.index, DeleteComment.length);
     }
+  
+    const updatedComments = removeComment(yarray.toArray());
+
+    //Highlight overlapping comments again
+    updatedComments.forEach(comment => {
+      const commentEnd = comment.index + comment.length;
+      const deleteCommentEnd = DeleteComment.index + DeleteComment.length;
+  
+      if (
+        (comment.index >= DeleteComment.index && comment.index < deleteCommentEnd) || // Anfang des Kommentars liegt innerhalb des DeleteComments
+        (commentEnd > DeleteComment.index && commentEnd <= deleteCommentEnd) || // Ende des Kommentars liegt innerhalb des DeleteComments
+        (comment.index <= DeleteComment.index && commentEnd >= deleteCommentEnd) // Kommentar umfasst den gesamten DeleteComment-Bereich
+      ) {
+        handleHighlightText(comment.index, comment.length, colors.currentMUPSectionDYellow);
+      }
+    });
+
+    yarray.delete(0, yarray.length);
+    yarray.push(updatedComments);
   };
 
   const editComment = async (EditComment: Comment, newContent: string) => {
+    const yarray = yDoc.getArray<Comment>("comments");
+
     const updateComment = (comments: Comment[]): Comment[] => {
       return comments.map((comment) => {
         if (comment.key === EditComment.key && comment.parentKey === EditComment.parentKey) {
@@ -315,52 +273,15 @@ export default function CommentHandler({
       });
     };
 
-    const updatedComments = updateComment(comments);
-    setComments(updatedComments);  
-
-    try {
-      // API call to update the comment in MongoDB
-      const response = await fetch('/api/update-comment', {
-        method: 'PUT',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ comment: EditComment, content: newContent }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to update comment");
-      }
-      const data = await response.json();
-      console.log("Comment updated successfully:", data);
-    } catch (error) {
-      console.error("Failed to update comment:", error);
-    }
+    const updatedComments = updateComment(yarray.toArray());
+    yarray.delete(0, yarray.length);
+    yarray.push(updatedComments);
   };
 
   const getRange = (index: number, length: number) => {
     console.log(index, length);
     setRange({ index: index, length: length });
   };
-
-  // Funktion zum Speichern eines neuen Kommentars in der MongoDB
-  // const saveComment = async (comment: Comment) => {
-  //   try {
-  //     const response = await fetch("/api/save-comment", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ room, comment }),
-  //     });
-  //     if (!response.ok) {
-  //       throw new Error("Failed to save comment");
-  //     }
-  //     const data = await response.json();
-  //     console.log("Comment saved successfully:", data);
-  //   } catch (error) {
-  //     console.error("Failed to save comment:", error);
-  //   }
-  // };
 
   return (
     <div className="comments">
@@ -382,6 +303,8 @@ export default function CommentHandler({
         <div className="mt-8">
           <CommentList
             comments={comments}
+            selectedText={selectedText}
+            selectedRange={selectedRange}
             incrementUpvote={incrementUpvote}
             deleteComment={deleteComment}
             editComment={editComment}
@@ -390,6 +313,10 @@ export default function CommentHandler({
             getRange={getRange}
             setAIChanges={setAIChanges}
             setCheckedKeys={setCheckedKeys}
+            //promptList={promptList}
+            highlightText={handleHighlightText}
+            removeHighlight={handleRemoveHighlight}
+            selectedModel={selectedModel}
         />
         </div>
       )}

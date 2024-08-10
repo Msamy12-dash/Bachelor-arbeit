@@ -6,9 +6,7 @@ export async function getOrCreateUser(username: string, role: Role): Promise<Use
   try {
     const response = await fetch(`${PARTYKIT_URL}/parties/useridserver/${SINGLETON_ROOM_ID}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json', },
       body: JSON.stringify({ username, role }),
     });
     
@@ -22,4 +20,19 @@ export async function getOrCreateUser(username: string, role: Role): Promise<Use
     console.error('Error getting or creating user:', error);
     throw error;
   }
+
+  
+}
+
+export function addCorsHeaders(response: Response): Response {
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: {
+      ...Object.fromEntries(response.headers),
+      'Access-Control-Allow-Origin': 'http://localhost:3000',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
 }

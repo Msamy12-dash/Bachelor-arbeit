@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import useYProvider from "y-partykit/react";
 import MUPCard from "./MUPCard";
 import { Button } from "@nextui-org/react";
 import Quill from "react-quill";
@@ -18,6 +17,12 @@ interface CardData {
   range: { index: number; length: number };
 }
 
+interface Range{
+  index: number;
+  length: number;
+}
+
+
 export default function CardContainer({
   currentRoom,
   yDoc,
@@ -26,6 +31,8 @@ export default function CardContainer({
   completeText,
   setPrompts,
   editor,
+  range,
+  selectedModel
 }: Readonly<{
   currentRoom: string;
   yDoc: Y.Doc;
@@ -33,13 +40,13 @@ export default function CardContainer({
   selectedText: string;
   completeText: string;
   setPrompts: Function;
-  editor:
-    | (Quill & {
-        highlightText: (index: number, length: number, color: string) => void;
-        removeHighlight: (index: number, length: number) => void;
-        getSelection: () => { index: number; length: number } | null;
-      })
-    | null;
+  editor: Quill & {
+    highlightText: (index: number, length: number, color: string) => void;
+    removeHighlight: (index: number, length: number) => void;
+    getSelection: () => { index: number; length: number } | null;
+  } | null;
+  range: Range | undefined;
+  selectedModel: string;
 }>) {
   const [cards, setCards] = useState<CardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -162,6 +169,10 @@ export default function CardContainer({
                   onDiscard={handleDiscardCard}
                   yProvider={yProvider}
                   setPrompts={setPrompts}
+                  editor={editor}
+                  range={range}
+                  selectedModel={selectedModel}
+
                 />
               </div>
             ))}
