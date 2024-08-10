@@ -23,7 +23,7 @@ export const ReactionUpdateSchema = z.object({
     title: string;
     options: string[];
     votes?: number[];
-    bolck_id : number;
+    bolck_id : number|null;
     user: User;
   };
 export type User ={

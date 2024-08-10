@@ -84,7 +84,8 @@ const User ={
     const rangeId = getCurrentId(doc,provider);
 
     const examplePoll = {
-      room_id :randomId,
+      Room_id :randomId,
+      title:"a",
       id: "Vote on the Text",
       options: pollOptions,
       votes: [0, 0],
