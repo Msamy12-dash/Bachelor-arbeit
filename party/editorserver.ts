@@ -1,4 +1,4 @@
-import type * as Party from "partykit/server";
+import * as Party from "partykit/server";
 
 import { Buffer } from 'buffer';
 
@@ -14,7 +14,9 @@ export default class EditorServer implements Party.Server {
   connections: Record<string, number> | undefined;
 
   constructor(public room: Party.Room) {}
-  onStart?(): void | Promise<void>{}
+  onStart?(): void | Promise<void>{
+    this.room.storage.deleteAll();
+  }
   getOpts() {
     this.handleLoadFromDB();
     // options must match when calling unstable_getYDoc and onConnect
@@ -83,7 +85,7 @@ export default class EditorServer implements Party.Server {
 
     const update = Y.encodeStateAsUpdate(doc);
     const base64State = Buffer.from(update).toString('base64');
-
+    console.log("handleYDocChange is running")
     try {
       const response = await fetch('http://localhost:3000/api/setYDocForRoom', {
         method: 'POST',

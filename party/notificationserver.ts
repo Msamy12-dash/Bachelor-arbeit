@@ -1,8 +1,9 @@
 import type * as Party from "partykit/server";
-import { json, Poll } from "./src/types";
+
+import { Poll } from "./src/types";
 
 interface Update {
-  type: "connect" | "disconnect";
+  type: "connect" | "disconnect" | "delete";
   connectionId: string;
   roomId: string;
   poll: Poll; // Make sure the poll type definition is correct and imported
@@ -19,7 +20,6 @@ export default class NotificationServer implements Party.Server {
 
   async onRequest(request: Party.Request) {
     try {
-      console.log("NotificationServer id =" + this.party.id);
 
       // read from storage
       this.Polls = await this.party.storage.get("Polls") ?? {};
@@ -30,14 +30,23 @@ export default class NotificationServer implements Party.Server {
 
         const count = this.connections[update.roomId] ?? 0;
 
-        if (update.type === "connect") {
+        if (update.type === "delete") {
+          console.log("Deleting poll with Room_id " + update.poll.title);
+          // Delete the poll from the list
+          delete this.Polls[update.roomId];
+          delete this.connections[update.roomId];
+        
+          
+        } else if (update.type === "connect") {
           this.connections[update.roomId] = count + 1;
         } else if (update.type === "disconnect") {
           this.connections[update.roomId] = Math.max(0, count - 1);
         }
 
-        // Update the poll for the room
-        this.Polls[update.roomId] = update.poll;
+        if (update.type !== "delete") {
+          // Update the poll for the room
+          this.Polls[update.roomId] = update.poll;
+        }
 
         if (this.connections) {
           for (const roomId in this.connections) {
@@ -49,17 +58,17 @@ export default class NotificationServer implements Party.Server {
           }
         }
 
-        // save updated polls and connections to storage
+        // Save updated polls and connections to storage
         await this.party.storage.put("Polls", this.Polls);
         await this.party.storage.put("connections", this.connections);
 
-        // notify any connected listeners about the updated connections and polls
+        // Notify any connected listeners about the updated connections and polls
         this.party.broadcast(JSON.stringify({
           connectionKeys: Object.keys(this.connections)
         }));
       }
 
-      // send connection counts to requester
+      // Send connection counts to requester
       return new Response(JSON.stringify(this.connections));
     } catch (error) {
       console.error("Error handling request:", error);

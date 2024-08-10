@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
-import Snackbar from "@mui/material/Snackbar";
+import { Avatar, Button, Card, CardBody, CardHeader } from "@nextui-org/react";
 import * as Y from "yjs";
+import Draggable from 'react-draggable';
+import { IconButton } from "@mui/material";
 
 import {
   saveRangeWithText,
   updateVoteRangeText,
   deleteRangeFromYArray,
-  deleteAll,
-  saveRORange,
   deleteCurrent
-} from "../VoteComponent/TextBlocking";
+} from "../voteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
-import Draggable from 'react-draggable';
 
-import CloseIcon from '@mui/icons-material/Close';
 
 import CustomMenu from "./AIInteractionComponent";
-import { IconButton } from "@mui/material";
+
 
 interface Range {
   index: number;
@@ -41,6 +38,10 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
   const [voteID, setVoteID] = useState(0); // State to track the ID
 
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+
+const User ={
+  username : "user ",
+  id :1}
 
   useEffect(() => {
     setInputText(text);
@@ -69,14 +70,18 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
     const selectedText = text;
     const modifiedText = inputText;
     const pollOptions = [selectedText, modifiedText];
+    const randomId = generateRandomId();
 
     const examplePoll = {
+      room_id :randomId,
       id: "Vote on the Text",
       options: pollOptions,
-      votes: [0, 0]
+      votes: [0, 0],
+      bolck_id : 1,
+      user: User
     };
 
-    const randomId = generateRandomId();
+
     sendvote(randomId, examplePoll);
     setVotingInProgress(true);
     setInputDisabled(true);
@@ -133,8 +138,8 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
             {!inputDisabled && (
               <IconButton
                 size="small"
-                onClick={handleClearText}
                 style={{ position: 'absolute', top: '-10px', right: '10px' }}
+                onClick={handleClearText}
               >
                 {/*<CloseIcon fontSize="small" />*/}
                 <span className="text-sm text-blue-500 cursor-pointer">
@@ -144,10 +149,10 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
             )}
               <textarea
                 className="max-w-full p-2 border border-gray-300 rounded-md"
-                style={{ width: '100%', height: '100px', resize: 'vertical', overflow: 'auto' }}
                 defaultValue={text}
                 disabled={inputDisabled}
                 placeholder="Enter your text"
+                style={{ width: '100%', height: '100px', resize: 'vertical', overflow: 'auto' }}
                 value={inputText}
                 onChange={handleInputChange}
               />
@@ -165,8 +170,8 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onSaveRange, on
               <Button
                 className={inputDisabled ? "bg-gray-300" : ""}
                 color="success"
-                onClick={handleVoteClick}
                 disabled={inputDisabled}
+                onClick={handleVoteClick}
               >
                 Vote
               </Button>

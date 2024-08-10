@@ -10,7 +10,9 @@ export default class RoomServer implements Party.Server {
    constructor(public room: Party.Room) {
      this.rooms = {};
    }
- 
+   async onStart() {
+       this.room.storage.deleteAll();
+   }
    onConnect(connection: Party.Connection) {
     
 

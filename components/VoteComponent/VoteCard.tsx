@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
+
+import PollUI from "./VoteComponent";
+
 import { PARTYKIT_URL } from "@/pages/env";
 import { Poll } from "@/party/src/types";
-import PollUI from "./VoteComponent";
 
 const VoteCard: React.FC<{ pollId: string }> = ({ pollId }) => {
   const [poll, setPoll] = useState<Poll | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  
   useEffect(() => {
     const fetchPoll = async () => {
       try {
@@ -26,6 +28,9 @@ const VoteCard: React.FC<{ pollId: string }> = ({ pollId }) => {
           }
         } else {
           const pollData = (await req.json()) as Poll;
+
+          console.log(pollData)
+
           setPoll(pollData);
         }
       } catch (error) {
@@ -43,7 +48,7 @@ const VoteCard: React.FC<{ pollId: string }> = ({ pollId }) => {
 
   return (
     <div className="flex flex-col space-y-4">
-      {poll && <PollUI id={pollId} options={poll.options} initialVotes={poll.votes} />}
+      {poll && <PollUI id={pollId} initialVotes={poll.votes} options={poll.options} />}
     </div>
   );
 };

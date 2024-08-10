@@ -1,7 +1,7 @@
-import type * as Party from "partykit/server";
+import * as Party from "partykit/server";
 
 import { json, Poll } from "./src/types";
-import { CheckVote, SetVote, ReceivingVotes } from "./src/VoteFunction";
+import { CheckVote, SetVote, ReceivingVotes, updatevote, deletevote } from "./src/VoteFunction";
 
 // Standalone function to handle POST requests
 
@@ -13,7 +13,6 @@ export default class VoteServer implements Party.Server {
 
   poll: Poll | undefined;
   async onConnect(connection: Party.Connection) {
-    console.log("connected to poll server " )
 
     // when a websocket connection is established, send them a list of rooms
     const votes=JSON.stringify(await this.getActiveRooms())
@@ -29,17 +28,14 @@ export default class VoteServer implements Party.Server {
     return [...rooms.values()];
   }
   constructor(public readonly room: Party.Room) {
-    this.room.storage.setAlarm(Date.now() + 10 * 60 * 1000);
-    console.log("vote now ")
+   
   }
 
   async onRequest(_req: Party.Request) {
 
     switch (_req.method) {
-      case "POST":
-        return SetVote(_req, this.room, this.setPoll.bind(this));
-      case "GET":
-        return CheckVote(this.poll);
+      case "POST":  return SetVote(_req, this.room, this.setPoll.bind(this));
+      case "GET":   return CheckVote(this.poll);
       default:
         return json({ error: "Method not found" });
     }
@@ -47,7 +43,11 @@ export default class VoteServer implements Party.Server {
 
   setPoll(poll: Poll) {
     this.poll = poll;
-    console.log(poll.votes)
+
+
+     this.room.storage.put<string>("id",this.room.id);
+     this.room.storage.put<Poll>("Poll",this.poll) ; 
+
   }
 
   async onMessage(message: string , sender: Party.Connection) {
@@ -58,9 +58,20 @@ export default class VoteServer implements Party.Server {
 
   async onAlarm() {
     this.room.storage.setAlarm(Date.now() + 10 * 60 * 1000);
-    
-  }
+    console.log("end vote")
+       // alarms don't have access to room id, so retrieve it from storage
+       const id = await this.room.storage.get<string>("id");
+       const poll = await this.room.storage.get<Poll>("Poll") ; 
 
+      console.log("id ="+id)
+      console.log("poll ="+poll)
+
+       if (poll) {
+        await deletevote("delete",poll);
+
+          
+  }
+  }
 
   
 
@@ -98,5 +109,11 @@ export default class VoteServer implements Party.Server {
       console.error(`Error updating connections for type ${type}:`, error);
     }
   }
-}
+    /**
+   * A scheduled job that executes when the room storage alarm is triggered
+   */
+   
+    
 
+  
+}

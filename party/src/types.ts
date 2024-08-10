@@ -17,13 +17,19 @@ export const ReactionUpdateSchema = z.object({
 });
 
 
-export type Poll = {
-  id: any;
-  title: string;
-  options: string[];
-  votes?: number[];
-};
+  export type Poll = {
 
+    Room_id:string;
+    title: string;
+    options: string[];
+    votes?: number[];
+    bolck_id : number;
+    user: User;
+  };
+export type User ={
+  username : string,
+  id : number ;
+};
 export type Rooms = {
   [key: string]: number;
 };
@@ -55,5 +61,5 @@ const CORS = {
 export const json = <T>(data: T, status = 200) => Response.json(data, { status, headers: CORS });
 interface Update {
   roomId: string;
-  type: 'connect' | 'disconnect';
+  type: 'connect' | 'disconnect' |'delete';
 }
