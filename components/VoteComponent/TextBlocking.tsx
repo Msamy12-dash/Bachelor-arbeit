@@ -620,6 +620,67 @@ export const unlockRange = (
   }
 };
 
+export const clearAllRelRanges = (
+  doc: Y.Doc,
+  quill: React.RefObject<ReactQuill>,
+) => {
+  const yMap = doc.getMap<RelRange>("relRanges");
+  const editor = quill.current?.getEditor();
+
+  if (editor) {
+    // Loop through all ranges in the Y.Map
+    yMap.forEach((relRange, key) => {
+      const startPos = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc);
+      const endPos = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc);
+
+      if (startPos && endPos) {
+        const start = startPos.index;
+        const end = endPos.index;
+
+        // Clear formatting for the range
+        editor.formatText(start, end - start, { background: false });
+      }
+
+      // Delete the range from the Y.Map
+      yMap.delete(key);
+    });
+  }
+};
+
+export const restoreSelectionToCurrentRange = (
+  doc: Y.Doc,
+  provider: YPartyKitProvider,
+  quill: React.RefObject<ReactQuill>,
+) => {
+  const currentId = getCurrentId(doc, provider);
+
+  if (currentId !== null) {
+    const yMap = doc.getMap<RelRange>("relRanges");
+    const relRange = yMap.get(currentId.toString());
+
+    if (relRange) {
+      const startPos = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc);
+      const endPos = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc);
+
+      if (startPos && endPos ) {
+        const start = startPos.index;
+        const end = endPos.index;
+
+        const editor = quill.current?.getEditor();
+        if (editor) {
+          editor.setSelection(start, end - start);
+        }
+      }
+    } else {
+      console.error(`RelRange with ID ${currentId} not found.`);
+    }
+  } else {
+    console.error("No current ID found for the user.");
+  }
+};
+
+
+
 
 
 

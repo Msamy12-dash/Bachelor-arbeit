@@ -11,6 +11,7 @@ import Tooltip from "../ToolTipsComponets/ToolTip";
 import { handleCommentRangeShift } from "../ChatComponent/handleCommentRangeShift";
 import { handleRangeShift, handleROChange, handleRORelSelectionChange,
   handleROSelectionChange,
+  restoreSelectionToCurrentRange,
   saveRelRange,
   saveRORange
 } from "../VoteComponent/TextBlocking";
@@ -93,8 +94,6 @@ export default function Editor({
 
 
   function handleSelectionChange(range: Range) {
-
-
     handleRORelSelectionChange(quill, range, provider.doc, provider.doc.getText("quill"));
 
     // If text is selected

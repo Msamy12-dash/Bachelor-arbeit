@@ -11,7 +11,7 @@ import {
   deleteAll,
   saveRORange,
   deleteCurrent,
-  getCurrentId, saveRelRange, deleteCurrentRelRange, saveNewTextForCurrentRange,unlockRange
+  getCurrentId, saveRelRange, deleteCurrentRelRange, saveNewTextForCurrentRange,unlockRange,clearAllRelRanges
 } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 import Draggable from 'react-draggable';
@@ -66,7 +66,7 @@ const User ={
   };
 
   const handleCancelClick = () => {
-    //deleteAll(quill, doc);
+    clearAllRelRanges(doc, quill);
     //deleteCurrent(quill, doc, provider);
     deleteCurrentRelRange( doc, provider,quill);
     setInputDisabled(true);
@@ -194,3 +194,4 @@ const User ={
 };
 
 export default Tooltip;
+
