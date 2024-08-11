@@ -11,6 +11,8 @@ import TabPanel from "@mui/lab/TabPanel";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
 import colors from "../../highlightColors.js"
+import ListIcon from "@mui/icons-material/List";
+import TocIcon from "@mui/icons-material/Toc";
 
 interface Comment {
   key: number;
@@ -285,49 +287,68 @@ export default function CommentHandler({
 
   return (
     <div className="comments">
-      <Box sx={{ width: "100%", typography: "body1" }}>
-        <TabContext value={value}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={handleChange} aria-label="lab API tabs example">
-              <Tab label="Comment" value="1" />
-              <Tab label="Prompt List" value="2" />
-            </TabList>
-          </Box>
-          <TabPanel value="1">
+    <Box sx={{ width: "100%", typography: "body1" }}>
+      <TabContext value={value}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <TabList onChange={handleChange} aria-label="lab API tabs example">
+            <Tab
+              label={
+                <div className="flex justify-center items-center ">
+                  <TocIcon className="mr-2" /> Comment
+                </div>
+              }
+              value="1"
+            />
+            <Tab
+              label={
+                <div className="flex justify-center items-center ">
+                  <ListIcon className="mr-2" /> Prompt List
+                </div>
+              }
+              value="2"
+            />
+          </TabList>
+        </Box>
+        <TabPanel value="1">
           <div className="comments text-center block">
-      <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
-      <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
-        {showComments ? "Hide Comments" : "Show Comments"}
-      </button>
-      {showComments && (
-        <div className="mt-8">
-          <CommentList
-            comments={comments}
-            selectedText={selectedText}
-            selectedRange={selectedRange}
-            incrementUpvote={incrementUpvote}
-            deleteComment={deleteComment}
-            editComment={editComment}
-            addComment={addComment}
-            editor={editor}
-            getRange={getRange}
-            setAIChanges={setAIChanges}
-            setCheckedKeys={setCheckedKeys}
-            //promptList={promptList}
-            highlightText={handleHighlightText}
-            removeHighlight={handleRemoveHighlight}
-            selectedModel={selectedModel}
-        />
-        </div>
-      )}
-    </div>
-          </TabPanel>
-          <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
-            <PromptList promptList={promptList} yProvider={yProvider}/>
-          </TabPanel>
-        </TabContext>
-      </Box>
-      </div>
+            <div className="Comment-font text-xl pt-2 font-bold">
+              Comments
+            </div>
+            <button
+              onClick={() => setShowComments(!showComments)}
+              className="HideShowComments font-normal py-2 px-4 rounded"
+            >
+              {showComments ? "Hide Comments" : "Show Comments"}
+            </button>
+            {showComments && (
+              <div className="mt-8">
+                <CommentList
+                  comments={comments}
+                  selectedText={selectedText}
+                  selectedRange={selectedRange}
+                  incrementUpvote={incrementUpvote}
+                  deleteComment={deleteComment}
+                  editComment={editComment}
+                  addComment={addComment}
+                  editor={editor}
+                  getRange={getRange}
+                  setAIChanges={setAIChanges}
+                  setCheckedKeys={setCheckedKeys}
+                  //promptList={promptList}
+                  highlightText={handleHighlightText}
+                  removeHighlight={handleRemoveHighlight}
+                  selectedModel={selectedModel}
+                />
+              </div>
+            )}
+          </div>
+        </TabPanel>
+        <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
+          <PromptList promptList={promptList} yProvider={yProvider} />
+        </TabPanel>
+      </TabContext>
+    </Box>
+  </div>
 
   );
 }
