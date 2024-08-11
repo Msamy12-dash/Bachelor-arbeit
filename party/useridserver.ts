@@ -1,5 +1,9 @@
 import type * as Party from "partykit/server";
-import { User, Role, SINGLETON_ROOM_ID, UserCore } from "./types";
+
+import { User } from "next-auth";
+
+import { UserCore, Role } from "./src/types";
+
 
 export default class useridserver implements Party.Server {
   users: UserCore[];
@@ -35,6 +39,7 @@ export default class useridserver implements Party.Server {
     if (req.method === "POST") {
       try {
         const body = await req.json();
+
         console.log("Received body:", body);
 
         if (!this.isValidUserRequest(body)) {
@@ -56,6 +61,7 @@ export default class useridserver implements Party.Server {
 
         const { username, role } = body;
         const user = await this.getOrCreateUser(username, role);
+
         return new Response(JSON.stringify(user), {
           status: 200,
           headers: {
@@ -65,6 +71,7 @@ export default class useridserver implements Party.Server {
         });
       } catch (error) {
         console.error("Error processing request:", error);
+
         return new Response("Internal Server Error", {
           status: 500,
           headers: {
@@ -73,6 +80,7 @@ export default class useridserver implements Party.Server {
         });
       }
     }
+
     return new Response("Method not allowed", {
       status: 405,
       headers: {
@@ -84,10 +92,12 @@ export default class useridserver implements Party.Server {
   private async loadUsersFromDatabase(): Promise<void> {
     try {
       const response = await fetch("http://localhost:3000/api/getUserIDs");
+
       if (!response.ok) {
         throw new Error("Failed to fetch user IDs");
       }
       const data = await response.json();
+
       this.users = data.users;
       console.log("Users loaded from database:", this.users.length);
     } catch (error) {
@@ -97,6 +107,7 @@ export default class useridserver implements Party.Server {
 
   private async getOrCreateUser(username: string, role: Role): Promise<User> {
     let userCore = this.users.find((u) => u.name === username);
+
     if (!userCore) {
       userCore = {
         id: username,
@@ -122,6 +133,7 @@ export default class useridserver implements Party.Server {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userCore),
       });
+
       if (!response.ok) {
         throw new Error("Failed to save user");
       }

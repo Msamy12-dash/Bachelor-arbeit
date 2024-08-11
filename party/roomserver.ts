@@ -1,7 +1,5 @@
 import type * as Party from "partykit/server";
-import { Rooms } from "./types";
-import { permission, send } from "process";
-import { act } from "react";
+import { Rooms } from "./src/types";
 import { addCorsHeaders } from "@/lib/userUtils";
 
 export default class RoomServer implements Party.Server {
@@ -16,6 +14,7 @@ export default class RoomServer implements Party.Server {
   async onStart(): Promise<void> {
     try {
       const roomNames = await this.getAllRoomNamesFromAPI();
+
       roomNames.forEach((roomName) => {
         this.rooms[roomName] = 0;
       });
@@ -28,25 +27,17 @@ export default class RoomServer implements Party.Server {
     const partyName = this.room.name;
     const roomId = this.room.id;
     const existingConnections = this.room.getConnections();
-    const numberOfExistingConnections: string[] = [];
-    Array.from(existingConnections).forEach((c: Party.Connection) =>
-      numberOfExistingConnections.push(c.id)
-    );
     const connectionID = conn.id;
-    console.log(`* onConnect at ${partyName}/${roomId}:
-    Connection ID: ${connectionID},
-    Number of connections: ${numberOfExistingConnections}
------------------------------------------------`);
-  
+
+    console.log(`* onConnect at ${partyName}/${roomId}: Connection ID: ${connectionID}, Number of connections: ${existingConnections.size}`);
 
     conn.send(JSON.stringify({ type: "rooms", rooms: this.rooms }));
   }
 
   async onRequest(req: Party.Request) {
     console.log(`Received ${req.method} request to ${req.url}`);
-    
+
     if (req.method === "OPTIONS") {
-      //console.log("Received OPTIONS request:", req, "\n-----------------------------------------------");
       return new Response(null, {
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -55,7 +46,7 @@ export default class RoomServer implements Party.Server {
         },
       });
     }
-    
+
     if (req.method === "POST") {
       const {
         room,
@@ -74,57 +65,57 @@ export default class RoomServer implements Party.Server {
       if (type && userId && connectionId) {
         if (type === "checkAndAddUser") {
           if (this.activeUserIds.has(userId)) {
-            //return Response.json({ success: false, message: "User already logged in" });
-            console.log("active Users:", this.activeUserIds);
+            console.log("User already logged in:", userId);
+            console.log("Active Users:", this.activeUserIds);
+
             return addCorsHeaders(Response.json({ success: false, message: "User already logged in" }));
           }
-          this.activeUserIds.set( userId, connectionId );
-          console.log("active Users:", this.activeUserIds);
+          this.activeUserIds.set(userId, connectionId);
+          console.log("Active Users updated:", this.activeUserIds);
 
           return addCorsHeaders(Response.json({ success: true }));
         }
       }
 
-      if (count !== undefined) {
+      if (room && count !== undefined) {
+        console.log(`Updating room: ${room} with count: ${count}`);
         this.rooms[room] = count;
+        console.log(`Room update: ${room} has ${count} user${count !== 1 ? "s" : ""}`);
+
+        console.log("Broadcasting updated room data:", this.rooms);
         this.room.broadcast(
           JSON.stringify({ type: "rooms", rooms: this.rooms })
-        );
-        console.log(
-          `Room update: ${room} has ${count} user${count !== 1 ? "s" : ""}`
         );
       }
 
       return addCorsHeaders(Response.json({ ok: true }));
     }
+
     if (req.method === "GET") {
+      console.log("Active Users:", Array.from(this.activeUserIds.keys()));
+
       return addCorsHeaders(Response.json({
         activeUserIds: Array.from(this.activeUserIds.keys()),
       }));
     }
+
     return addCorsHeaders(Response.json({ error: "Method not allowed" }, { status: 405 }));
   }
 
   onClose(conn: Party.Connection) {
     const partyName = this.room.name;
     const roomId = this.room.id;
-    const existingConnections = this.room.getConnections();
-    const numberOfExistingConnections: string[] = [];
-    Array.from(existingConnections).forEach((c: Party.Connection) =>
-      numberOfExistingConnections.push(c.id)
-    );
     const connectionID = conn.id;
-    console.log(`* onConnect at ${partyName}/${roomId}:
-    Connection ID: ${connectionID},
-    Number of connections: ${numberOfExistingConnections}
------------------------------------------------`);
 
+    console.log(`* onClose at ${partyName}/${roomId}: Connection ID: ${connectionID}`);
 
     this.activeUserIds.forEach((value, key) => {
       if (value === conn.id) {
-      this.activeUserIds.delete(key);
+        this.activeUserIds.delete(key);
       }
     });
+
+    console.log("Active Users after disconnect:", this.activeUserIds);
   }
 
   private async getAllRoomNamesFromAPI(): Promise<string[]> {
@@ -138,8 +129,7 @@ export default class RoomServer implements Party.Server {
     }
 
     const data = await response.json();
+
     return data.roomNames;
   }
-
-  
 }

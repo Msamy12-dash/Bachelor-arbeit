@@ -18,7 +18,7 @@ import Lobby from "./Lobby";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/MainPageComponent/theme-switch";
-import { Rooms } from "@/party/types";
+import { Rooms } from "@/party/src/types";
 
 export const Navbar = ({ 
   currentRoom, 
@@ -75,7 +75,6 @@ export const Navbar = ({
         <DropdownTrigger>
           <Button color="primary" variant="bordered" className="w-32 m-4">
             {selectedModel}
-            <ArrowDropDown/>
           </Button>
         </DropdownTrigger>
         
@@ -101,7 +100,7 @@ export const Navbar = ({
           <ThemeSwitch />
         </NavbarItem>
       </NavbarContent>
-          <Lobby currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
+          <Lobby  currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} rooms={rooms} setRooms={setRooms} />
 
     </NextUINavbar>
   );

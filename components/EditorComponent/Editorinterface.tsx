@@ -2,22 +2,16 @@
 import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import Quill from "react-quill";
-import CommentHandler from "../ChatComponent/CommentHandler";
 import { Card, Button } from "@nextui-org/react";
-
-import CommentHandler from "../ChatComponent/CommentHandler";
-import LikeConnector from "../LikeComment/LikeConnector";
-import { PARTYKIT_HOST } from "@/pages/env";
-import usePartySocket from "partysocket/react";
-
-
-
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { Resizable } from "react-resizable";
+
 import "react-resizable/css/styles.css";
-import CardContainer from "../MUPComponents/CardContainer";
-import YPartyKitProvider from "y-partykit/provider";
 import * as Y from "yjs";
+import YPartyKitProvider from "y-partykit/provider";
+
+import CardContainer from "../MUPComponents/CardContainer";
+import CommentHandler from "../ChatComponent/CommentHandler";
 
 interface Range {
   index: number;
@@ -39,12 +33,12 @@ function getRandomColor() {
 export default function EditorPage({
   currentRoom,
   yDoc,
-  yProvider,
+  provider,
   selectedModel
 }: {
   currentRoom: string;
   yDoc: Y.Doc;
-  yProvider: YPartyKitProvider;
+  provider: YPartyKitProvider;
   selectedModel: string;
 }) {
   const [prompts, setPrompts] = useState<string[]>([]);
@@ -129,12 +123,7 @@ export default function EditorPage({
       <div style={{ display: "flex", height: "100vh" }}>
         {isCommentsVisible && (
           <Resizable
-            width={commentWidth}
-            height={Infinity}
             axis="x"
-            minConstraints={[250, Infinity]}
-            maxConstraints={[1000, Infinity]}
-            onResize={(event, { size }) => setCommentWidth(size.width)}
             handle={
               <div
                 style={{
@@ -148,6 +137,11 @@ export default function EditorPage({
                 }}
               />
             }
+            height={Infinity}
+            maxConstraints={[1000, Infinity]}
+            minConstraints={[250, Infinity]}
+            width={commentWidth}
+            onResize={(event: any, { size }: any) => setCommentWidth(size.width)}
           >
             <div
               style={{
@@ -159,7 +153,6 @@ export default function EditorPage({
               }}
             >
               <Button
-                onClick={toggleCommentsVisibility}
                 style={{
                   position: "absolute",
                   top: "10px",
@@ -169,25 +162,26 @@ export default function EditorPage({
                   alignItems: "center",
                   justifyContent: "center",
                 }}
+                onClick={toggleCommentsVisibility}
               >
                 <FaArrowRight size={24} />
               </Button>
               <Card style={{ width: "100%", padding: "10px", height: "100%" }}>
                 <CommentHandler
-                  editor={editor}
-                  room={currentRoom}
-                  setRange={handleSetRange}
-                  setAIChanges={setAIChanges}
-                  selectedText={selectedText}
-                  selectedRange={selectedRange}
                   deleteSelectedComments={deleteSelectedComments}
-                  setDeleteSelectedComments={setDeleteSelectedComments}
-                  promptList={prompts}
-                  yDoc={yDoc}
-                  yProvider={yProvider}
+                  editor={editor}
                   highlightText={editor?.highlightText}
+                  promptList={prompts}
                   removeHighlight={editor?.removeHighlight}
+                  room={currentRoom}
                   selectedModel={selectedModel}
+                  selectedRange={selectedRange}
+                  selectedText={selectedText}
+                  setAIChanges={setAIChanges}
+                  setDeleteSelectedComments={setDeleteSelectedComments}
+                  setRange={handleSetRange}
+                  yDoc={yDoc}
+                  yProvider={provider}
                 />
               </Card>
             </div>
@@ -204,7 +198,6 @@ export default function EditorPage({
         >
           {!isCommentsVisible && (
             <Button
-              onClick={toggleCommentsVisibility}
               style={{
                 position: "absolute",
                 top: "10px",
@@ -214,6 +207,7 @@ export default function EditorPage({
                 alignItems: "center",
                 justifyContent: "center",
               }}
+              onClick={toggleCommentsVisibility}
             >
               <FaArrowLeft size={24} />
             </Button>
@@ -221,16 +215,16 @@ export default function EditorPage({
           <Editor
             key={currentRoom}
             currentRoom={currentRoom}
-            yDoc={yDoc}
-            yProvider={yProvider}
-            userColor={userColor}
-            setEditor={setEditor}
-            selectedText={selectedText}
-            setSelectedText={setSelectedText}
-            setCompleteText={setCompleteText}
+            provider={provider}
             selectedRange={selectedRange}
-            setSelectedRange={setSelectedRange}
+            selectedText={selectedText}
+            setCompleteText={setCompleteText}
+            setEditor={setEditor}
             setRange={setRange}
+            setSelectedRange={setSelectedRange}
+            setSelectedText={setSelectedText}
+            userColor={userColor}
+            yDoc={yDoc}
           />
           {showAIChangesDiv && AIChanges && (
             <Card
@@ -261,8 +255,8 @@ export default function EditorPage({
                 <p style={{ marginBottom: "1vw" }}>{AIChanges.summary}</p>
                 <div style={{ display: "flex", marginBottom: "1vw" }}>
                   <input
-                    type="checkbox"
                     checked={isChecked}
+                    type="checkbox"
                     onChange={handleCheckboxOnChange}
                   />
                   <p style={{ marginLeft: "0.5vw" }}>
@@ -271,17 +265,17 @@ export default function EditorPage({
                 </div>
                 <div style={{ display: "flex" }}>
                   <Button
+                    color="success"
                     style={{
                       color: "white",
                       paddingLeft: "1vw",
                       paddingRight: "1vw",
                     }}
-                    color="success"
                     onClick={handleAcceptOnClick}
                   >
                     Accept changes
                   </Button>
-                  <Button onClick={handleDiscardOnClick} className="ml-5">
+                  <Button className="ml-5" onClick={handleDiscardOnClick}>
                     Discard
                   </Button>
                 </div>
@@ -293,15 +287,15 @@ export default function EditorPage({
         <Card className="w-1/5 p-4 overflow-y-auto">
           <CardContainer
             key={currentRoom}
-            currentRoom={currentRoom}
-            yDoc={yDoc}
-            yProvider={yProvider}
-            selectedText={selectedText}
             completeText={completeText}
+            currentRoom={currentRoom}
             editor={editor}
-            setPrompts={setPrompts}
-            selectedModel={selectedModel}
             range={range}
+            selectedModel={selectedModel}
+            selectedText={selectedText}
+            setPrompts={setPrompts}
+            yDoc={yDoc}
+            yProvider={provider}
           />
         </Card>
       </div>

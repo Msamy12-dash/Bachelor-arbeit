@@ -1,16 +1,17 @@
 // CommentHandlers
 import React, { useState, useEffect } from "react";
-import CommentList from "./CommentList";
 import Quill from "react-quill";
-import PromptList from "./PromptList";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
+import { TabList ,TabPanel } from '@mui/lab';
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
+
 import colors from "../../highlightColors.js"
+
+import PromptList from "./PromptList";
+import CommentList from "./CommentList";
 
 interface Comment {
   key: number;
@@ -97,7 +98,9 @@ export default function CommentHandler({
     const ymap = yDoc.getMap('keys');
     const currentKey = Number(ymap.get('currentKey') || 0);
     const newKey = currentKey + 1;
+
     ymap.set('currentKey', newKey);
+
     return newKey;
   };
   
@@ -122,6 +125,7 @@ export default function CommentHandler({
       // Find the comment with the matching parentkey
       const parentKey = comment.parentKey;
       const parentComment = comments.find(comment => comment.key === parentKey);
+
       if (parentComment === undefined) {
         canReply = false;
       }
@@ -167,10 +171,12 @@ export default function CommentHandler({
               replies: addReplyToComment(comment.replies, keyToFind, replyToAdd)
             };
           }
+
           return comment;
         });
       };
       const updatedComments = addReplyToComment(yarray.toArray(), comment.parentKey, newComment);
+
       yarray.delete(0, yarray.length);
       yarray.push(updatedComments);
     } 
@@ -182,6 +188,7 @@ export default function CommentHandler({
       for (let key of checkedKeys){
         //console.log(key);
         let comment = comments.find(comment => comment.key === key);
+
         if(comment){
           deleteComment(comment!);
         }
@@ -208,10 +215,12 @@ export default function CommentHandler({
             replies: updateUpvote(comment.replies)
           };
         }
+
         return comment;
       });
     };
     const updatedComments = updateUpvote(yarray.toArray());
+
     yarray.delete(0, yarray.length);
     yarray.push(updatedComments);
   };
@@ -225,10 +234,12 @@ export default function CommentHandler({
           return acc;
         } else {
           const updatedReplies = comment.replies.length > 0 ? removeComment(comment.replies) : [];
+
           acc.push({
             ...comment,
             replies: updatedReplies
           });
+
           return acc;
         }
       }, [] as Comment[]);
@@ -269,11 +280,13 @@ export default function CommentHandler({
         if (comment.replies.length > 0) {
           return { ...comment, replies: updateComment(comment.replies) };
         }
+
         return comment;
       });
     };
 
     const updatedComments = updateComment(yarray.toArray());
+
     yarray.delete(0, yarray.length);
     yarray.push(updatedComments);
   };
@@ -288,7 +301,7 @@ export default function CommentHandler({
       <Box sx={{ width: "100%", typography: "body1" }}>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={handleChange} aria-label="lab API tabs example">
+            <TabList aria-label="lab API tabs example" onChange={handleChange}>
               <Tab label="Comment" value="1" />
               <Tab label="Prompt List" value="2" />
             </TabList>
@@ -296,33 +309,33 @@ export default function CommentHandler({
           <TabPanel value="1">
           <div className="comments text-center block">
       <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
-      <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
+      <button className="HideShowComments font-normal py-2 px-4 rounded" onClick={() => setShowComments(!showComments)}>
         {showComments ? "Hide Comments" : "Show Comments"}
       </button>
       {showComments && (
         <div className="mt-8">
           <CommentList
+            addComment={addComment}
             comments={comments}
-            selectedText={selectedText}
-            selectedRange={selectedRange}
-            incrementUpvote={incrementUpvote}
             deleteComment={deleteComment}
             editComment={editComment}
-            addComment={addComment}
             editor={editor}
             getRange={getRange}
+            incrementUpvote={incrementUpvote}
+            removeHighlight={handleRemoveHighlight}
+            selectedModel={selectedModel}
+            selectedRange={selectedRange}
+            selectedText={selectedText}
             setAIChanges={setAIChanges}
             setCheckedKeys={setCheckedKeys}
             //promptList={promptList}
             highlightText={handleHighlightText}
-            removeHighlight={handleRemoveHighlight}
-            selectedModel={selectedModel}
         />
         </div>
       )}
     </div>
           </TabPanel>
-          <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
+          <TabPanel style={{ padding: "10px 0px 10px 0px" }} value="2">
             <PromptList promptList={promptList} yDoc={yDoc} />
           </TabPanel>
         </TabContext>

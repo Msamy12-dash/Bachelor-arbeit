@@ -1,13 +1,13 @@
-import EditorPage from "@/components/EditorComponent/Editorinterface";
-import DefaultLayout from "@/layouts/default";
 import { useCallback, useEffect, useState } from "react";
 import YPartyKitProvider from "y-partykit/provider";
-import { PARTYKIT_HOST, PARTYKIT_URL } from "./env";
 import * as Y from "yjs";
-import { Role, SINGLETON_ROOM_ID, User, Rooms } from "@/party/types";
-import { getOrCreateUser } from "@/lib/userUtils";
-import { useRouter } from "next/router";
-import { getCookie } from "cookies-next";
+import { User } from "next-auth";
+
+import { PARTYKIT_HOST } from "./env";
+
+import DefaultLayout from "@/layouts/default";
+import EditorPage from "@/components/EditorComponent/Editorinterface";
+import { Rooms } from "@/party/src/types";
 
 export default function IndexPage({
   user,
@@ -31,8 +31,10 @@ export default function IndexPage({
       undefined,
       { party: "editorserver", connectionId: user.id }
     );
+
     setYProvider(provider);
     setYDoc(provider.doc);
+
     return provider;
   }, [currentRoom, user]);
 
@@ -76,8 +78,8 @@ export default function IndexPage({
   }
 
   return (
-    <DefaultLayout currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} rooms={rooms} setRooms={setRooms} selectedModel={selectedModel} setSelectedModel={setSelectedModel}>
-      <EditorPage currentRoom={currentRoom} yDoc={yDoc} yProvider={yProvider} selectedModel={selectedModel}/>
+    <DefaultLayout currentRoom={currentRoom} rooms={rooms} selectedModel={selectedModel} setCurrentRoom={setCurrentRoom} setRooms={setRooms} setSelectedModel={setSelectedModel}>
+      <EditorPage currentRoom={currentRoom} provider={yProvider} selectedModel={selectedModel} yDoc={yDoc}/>
     </DefaultLayout>
   );
 }

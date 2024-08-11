@@ -157,7 +157,7 @@ export default function MUPCard({
         <div>
           <p>Response:</p>
           <div className="p-4 bg-gray-50 border border-gray-300 rounded-lg box-border">
-            {cardData.responseText}
+          {JSON.stringify(cardData.responseText)}
           </div>
       
           <div className="mt-4 flex space-x-2">

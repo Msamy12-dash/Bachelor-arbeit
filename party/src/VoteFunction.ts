@@ -1,7 +1,8 @@
 import type * as Party from "partykit/server";
 
 import { json, Poll, ReactionSchema, ReactionUpdateSchema } from "./types";
-import { PARTYKIT_HOST, PARTYKIT_URL } from "@/pages/env";
+
+import { PARTYKIT_URL } from "@/pages/env";
 const DELETE_VOTE_AFTER_VOTTING_PERIOD = 100 * 60 * 1; 
 
 

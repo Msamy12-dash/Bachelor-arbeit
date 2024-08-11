@@ -26,10 +26,7 @@ export const ReactionUpdateSchema = z.object({
     bolck_id : number|null;
     user: User;
   };
-export type User ={
-  username : string,
-  id : number ;
-};
+
 export type Rooms = {
   [key: string]: number;
 };
@@ -47,7 +44,20 @@ export const error = (err: string | { message: string }, status = 500) => {
 };
 // To connect to the server
 
+export enum Role {
+  Admin = "admin",
+  User = "user",
+}
 
+export type UserCore = {
+  id: string;
+  name: string;
+  
+};
+
+export type User = UserCore & {
+  role: Role;
+};
 export const SINGLETON_ROOM_ID = "index";
 export const LOCAL_HOST = "http://localhost:1999";
 

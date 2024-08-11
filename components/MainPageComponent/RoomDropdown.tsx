@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -6,9 +6,8 @@ import {
   DropdownItem,
   Button,
 } from "@nextui-org/react";
-import usePartySocket from "partysocket/react";
-import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
-import { PARTYKIT_HOST } from "@/pages/env";
+import { Rooms } from "@/party/src/types";
+
 
 export default function RoomDropdown({
   currentRoom,
@@ -24,6 +23,7 @@ export default function RoomDropdown({
   
   const handleNewRoom = () => {
     const newRoomId = Math.random().toString(36).substring(2, 8);
+
     setCurrentRoom(newRoomId);
   };
 
@@ -36,6 +36,7 @@ export default function RoomDropdown({
         {`Room ${roomId} (${count} user${count !== 1 ? "s" : ""})`}
       </DropdownItem>
     ));
+
     items.push(
       <DropdownItem
         key="new-room"
@@ -45,13 +46,14 @@ export default function RoomDropdown({
         Create New Room
       </DropdownItem>
     );
+
     return items;
   };
 
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button variant="flat" className="capitalize">
+        <Button className="capitalize" variant="flat">
           {currentRoom
             ? `Room: ${currentRoom} (${rooms[currentRoom] || 0})`
             : "Select Room"}
@@ -59,11 +61,11 @@ export default function RoomDropdown({
       </DropdownTrigger>
       <DropdownMenu
         aria-label="Room selection"
+        selectedKeys={currentRoom ? [currentRoom] : []}
+        selectionMode="single"
         onAction={(key) => {key !== "new-room" && setCurrentRoom(key.toString())
           console.log(currentRoom)
         }}
-        selectionMode="single"
-        selectedKeys={currentRoom ? [currentRoom] : []}
       >
         {renderDropdownItems()}
       </DropdownMenu>
