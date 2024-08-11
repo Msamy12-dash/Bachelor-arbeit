@@ -6,12 +6,12 @@ interface Update {
   type: "connect" | "disconnect" | "delete";
   connectionId: string;
   roomId: string;
-  poll: Poll; // Make sure the poll type definition is correct and imported
+  poll: Poll;
 }
 
 export default class NotificationServer implements Party.Server {
   connections: Record<string, number> | undefined;
-  Polls: Record<string, Poll> | undefined; // Store polls by roomId
+  Polls: Record<string, Poll> | undefined;
 
   constructor(readonly party: Party.Room) {
     this.Polls = {};
@@ -20,85 +20,68 @@ export default class NotificationServer implements Party.Server {
 
   async onRequest(request: Party.Request) {
     try {
-
-      // read from storage
+      // Load the polls and connections from storage
       this.Polls = await this.party.storage.get("Polls") ?? {};
       this.connections = await this.party.storage.get("connections") ?? {};
-      console.log(this.connections)
+      console.log(this.connections);
+
       if (request.method === "POST") {
         const update = await request.json() as Update;
-
         const count = this.connections[update.roomId] ?? 0;
 
         if (update.type === "delete") {
           console.log("Deleting connection with Room_id " + update.poll.Room_id);
-  
-          // Use a similar approach to your Delete function to filter out the connection to delete
+
+          // Filter out the connection to delete
           const filteredConnections: Record<string, number> = {};
+
           Object.keys(this.connections).forEach((key) => {
             if (key !== update.poll.Room_id) {
               filteredConnections[key] = this.connections[key];
             }
           });
-  
+
           // Update the server state with the filtered connections
           this.connections = filteredConnections;
-  
-          // Save the updated connections back to storage
+
+          // Remove the corresponding poll
+          delete this.Polls[update.roomId];
+
+          // Save the updated connections and polls back to storage
           await this.party.storage.put("connections", this.connections);
-  
+          await this.party.storage.put("Polls", this.Polls);
+
           // Broadcast the updated connections state
           this.party.broadcast(JSON.stringify({
+            update: "delete vote",
+            block_id: update.poll.bolck_id,
             connectionKeys: Object.keys(this.connections)
-            
+          }));
+        } else if (update.type === "connect" || update.type === "disconnect") {
+          if (update.type === "connect") {
+            this.connections[update.roomId] = count + 1;
           }
-          )
-      
-      
-      
-      
-      );
-      for (const roomId in this.connections) {
-        if (this.connections.hasOwnProperty(roomId)) {
-          const connectionCount = this.connections[roomId];
+          if (update.type === "disconnect") {
+            this.connections[update.roomId] = Math.max(0, count - 1);
+          }
 
-          //console.log(`Room ID: ${roomId}, Connections: ${connectionCount}, Poll: ${JSON.stringify(this.Polls[roomId])}`);
-        }
-      }
-  
-        } else if (update.type === "connect") {
-          this.connections[update.roomId] = count + 1;
-        } else if (update.type === "disconnect") {
-          this.connections[update.roomId] = Math.max(0, count - 1);
-        }
-
-        if (update.type !== "delete") {
           // Update the poll for the room
           this.Polls[update.roomId] = update.poll;
+
+          // Save updated polls and connections to storage
+          await this.party.storage.put("Polls", this.Polls);
+          await this.party.storage.put("connections", this.connections);
+
+          // Notify any connected listeners about the updated connections and polls
+          this.party.broadcast(JSON.stringify({
+            update: "add vote",
+            connectionKeys: Object.keys(this.connections)
+          }));
         }
 
-        if (this.connections) {
-          for (const roomId in this.connections) {
-            if (this.connections.hasOwnProperty(roomId)) {
-              const connectionCount = this.connections[roomId];
-
-              //console.log(`Room ID: ${roomId}, Connections: ${connectionCount}, Poll: ${JSON.stringify(this.Polls[roomId])}`);
-            }
-          }
-        }
-
-        // Save updated polls and connections to storage
-        await this.party.storage.put("Polls", this.Polls);
-        await this.party.storage.put("connections", this.connections);
-
-        // Notify any connected listeners about the updated connections and polls
-        this.party.broadcast(JSON.stringify({
-          connectionKeys: Object.keys(this.connections)
-        }));
+        // Return the current connection state
+        return new Response(JSON.stringify(this.connections));
       }
-
-      // Send connection counts to requester
-      return new Response(JSON.stringify(this.connections));
     } catch (error) {
       console.error("Error handling request:", error);
 
@@ -111,7 +94,6 @@ export default class NotificationServer implements Party.Server {
   }
 
   async onMessage(message: string, sender: Party.Connection) {
-    // Parsing message to extract roomId and poll related action
     try {
       const data = JSON.parse(message);
       const roomId = data.roomId;

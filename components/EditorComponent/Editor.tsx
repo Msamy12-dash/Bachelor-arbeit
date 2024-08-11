@@ -104,27 +104,33 @@ export default function Editor({
     }
   }, [userColor, provider]);
 
-  function handleSelectionChange(range: Range | null) {
-    const editor = quill.current?.getEditor();
-    const selection = editor?.getSelection();
-  
-    // Ensure that range and selection are valid and that index and length are numbers
-    if (range && selection && typeof range.index === "number" && typeof range.length === "number" && range.length > 0) {
-      // Get the selected text and update the state
-      const getText = editor.getText(range.index, range.length);
-      setSelectedText(getText);
-  
-      // Set the selected range
+  function handleSelectionChange(range: Range) {
+    handleRORelSelectionChange(
+      quill,
+      range,
+      provider.doc,
+      provider.doc.getText("quill")
+    );
+
+    const editor = quill.current!.getEditor();
+    const selection = editor.getSelection();
+
+    // If a valid selection is made
+    if (range && range.length > 0 && selection) {
+      // Get range the user selected and store it in state
       setSelectedRange(selection);
-  
+
       // For MUP
       setRange(selection);
+
+      // Update selectedText
+      const getText = editor.getText(range.index, range.length);
+      setSelectedText(getText);
     } else {
       setSelectedText("");
     }
   }
-  
-  
+
   useEffect(() => {
     if (quill.current) {
       const editor = quill.current.getEditor();
@@ -202,7 +208,6 @@ export default function Editor({
         show={showTooltip}
         text={selectedText}
         onCancel={handleHideTooltip}
-        
       />
     </div>
   );

@@ -27,7 +27,8 @@ const NotificationComponent: React.FC = () => {
     //console.log()
     try {
       data = JSON.parse(event.data);
-      //console.log(data)
+      console.log(JSON.stringify(data))
+      
 
     } catch (error) {
       console.error("Failed to parse message:", error);
@@ -35,11 +36,13 @@ const NotificationComponent: React.FC = () => {
 
       return;
     }
-
+    console.log("data.connectionKeys")
     if (data.connectionKeys && JSON.stringify(data.connectionKeys) !== JSON.stringify(connectionKeys)) {
+      console.log(data.connectionKeys)
       setConnectionKeys(data.connectionKeys);
-      setNewNotification(true); // Only set true if new keys are different
+      setNewNotification(true);
     }
+    
   };
 
   useSocketConnection("0", onMessage);
