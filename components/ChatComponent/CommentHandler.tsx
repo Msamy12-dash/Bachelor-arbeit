@@ -290,11 +290,11 @@ export default function CommentHandler({
               aria-label="lab API tabs example"
               sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}
             >
-              <Tab label="Comment" value="1" sx={{ flex: 1 }} />
-              <Tab label="Prompt List" value="2" sx={{ flex: 1 }} />
+              <Tab label="Comment" value="1" sx={{ flex: 1, padding: 0 }} />
+              <Tab label="Prompt List" value="2" sx={{ flex: 1, padding: 0 }} />
             </TabList>
           </Box>
-          <TabPanel value="1" sx={{ paddingTop: 6 }}>
+          <TabPanel value="1" sx={{ padding: 0, paddingTop: 2 }}>
             <div className="text-center block">
               <div className="Comment-font text-xl font-bold">Comments</div>
               
@@ -320,11 +320,11 @@ export default function CommentHandler({
               )}
             </div>
           </TabPanel>
-          <TabPanel value="2" sx={{ padding: "10px 0" }}>
+          <TabPanel value="2" sx={{ padding: 0 }}>
             <PromptList promptList={promptList} yDoc={yDoc} />
           </TabPanel>
         </TabContext>
       </Box>
     </div>
   );
-};
+}

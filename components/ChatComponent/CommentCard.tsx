@@ -52,7 +52,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
   const [showHistory, setShowHistory] = React.useState(false);
   const [showReplyTextarea, setShowReplyTextarea] = React.useState(false);
   const [parentKey, setParentKey] = React.useState<number | null>(null);
-  const [isLiked, setIsLiked] = React.useState<boolean>();
+  const [isLiked, setIsLiked] = React.useState<boolean>(comment.likedBy.includes(user?.id || ""));
 
   const enableEditMode = () => {
     setIsEditing(true);
@@ -124,8 +124,8 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
 
 
   return (
-    <div style={{display: "flex", padding: "1vw", justifyContent: "space-between"}}>
-      <div className={`card ${theme === 'dark' ? 'text-white' : 'text-gray-700'} border border-gray-500 rounded-lg mb-4`} style={{width: "32vw"}}>
+    <div style={{display: "flex", padding: "0,5vw", justifyContent: "space-between"}}>
+      <div className={`card ${theme === 'dark' ? 'text-white' : 'text-gray-700'} border border-gray-500 rounded-lg mb-2`} style={{width: "32vw"}}>
 
         <div className="card-body">
           {comment.isTextSpecific && (
