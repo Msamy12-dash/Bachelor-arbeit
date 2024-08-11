@@ -52,8 +52,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
   const [showHistory, setShowHistory] = React.useState(false);
   const [showReplyTextarea, setShowReplyTextarea] = React.useState(false);
   const [parentKey, setParentKey] = React.useState<number | null>(null);
-  const [isLiked, setIsLiked] = React.useState<boolean>(comment.likedBy.includes(user?.id || ""));
-
+  const [isLiked, setIsLiked] = React.useState<boolean>((comment.likedBy ?? []).includes(user?.id || ""));
   const enableEditMode = () => {
     setIsEditing(true);
   };
@@ -138,7 +137,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
           <div className='flex justify-between items-center p-4 rounded-t-lg'>
             <h5 className="card-title text-lg font-semibold">{comment.name}</h5>
 
-            <div className="EditDeleteHistory">
+            <div className="flex flex-wrap items-center">
             {(user && comment.user && user.id === comment.user.id || user?.role === "admin") && !isEditing && (
               <>
                 <IconButton onClick={enableEditMode} className="text-gray-500 hover:text-gray-700">
@@ -154,9 +153,14 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
                 <HistoryIcon />
               </IconButton>
             )}
-            <IconButton onClick={() => handleLike(comment)}>
-              <ThumbUpIcon className={`${isLiked ? 'text-blue-500 hover:text-blue-700' : 'text-gray-500 hover:text-gray-700'}`}/>
-            </IconButton>
+            <div className="relative flex-shrink-0">
+              <IconButton onClick={() => handleLike(comment)}>
+                <ThumbUpIcon className={`${isLiked ? 'text-blue-500 hover:text-blue-700' : 'text-gray-500 hover:text-gray-700'}`} />
+              </IconButton>
+              <div className="absolute top-0 right-0 transform translate-x-2 -translate-y-2 flex justify-center items-center bg-gray-200 text-gray-800 rounded-full w-6 h-6 text-sm">
+                {comment.upvotes}
+              </div>
+            </div>
             {comment.canReply && (
               <IconButton onClick={() => toggleReplyTextarea()} className="text-gray-500 hover:text-gray-700">
                 <ReplyIcon />
@@ -184,6 +188,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, editor, onEdit, onDe
         ) : (
           <div>
             <p className="card-text">{comment.content}</p>
+            
             <div className='flex justify-between items-center mr-6 ml-6 pb-2 mt-2'>
             </div>
           </div>
