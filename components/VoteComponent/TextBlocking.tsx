@@ -250,7 +250,7 @@ export const handleROChange = (
 ) => {
   // const editor = quill.current?.getEditor();
   //
-  // //console.log(rangeListRef);
+  // console.log(rangeListRef);
   // const deleteOperation = delta.ops?.find((op) => op.delete);
   //
   // if (deleteOperation !== undefined) {
@@ -338,7 +338,7 @@ export const handleRangeShift = (delta: DeltaStatic, quill: any, doc: Y.Doc) => 
 
   voteYArray.delete(0, voteYArray.length);
   voteYArray.push(newBlockedVoteRanges);
-  //console.log(voteYArray.toArray());
+  console.log(voteYArray.toArray());
 };
 
 export const deleteCurrent = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, provider: YPartyKitProvider) => {
@@ -353,9 +353,9 @@ export const deleteCurrent = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, pr
     if (currentRangeIndex !== -1) {
       const currentRange = ranges[currentRangeIndex];
 
-      //console.log(JSON.stringify(yarray.toArray()));
+      console.log(JSON.stringify(yarray.toArray()));
       yarray.delete(currentRangeIndex, 1);
-      //console.log(JSON.stringify(yarray.toArray()));
+      console.log(JSON.stringify(yarray.toArray()));
 
       const editor = quill.current?.getEditor();
       if (editor) {
@@ -366,9 +366,9 @@ export const deleteCurrent = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, pr
 };
 
 
-export const getCurrentId = (doc: Y.Doc,provider: YPartyKitProvider): number | null => {
+export const getCurrentId = (doc: Y.Doc,provider: YPartyKitProvider): number => {
   const localState = provider.awareness.getLocalState();
-  return localState ? localState['currentId'] : null;
+  return localState ? localState['currentId'] : 0;
 };
 export const setCurrentRangeForUser = (rangeId:any ,provider:YPartyKitProvider )=> {
   provider.awareness.setLocalStateField('currentId', rangeId);
@@ -451,6 +451,8 @@ export const handleRelRangeShift = (doc: Y.Doc, ytext: Y.Text) => {
     if (rangePos) {
       const start = rangePos.start;
       const end = rangePos.end;
+      // The positions will be adjusted automatically by Y.js.
+      // Optionally, you can perform additional logic if necessary.
     }
   });
 };
@@ -458,15 +460,12 @@ export const handleRelRangeShift = (doc: Y.Doc, ytext: Y.Text) => {
 export const saveRelRange = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, provider: YPartyKitProvider, range?: Omit<Range, "id" | "current">) => {
 
   if (quill.current) {
-    console.log("quill is defined")
     const editor = quill.current.getEditor();
     const ytext = doc.getText("quill");
 
 
 
     if (range && range.length > 0) {
-      console.log("range is defined")
-
       if (range.index == 0) {
         editor.insertText(range.index, " ", { background: false });
         range.index += 1;
@@ -505,7 +504,7 @@ export const handleRORelSelectionChange = async (
       const startPos = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc);
       const endPos = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc);
 
-      if (startPos && endPos) {
+      if (startPos && endPos && startPos.type === ytext && endPos.type === ytext) {
         const rangeStart = startPos.index;
         const rangeEnd = endPos.index;
 
@@ -589,31 +588,38 @@ export const saveNewTextForCurrentRange = (
   }
 };
 
-export const clearAllRelRanges = (
+export const unlockRange = (
   doc: Y.Doc,
+  rangeId: number,
+  replaceText: boolean,
   quill: React.RefObject<ReactQuill>
 ) => {
   const yMap = doc.getMap<RelRange>("relRanges");
-  const editor = quill.current?.getEditor();
 
-    // Loop through all ranges in the Y.Map
-    yMap.forEach((relRange, key) => {
-      const startPos = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc);
-      const endPos = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc);
+  const relRange = yMap.get(rangeId.toString());
 
-      if (startPos && endPos ) {
-        const start = startPos.index;
-        const end = endPos.index;
+  if (relRange) {
+    const editor = quill.current?.getEditor();
+    if (editor) {
+      if (replaceText && relRange.newText) {
+        const rangeStart = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc)?.index;
+        const rangeEnd = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc)?.index;
 
-        // Clear formatting for the range
-        editor?.formatText(0, editor.getLength(), { background: false });
+        if (rangeStart !== undefined && rangeEnd !== undefined) {
+          editor.deleteText(rangeStart, rangeEnd - rangeStart);
+          editor.insertText(rangeStart, relRange.newText, { background: false });
+
+          editor.formatText(rangeStart, relRange.newText.length, { background: false });
+        }
       }
 
-      // Delete the range from the Y.Map
-      yMap.delete(key);
-    });
-
+      yMap.delete(rangeId.toString());
+    }
+  } else {
+    console.error(`RelRange with ID ${rangeId} not found.`);
+  }
 };
+
 
 
 

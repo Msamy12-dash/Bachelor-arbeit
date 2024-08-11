@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Avatar, Button, Card, CardBody, CardHeader } from "@nextui-org/react";
+import { Avatar, Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
+import Snackbar from "@mui/material/Snackbar";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
-import Draggable from 'react-draggable';
-import { IconButton } from "@mui/material";
 
 import {
   saveRangeWithText,
   updateVoteRangeText,
   deleteRangeFromYArray,
-  getCurrentId, deleteCurrentRelRange, saveNewTextForCurrentRange, clearAllRelRanges
+  deleteAll,
+  saveRORange,
+  deleteCurrent,
+  getCurrentId, saveRelRange, deleteCurrentRelRange, saveNewTextForCurrentRange,unlockRange
 } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
+import Draggable from 'react-draggable';
+
+import CloseIcon from '@mui/icons-material/Close';
 
 import CustomMenu from "./AIInteractionComponent";
-
+import { IconButton } from "@mui/material";
 
 interface Range {
   index: number;
@@ -34,10 +39,12 @@ interface TooltipProps {
 const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange, onCancel, quill, doc,provider }) => {
   const [inputDisabled, setInputDisabled] = useState(true);
   const [suggestButtonDisabled, setSuggestButtonDisabled] = useState(true);
-  const [, setVotingInProgress] = useState(false);
+  const [votingInProgress, setVotingInProgress] = useState(false);
   const [inputText, setInputText] = useState('');
+  const [voteID, setVoteID] = useState(0); // State to track the ID
+  const [currentRangeID, setCurrentRangeID] = useState(0);
 
-  const [, setIsSnackbarOpen] = useState(false);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
 const User ={
   username : "user ",
@@ -59,7 +66,8 @@ const User ={
   };
 
   const handleCancelClick = () => {
-    //clearAllRelRanges(doc, quill);
+    //deleteAll(quill, doc);
+    //deleteCurrent(quill, doc, provider);
     deleteCurrentRelRange( doc, provider,quill);
     setInputDisabled(true);
     setSuggestButtonDisabled(true);
@@ -71,10 +79,10 @@ const User ={
     const modifiedText = inputText;
     const pollOptions = [selectedText, modifiedText];
     const randomId = generateRandomId();
-
     saveNewTextForCurrentRange(doc, provider, modifiedText);
 
     const rangeId = getCurrentId(doc,provider);
+    let replaceText = false;
 
     const examplePoll = {
       Room_id :randomId,
@@ -92,16 +100,12 @@ const User ={
     setInputDisabled(true);
     setSuggestButtonDisabled(true);
 
-    updateVoteRangeText(doc, selectedText, modifiedText);
+
+    unlockRange(doc, rangeId, replaceText, quill);
+
 
     onCancel();
     setIsSnackbarOpen(true); // Show Snackbar on vote click
-  };
-
-  const handleEndVoteClick = () => {
-    setVotingInProgress(false);
-    deleteRangeFromYArray(doc, inputText, quill);
-    onCancel();
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -143,8 +147,8 @@ const User ={
             {!inputDisabled && (
               <IconButton
                 size="small"
-                style={{ position: 'absolute', top: '-10px', right: '10px' }}
                 onClick={handleClearText}
+                style={{ position: 'absolute', top: '-10px', right: '10px' }}
               >
                 {/*<CloseIcon fontSize="small" />*/}
                 <span className="text-sm text-blue-500 cursor-pointer">
@@ -154,9 +158,10 @@ const User ={
             )}
               <textarea
                 className="max-w-full p-2 border border-gray-300 rounded-md"
+                style={{ width: '100%', height: '100px', resize: 'vertical', overflow: 'auto' }}
+                defaultValue={text}
                 disabled={inputDisabled}
                 placeholder="Enter your text"
-                style={{ width: '100%', height: '100px', resize: 'vertical', overflow: 'auto' }}
                 value={inputText}
                 onChange={handleInputChange}
               />
@@ -174,8 +179,8 @@ const User ={
               <Button
                 className={inputDisabled ? "bg-gray-300" : ""}
                 color="success"
-                disabled={inputDisabled}
                 onClick={handleVoteClick}
+                disabled={inputDisabled}
               >
                 Vote
               </Button>

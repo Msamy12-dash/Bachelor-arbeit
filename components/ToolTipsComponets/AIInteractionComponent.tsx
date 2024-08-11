@@ -11,7 +11,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 interface CustomMenuProps {
   onSaveRange: () => void;
-    onInsertTrialText: () => void;
+  onInsertTrialText: () => void;
   disabled: boolean;
 }
 
