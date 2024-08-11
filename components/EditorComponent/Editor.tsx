@@ -9,10 +9,15 @@ import YPartyKitprovider from "y-partykit/provider";
 
 import Tooltip from "../ToolTipsComponets/ToolTip";
 import { handleCommentRangeShift } from "../ChatComponent/handleCommentRangeShift";
-import {
-  handleRORelSelectionChange,
+import { handleRangeShift, handleROChange, handleRORelSelectionChange,
+  handleROSelectionChange,
   saveRelRange,
+  saveRORange
 } from "../VoteComponent/TextBlocking";
+
+Quill.register("modules/cursors", QuillCursors);
+
+
 
 interface Range {
   index: number;
@@ -27,16 +32,13 @@ interface Position {
 Quill.register("modules/cursors", QuillCursors);
 
 export default function Editor({
-  currentRoom,
-  yDoc,
-  provider,
-  userColor,
-  setEditor,
-  selectedText,
-  setSelectedText,
-  setSelectedRange,
-  setRange,
-}: Readonly<{
+                                 currentRoom,
+                                 provider,
+                                 userColor,
+                                 setEditor,
+                                 selectedText,
+                                 setSelectedText,
+                                 setSelectedRange}: Readonly<{
   currentRoom: string;
   yDoc: Y.Doc;
   provider: YPartyKitprovider;
@@ -57,42 +59,27 @@ export default function Editor({
     maxWidth: 0,
   });
   const [, setVoteRange] = useState<Range | null>();
-  const isInitialLoadRef = useRef(true);
   const quill = useRef<ReactQuill>(null);
+  const [showButton, setShowButton] = useState(false);
 
-  const saveRange = (): void => {
-    saveRelRange(quill, provider.doc, provider);
-  };
 
-  const handleHideTooltip = () => {
-    setShowTooltip(false);
-  };
+  const [buttonPosition, setButtonPosition] = useState<Position>();
+
+
+
 
   useEffect(() => {
-    if (!yDoc) return;
-    const ytext = yDoc.getText("quill");
+    if (typeof window !== "undefined") {
+      const ytext = provider.doc.getText("quill");
 
-    if (typeof window !== "undefined" && quill.current) {
-      const editor = quill.current.getEditor();
+      const editor = quill.current!.getEditor();
 
-      // Set editor methods and state in the parent component
-      setEditor({
-        ...quill.current,
-        highlightText,
-        removeHighlight,
-        getSelection: () => editor.getSelection(),
-      });
-
-      // Handle selection change in the Quill editor
+      if (quill.current) {
+        setEditor(quill.current);
+      }
       editor.on("selection-change", handleSelectionChange);
-
-      // Create a binding between Yjs and the Quill editor
       const binding = new QuillBinding(ytext, editor, provider.awareness);
 
-      editor.setContents(ytext.toDelta());
-      isInitialLoadRef.current = false;
-
-      // Set local user state in Yjs awareness system
       provider.awareness.setLocalStateField("user", {
         name: "Typing...",
         color: userColor,
@@ -104,27 +91,35 @@ export default function Editor({
     }
   }, [userColor, provider]);
 
-  function handleSelectionChange(range: Range | null) {
-    const editor = quill.current?.getEditor();
-    const selection = editor?.getSelection();
-  
-    // Ensure that range and selection are valid and that index and length are numbers
-    if (range && selection && typeof range.index === "number" && typeof range.length === "number" && range.length > 0) {
-      // Get the selected text and update the state
-      const getText = editor.getText(range.index, range.length);
-      setSelectedText(getText);
-  
-      // Set the selected range
-      setSelectedRange(selection);
-  
-      // For MUP
-      setRange(selection);
+
+  function handleSelectionChange(range: Range) {
+
+
+    handleRORelSelectionChange(quill, range, provider.doc, provider.doc.getText("quill"));
+
+    // If text is selected
+    if (range && range.length > 0) {
+      // Get range the user selected and store it in state
+      const selection = quill.current!.getEditor().getSelection();
+
+      if (selection) {
+        setSelectedRange(selection);
+
+        // Get positions of Editor itself and selected range (in pixels)
+        const bounds = quill.current!.getEditor().getBounds(selection!.index);
+
+        setSelectedText(quill.current!.getEditor().getText(selection!.index,selection!.length));
+
+        // Set button position relative to selected text
+        setButtonPosition({top: bounds!.top + 40, left: bounds!.left});
+
+        setShowButton(true);
+        //console.log(buttonPosition);
+      }
     } else {
-      setSelectedText("");
+      setShowButton(false);
     }
   }
-  
-  
   useEffect(() => {
     if (quill.current) {
       const editor = quill.current.getEditor();
@@ -135,7 +130,6 @@ export default function Editor({
         const range = editor.getSelection();
 
         if (range) {
-          setVoteRange(range);
           const text = editor.getText(range.index, range.length);
 
           setSelectedText(text);
@@ -148,8 +142,13 @@ export default function Editor({
               maxWidth: maxWidth,
             });
             setShowTooltip(true);
-            saveRelRange(quill, provider.doc, provider, range);
+            saveRelRange(quill, provider.doc, provider,range);
+
+          } else {
+            // setShowTooltip(false);
           }
+        } else {
+          // setShowTooltip(false);
         }
       };
 
@@ -161,24 +160,23 @@ export default function Editor({
     }
   }, []);
 
-  function highlightText(index: number, length: number, color: string) {
-    quill.current?.getEditor().formatText(index, length, { background: color });
-  }
 
-  function removeHighlight(index: number, length: number) {
-    quill.current?.getEditor().formatText(index, length, { background: false });
-  }
 
-  const onChange = (
-    content: string,
-    delta: DeltaStatic,
-    source: string
-  ): void => {
-    if (!isInitialLoadRef.current && source === "user") {
-      handleCommentRangeShift(delta, quill, yDoc);
-    }
+  const onChange = (content: string, delta: DeltaStatic, source: string): void => {
+    handleROChange(quill, content, delta, source);
+    handleRangeShift(delta,quill,provider.doc);
+    console.log(JSON.stringify(quill.current?.getEditor().getSelection()?.index))
     setText(content);
   };
+
+  const saveRange = ():void=>{
+    saveRelRange(quill, provider.doc, provider);
+  }
+
+  const handleHideTooltip = () => {
+    setShowTooltip(false);
+  };
+
 
   return (
     <div>
@@ -202,8 +200,8 @@ export default function Editor({
         show={showTooltip}
         text={selectedText}
         onCancel={handleHideTooltip}
-        
       />
+
     </div>
   );
 }

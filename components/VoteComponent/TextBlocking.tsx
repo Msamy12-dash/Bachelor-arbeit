@@ -451,8 +451,6 @@ export const handleRelRangeShift = (doc: Y.Doc, ytext: Y.Text) => {
     if (rangePos) {
       const start = rangePos.start;
       const end = rangePos.end;
-      // The positions will be adjusted automatically by Y.js.
-      // Optionally, you can perform additional logic if necessary.
     }
   });
 };
@@ -460,12 +458,15 @@ export const handleRelRangeShift = (doc: Y.Doc, ytext: Y.Text) => {
 export const saveRelRange = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, provider: YPartyKitProvider, range?: Omit<Range, "id" | "current">) => {
 
   if (quill.current) {
+    console.log("quill is defined")
     const editor = quill.current.getEditor();
     const ytext = doc.getText("quill");
 
 
 
     if (range && range.length > 0) {
+      console.log("range is defined")
+
       if (range.index == 0) {
         editor.insertText(range.index, " ", { background: false });
         range.index += 1;
@@ -504,7 +505,7 @@ export const handleRORelSelectionChange = async (
       const startPos = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc);
       const endPos = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc);
 
-      if (startPos && endPos && startPos.type === ytext && endPos.type === ytext) {
+      if (startPos && endPos) {
         const rangeStart = startPos.index;
         const rangeEnd = endPos.index;
 
@@ -587,6 +588,33 @@ export const saveNewTextForCurrentRange = (
     console.error("No current ID found for the user.");
   }
 };
+
+export const clearAllRelRanges = (
+  doc: Y.Doc,
+  quill: React.RefObject<ReactQuill>
+) => {
+  const yMap = doc.getMap<RelRange>("relRanges");
+  const editor = quill.current?.getEditor();
+
+    // Loop through all ranges in the Y.Map
+    yMap.forEach((relRange, key) => {
+      const startPos = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc);
+      const endPos = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc);
+
+      if (startPos && endPos ) {
+        const start = startPos.index;
+        const end = endPos.index;
+
+        // Clear formatting for the range
+        editor?.formatText(0, editor.getLength(), { background: false });
+      }
+
+      // Delete the range from the Y.Map
+      yMap.delete(key);
+    });
+
+};
+
 
 
 

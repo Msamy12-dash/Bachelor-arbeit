@@ -9,7 +9,7 @@ import {
   saveRangeWithText,
   updateVoteRangeText,
   deleteRangeFromYArray,
-  getCurrentId, deleteCurrentRelRange, saveNewTextForCurrentRange
+  getCurrentId, deleteCurrentRelRange, saveNewTextForCurrentRange, clearAllRelRanges
 } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 
@@ -59,8 +59,7 @@ const User ={
   };
 
   const handleCancelClick = () => {
-    //deleteAll(quill, doc);
-    //deleteCurrent(quill, doc, provider);
+    //clearAllRelRanges(doc, quill);
     deleteCurrentRelRange( doc, provider,quill);
     setInputDisabled(true);
     setSuggestButtonDisabled(true);
@@ -155,7 +154,6 @@ const User ={
             )}
               <textarea
                 className="max-w-full p-2 border border-gray-300 rounded-md"
-                defaultValue={text}
                 disabled={inputDisabled}
                 placeholder="Enter your text"
                 style={{ width: '100%', height: '100px', resize: 'vertical', overflow: 'auto' }}
