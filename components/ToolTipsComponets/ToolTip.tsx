@@ -4,6 +4,7 @@ import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
 import Draggable from 'react-draggable';
 import { IconButton } from "@mui/material";
+import usePartySocket from "partysocket/react";
 
 import {
   saveRangeWithText,
@@ -15,7 +16,16 @@ import { sendvote } from "../VoteComponent/VoteClientFunctions";
 
 import CustomMenu from "./AIInteractionComponent";
 
+import { PARTYKIT_HOST } from "@/pages/env";
 
+function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
+  return usePartySocket({
+    host: PARTYKIT_HOST,
+    room: "active-connections",
+    party: "notificationserver",
+    onMessage,
+  });
+}
 interface Range {
   index: number;
   length: number;
@@ -38,7 +48,29 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
   const [inputText, setInputText] = useState('');
 
   const [, setIsSnackbarOpen] = useState(false);
+  const onMessage = (event: MessageEvent) => {
+    let data;
 
+    //console.log()
+    try {
+      data = JSON.parse(event.data);
+      console.log(JSON.stringify(data))
+      
+
+    } catch (error) {
+      console.error("Failed to parse message:", error);
+      //console.log("Received message:", event.data);
+
+      return;
+    }
+    console.log("data.connectionKeys")
+    if (data.connectionKeys && JSON.stringify(data.connectionKeys) !== JSON.stringify(connectionKeys)) {
+      console.log(data.connectionKeys)
+      setConnectionKeys(data.connectionKeys);
+      setNewNotification(true);
+    }
+    
+  };
 const User ={
   username : "user ",
   id :1}

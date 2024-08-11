@@ -52,6 +52,7 @@ const NotificationComponent: React.FC = () => {
 
     setConnectionKeys(JSON.parse(saved));
   }, []);
+  useSocketConnection("0", onMessage);
 
   useEffect(() => {
     localStorage.setItem("connectionKeys", JSON.stringify(connectionKeys));
