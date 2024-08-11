@@ -20,9 +20,9 @@ export default function Login({ setUser, roomserverPartySocket }: { setUser: Fun
     try {
       const user = await getOrCreateUser(username, role as Role);
 
-      console.log("User:", user);
-      console.log("connId:", roomserverPartySocket.id);
-      console.log("userId:", user.id);
+      //console.log("User:", user);
+      //console.log("connId:", roomserverPartySocket.id);
+      //console.log("userId:", user.id);
       // Check if user is already active
       const response = await fetch(`${PARTYKIT_URL}/parties/roomserver/${SINGLETON_ROOM_ID}`, {
         method: 'POST',
@@ -30,16 +30,16 @@ export default function Login({ setUser, roomserverPartySocket }: { setUser: Fun
         body: JSON.stringify({ type: 'checkAndAddUser', connectionId: roomserverPartySocket.id, userId: user.id }),
       });
 
-      console.log("response:", response);
+      //console.log("response:", response);
       const data = await response.json();
 
-      console.log("data:", data);
+      //console.log("data:", data);
 
       if (!data.success) {
         throw new Error("User is already logged in");
       }
 
-      console.log("User:", user);
+      //console.log("User:", user);
       setUser(user); // Use the updateUser function with the full user object
       router.push("/");
     } catch (error: any) {

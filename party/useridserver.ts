@@ -19,11 +19,11 @@ export default class useridserver implements Party.Server {
   async onStart(): Promise<void> {
     
     await this.loadUsersFromDatabase();
-    console.log("UserIdServer has started. Users loaded:", this.users);
+    //console.log("UserIdServer has started. Users loaded:", this.users);
   }
 
   async onRequest(req: Party.Request): Promise<Response> {
-    console.log(`Received ${req.method} request to ${req.url}`);
+    //console.log(`Received ${req.method} request to ${req.url}`);
 
     if (req.method === "OPTIONS") {
       //console.log("Received OPTIONS request:", req, "\n-----------------------------------------------");
@@ -40,7 +40,7 @@ export default class useridserver implements Party.Server {
       try {
         const body = await req.json();
 
-        console.log("Received body:", body);
+        //console.log("Received body:", body);
 
         if (!this.isValidUserRequest(body)) {
           return new Response("Invalid request body", { status: 400 });
@@ -70,7 +70,7 @@ export default class useridserver implements Party.Server {
           },
         });
       } catch (error) {
-        console.error("Error processing request:", error);
+        //console.error("Error processing request:", error);
 
         return new Response("Internal Server Error", {
           status: 500,
@@ -99,9 +99,9 @@ export default class useridserver implements Party.Server {
       const data = await response.json();
 
       this.users = data.users;
-      console.log("Users loaded from database:", this.users.length);
+      //console.log("Users loaded from database:", this.users.length);
     } catch (error) {
-      console.error("Error loading users from database:", error);
+      //console.error("Error loading users from database:", error);
     }
   }
 
@@ -137,9 +137,9 @@ export default class useridserver implements Party.Server {
       if (!response.ok) {
         throw new Error("Failed to save user");
       }
-      console.log("User saved to database:", userCore);
+      //console.log("User saved to database:", userCore);
     } catch (error) {
-      console.error("Error saving user to database:", error);
+      //console.error("Error saving user to database:", error);
     }
   }
 

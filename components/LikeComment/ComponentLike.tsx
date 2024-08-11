@@ -29,7 +29,7 @@ export const Reactions = (props: ReactionsProps) => {
     room: props.roomId,
     party: "likeserver",
     onMessage: (event) => {
-      console.log(event.data);
+      //console.log(event.data);
       const message = JSON.parse(event.data);
       setReactions(message.reactions);
     },

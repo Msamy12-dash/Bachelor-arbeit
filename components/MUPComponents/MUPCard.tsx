@@ -101,7 +101,7 @@ export default function MUPCard({
     setPrompts(updatedPrompts);
     const ytext = yDoc.getText("promptList");
       ytext.setAttribute("savePrompt", JSON.stringify(updatedPrompts));
-      console.log("🚀 ~ handleSave ~ ytext:", ytext.getAttribute("savePrompt"));
+      //console.log("🚀 ~ handleSave ~ ytext:", ytext.getAttribute("savePrompt"));
     setInputText("");
   };
 

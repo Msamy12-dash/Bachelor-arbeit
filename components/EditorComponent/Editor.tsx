@@ -202,6 +202,7 @@ export default function Editor({
         show={showTooltip}
         text={selectedText}
         onCancel={handleHideTooltip}
+        
       />
     </div>
   );

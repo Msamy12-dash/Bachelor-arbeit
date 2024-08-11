@@ -162,8 +162,9 @@ export const parseReactionMessage = (message: string) => {
   export async function deletevote(type: "delete",poll: Poll) {
     try {
       // get handle to a shared room instance of the "connections" party
-     console.log("deleting this pool"+poll.votes)
+     //console.log("deleting this pool"+poll.votes)
       // notify room by making an HTTP POST request
+
       fetch(`${PARTYKIT_URL}/parties/notificationserver/active-connections`, {
 
         method: "POST",
@@ -176,4 +177,5 @@ export const parseReactionMessage = (message: string) => {
     } catch (error) {
       console.error(`Error updating connections for type ${type}:`, error);
     }
+    console.log("deleting"+poll.Room_id)
   }

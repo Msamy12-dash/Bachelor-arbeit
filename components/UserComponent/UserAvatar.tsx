@@ -36,7 +36,6 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ userCount }) => {
           <Avatar key={index}  name="user" />
         ))}
       </AvatarGroup>
-      <NotificationComponent />
     </>
   );
 };

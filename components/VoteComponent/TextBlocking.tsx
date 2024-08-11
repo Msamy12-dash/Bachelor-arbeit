@@ -250,7 +250,7 @@ export const handleROChange = (
 ) => {
   // const editor = quill.current?.getEditor();
   //
-  // console.log(rangeListRef);
+  // //console.log(rangeListRef);
   // const deleteOperation = delta.ops?.find((op) => op.delete);
   //
   // if (deleteOperation !== undefined) {
@@ -338,7 +338,7 @@ export const handleRangeShift = (delta: DeltaStatic, quill: any, doc: Y.Doc) => 
 
   voteYArray.delete(0, voteYArray.length);
   voteYArray.push(newBlockedVoteRanges);
-  console.log(voteYArray.toArray());
+  //console.log(voteYArray.toArray());
 };
 
 export const deleteCurrent = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, provider: YPartyKitProvider) => {
@@ -353,9 +353,9 @@ export const deleteCurrent = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, pr
     if (currentRangeIndex !== -1) {
       const currentRange = ranges[currentRangeIndex];
 
-      console.log(JSON.stringify(yarray.toArray()));
+      //console.log(JSON.stringify(yarray.toArray()));
       yarray.delete(currentRangeIndex, 1);
-      console.log(JSON.stringify(yarray.toArray()));
+      //console.log(JSON.stringify(yarray.toArray()));
 
       const editor = quill.current?.getEditor();
       if (editor) {

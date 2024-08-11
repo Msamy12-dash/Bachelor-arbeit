@@ -28,7 +28,7 @@ export default function PromptList({
   const savedText = localStorage.getItem("savedPrompts");
 
   useEffect(() => {
-    console.log("🚀 ~ useEffect ~ savedText:-----", savedText);
+    //console.log("🚀 ~ useEffect ~ savedText:-----", savedText);
 
     if (savedText) {
       try {

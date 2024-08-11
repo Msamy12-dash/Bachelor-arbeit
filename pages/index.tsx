@@ -4,7 +4,6 @@ import * as Y from "yjs";
 import { User } from "next-auth";
 
 import { PARTYKIT_HOST } from "./env";
-
 import DefaultLayout from "@/layouts/default";
 import EditorPage from "@/components/EditorComponent/Editorinterface";
 import { Rooms } from "@/party/src/types";
@@ -62,15 +61,15 @@ export default function IndexPage({
 
   //   useEffect(() => {
   //     mountCount.current += 1;
-  //     console.log(`Component mounted. Mount count: ${mountCount.current}`);
+  //     //console.log(`Component mounted. Mount count: ${mountCount.current}`);
 
   //     return () => {
-  //       console.log('Component unmounted');
+  //       //console.log('Component unmounted');
   //     };
   //   }, []);
 
   //   renderCount.current += 1;
-  //   console.log(`Component rendered. Render count: ${renderCount.current}`);
+  //   //console.log(`Component rendered. Render count: ${renderCount.current}`);
 
 
   if (!yProvider || !yDoc) {

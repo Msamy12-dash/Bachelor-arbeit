@@ -24,14 +24,14 @@ const NotificationComponent: React.FC = () => {
   const onMessage = (event: MessageEvent) => {
     let data;
 
-    console.log()
+    //console.log()
     try {
       data = JSON.parse(event.data);
-      console.log(data)
+      //console.log(data)
 
     } catch (error) {
       console.error("Failed to parse message:", error);
-      console.log("Received message:", event.data);
+      //console.log("Received message:", event.data);
 
       return;
     }

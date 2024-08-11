@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -11,8 +12,11 @@ import {
 } from "@nextui-org/react";
 import NextLink from "next/link";
 import clsx from "clsx";
-import { useState } from "react";
 
+// Import UserAvatar component
+
+import UserAvatar from '../UserComponent/UserAvatar';
+import NotificationComponent from '../UserComponent/NotificationComponent';
 
 import Lobby from "./Lobby";
 
@@ -38,15 +42,18 @@ export const Navbar = ({
 
   const handleSelect = (keys: any) => {
     const selectedKey = Array.from(keys).join(", "); // Convert the selection to a string
+
     setSelectedModel(selectedKey);
   };
+
+  const userCount = rooms[currentRoom] || 0; // Calculate user count for the current room
 
 
   return (
 
     <NextUINavbar maxWidth="xl" position="sticky">
-      <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-        <div className="hidden lg:flex gap-4 justify-start ml-2">
+      <NavbarContent className="basis-1/5 sm:basis-full flex items-center justify-start">
+        <div className="lg:flex gap-4 justify-start ml-2">
           {siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>
               <NextLink
@@ -64,26 +71,25 @@ export const Navbar = ({
         </div>
       </NavbarContent> 
 
-      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="center">
-        <NavbarItem>
+      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full justify-center">
+        <NavbarItem className="flex items-center justify-center">
+          <UserAvatar userCount={userCount} /> 
         </NavbarItem>
       </NavbarContent>
 
-     {/* Choose Model Section */}
-     <p className="text-small">Choose AI Model: </p>
       <Dropdown>
         <DropdownTrigger>
-          <Button color="primary" variant="bordered" className="w-32 m-4">
+          <Button className="w-32 m-4" color="primary" variant="bordered">
             {selectedModel}
           </Button>
         </DropdownTrigger>
-        
+
         <DropdownMenu
+          disallowEmptySelection
           aria-label="Single selection actions"
           color="secondary"
-          disallowEmptySelection
-          selectionMode="single"
           selectedKeys={selectedModel}
+          selectionMode="single"
           onSelectionChange={handleSelect}
         >
           <DropdownItem key="OpenAI">OpenAI</DropdownItem>
@@ -93,15 +99,14 @@ export const Navbar = ({
       </Dropdown>
 
       <NavbarContent
-        className=""
-        justify="end"
+        className="hidden sm:flex basis-1/5 sm:basis-full justify-end items-center"
       >
-        <NavbarItem className="hidden sm:flex gap-2">
+        <NavbarItem className="flex items-center gap-2">
+          <NotificationComponent />
           <ThemeSwitch />
+          <Lobby  currentRoom={currentRoom} rooms={rooms} setCurrentRoom={setCurrentRoom} setRooms={setRooms} />
         </NavbarItem>
       </NavbarContent>
-          <Lobby  currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} rooms={rooms} setRooms={setRooms} />
-
     </NextUINavbar>
   );
 };

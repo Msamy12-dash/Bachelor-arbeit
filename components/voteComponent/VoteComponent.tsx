@@ -8,7 +8,8 @@ import PollOptions from "../voteComponent/VoteOptions";
 import { Poll } from "@/party/src/types";
 import { PARTYKIT_HOST } from "@/pages/env";
 
- function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
+// Custom hook to create and handle WebSocket connection
+function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
   return usePartySocket({
     host: PARTYKIT_HOST,
     room: ID,
@@ -17,10 +18,7 @@ import { PARTYKIT_HOST } from "@/pages/env";
   });
 }
 
-// Custom hook to create and handle WebSocket connection
-
-
-const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[] }> = ({ id, options, initialVotes }) => {
+const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[]; title: string; username: string; roomId: string }> = ({ id, options, initialVotes, title, username, roomId }) => {
   const [votes, setVotes] = useState<number[]>(initialVotes ?? []);
   const [vote, setVote] = useState<number | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -28,7 +26,7 @@ const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[] 
 
   const onMessage = (event: MessageEvent) => {
     const data = event.data;
-      console.log("PollUI")
+    //console.log("PollUI");
     if (data === "vote now") {
       setIsSnackbarOpen(true);  // Ensure to open the snackbar when a message is received
       setTimeout(() => setIsSnackbarOpen(false), 3000); // Auto close snackbar after 3 seconds
@@ -41,7 +39,7 @@ const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[] 
     }
   };
 
-  const socket = useSocketConnection(id,onMessage);
+  const socket = useSocketConnection(id, onMessage);
 
   const sendVote = (optionIndex: number) => {
     if (vote === null) {
@@ -64,8 +62,10 @@ const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[] 
       <button className="btn btn-primary" onClick={onOpen}>Open Poll</button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalContent>
-          <ModalHeader>Poll</ModalHeader>
+          <ModalHeader>{title}</ModalHeader>
           <ModalBody>
+            <p>Created by: {username}</p>
+            <p>Room ID: {roomId}</p>
             <PollOptions options={options} setVote={sendVote} vote={vote} votes={votes} />
           </ModalBody>
           <ModalFooter>

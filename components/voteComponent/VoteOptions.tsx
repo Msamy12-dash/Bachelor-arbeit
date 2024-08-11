@@ -1,16 +1,13 @@
-"use client";
+import React from "react";
 
-export default function PollOptions({
-  options,
-  votes = [],
-  vote,
-  setVote,
-}: {
+interface VoteOptionsProps {
   options: string[];
   votes: number[];
   vote: number | null;
   setVote: (option: number) => void;
-}) {
+}
+
+const VoteOptions: React.FC<VoteOptionsProps> = ({ options = [], votes = [], vote, setVote }) => {
   const totalVotes = votes.length > 0 ? votes.reduce((a, b) => a + b, 0) : 0;
   const mostVotes = votes.length > 0 ? Math.max(...votes) : 0;
 
@@ -50,4 +47,6 @@ export default function PollOptions({
       ))}
     </ul>
   );
-}
+};
+
+export default VoteOptions;

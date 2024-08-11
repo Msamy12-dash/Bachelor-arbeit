@@ -29,7 +29,7 @@ export const handleCommentRangeShift = (delta: DeltaStatic, quill: any, doc: Y.D
     let length = comment.length;
     let currentPos = 0;
 
-    console.log(`Processing range: start=${start}, end=${end}`);
+    //console.log(`Processing range: start=${start}, end=${end}`);
 
     delta.ops?.forEach((op) => {
       if (op.retain !== undefined) {
@@ -57,7 +57,7 @@ export const handleCommentRangeShift = (delta: DeltaStatic, quill: any, doc: Y.D
       }
     });
 
-    console.log(`Final range: start=${start}, length=${length}`);
+    //console.log(`Final range: start=${start}, length=${length}`);
     return {...comment, index: start, length: length};
   });
 

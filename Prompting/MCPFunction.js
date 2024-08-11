@@ -60,7 +60,7 @@ export function buildPromptForMCP(completeText, userComments, userCommentsContex
       ${tone}`;
 
     //for testing pruposes
-    console.log(prompt); 
+    //console.log(prompt); 
     return prompt;
   }
   

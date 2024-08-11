@@ -292,7 +292,7 @@ export default function CommentHandler({
   };
 
   const getRange = (index: number, length: number) => {
-    console.log(index, length);
+    //console.log(index, length);
     setRange({ index: index, length: length });
   };
 
