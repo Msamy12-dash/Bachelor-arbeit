@@ -1,4 +1,4 @@
-import { requestResponseForMCP } from '../../OllamaSinglePromptFunction/ollamaMCPFunction.js'
+import { requestResponseForMCP } from '../../Prompting/MCPFunction.js'
 import { NextApiRequest, NextApiResponse } from 'next';
 
 
