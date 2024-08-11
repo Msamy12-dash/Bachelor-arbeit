@@ -366,9 +366,9 @@ export const deleteCurrent = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, pr
 };
 
 
-export const getCurrentId = (doc: Y.Doc,provider: YPartyKitProvider): number | null => {
+export const getCurrentId = (doc: Y.Doc,provider: YPartyKitProvider): number => {
   const localState = provider.awareness.getLocalState();
-  return localState ? localState['currentId'] : null;
+  return localState ? localState['currentId'] : 0;
 };
 export const setCurrentRangeForUser = (rangeId:any ,provider:YPartyKitProvider )=> {
   provider.awareness.setLocalStateField('currentId', rangeId);
@@ -587,6 +587,40 @@ export const saveNewTextForCurrentRange = (
     console.error("No current ID found for the user.");
   }
 };
+
+export const unlockRange = (
+  doc: Y.Doc,
+  rangeId: number,
+  replaceText: boolean,
+  quill: React.RefObject<ReactQuill>
+) => {
+  const yMap = doc.getMap<RelRange>("relRanges");
+
+  const relRange = yMap.get(rangeId.toString());
+
+  if (relRange) {
+    const editor = quill.current?.getEditor();
+    if (editor) {
+      if (replaceText && relRange.newText) {
+        const rangeStart = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc)?.index;
+        const rangeEnd = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc)?.index;
+
+        if (rangeStart !== undefined && rangeEnd !== undefined) {
+          editor.deleteText(rangeStart, rangeEnd - rangeStart);
+          editor.insertText(rangeStart, relRange.newText, { background: false });
+
+          editor.formatText(rangeStart, relRange.newText.length, { background: false });
+        }
+      }
+
+      yMap.delete(rangeId.toString());
+    }
+  } else {
+    console.error(`RelRange with ID ${rangeId} not found.`);
+  }
+};
+
+
 
 
 

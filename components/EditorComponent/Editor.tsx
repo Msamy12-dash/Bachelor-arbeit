@@ -174,9 +174,23 @@ export default function Editor({
           const bounds = editor.getBounds(range.index, range.length);
 
           if (bounds) {
+            let tooltipX = bounds.left;
+            let tooltipY = bounds.top + 120;
+
+            const screenPadding = 10;
+            const tooltipWidth = 300;
+
+            if (tooltipX + tooltipWidth > window.innerWidth - screenPadding) {
+              tooltipX = window.innerWidth - tooltipWidth - screenPadding;
+            }
+
+            if (tooltipX < screenPadding) {
+              tooltipX = screenPadding;
+            }
+
             setTooltipPosition({
-              x: bounds.left,
-              y: bounds.top + 120,
+              x: tooltipX,
+              y: tooltipY,
               maxWidth: maxWidth,
             });
             setShowTooltip(true);

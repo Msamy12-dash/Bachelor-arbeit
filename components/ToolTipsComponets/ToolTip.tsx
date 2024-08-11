@@ -11,7 +11,7 @@ import {
   deleteAll,
   saveRORange,
   deleteCurrent,
-  getCurrentId, saveRelRange, deleteCurrentRelRange, saveNewTextForCurrentRange
+  getCurrentId, saveRelRange, deleteCurrentRelRange, saveNewTextForCurrentRange,unlockRange
 } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 import Draggable from 'react-draggable';
@@ -82,6 +82,7 @@ const User ={
     saveNewTextForCurrentRange(doc, provider, modifiedText);
 
     const rangeId = getCurrentId(doc,provider);
+    let replaceText = false;
 
     const examplePoll = {
       Room_id :randomId,
@@ -99,16 +100,12 @@ const User ={
     setInputDisabled(true);
     setSuggestButtonDisabled(true);
 
-    updateVoteRangeText(doc, selectedText, modifiedText);
+
+    unlockRange(doc, rangeId, replaceText, quill);
+
 
     onCancel();
     setIsSnackbarOpen(true); // Show Snackbar on vote click
-  };
-
-  const handleEndVoteClick = () => {
-    setVotingInProgress(false);
-    deleteRangeFromYArray(doc, inputText, quill);
-    onCancel();
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
