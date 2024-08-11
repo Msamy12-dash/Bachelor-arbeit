@@ -13,6 +13,7 @@ import RoomDropdown from "./RoomDropdown";  // Import the new RoomDropdown compo
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/MainPageComponent/theme-switch";
 import { Rooms } from "@/party/types";
+import OnlineUsers from "../UserComponent/OnlineUsers";
 
 export const Navbar = ({ 
   currentRoom, 
@@ -57,7 +58,7 @@ export const Navbar = ({
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem>
-          <UserAvatar />
+        <OnlineUsers></OnlineUsers>
         </NavbarItem>
       </NavbarContent>
     </NextUINavbar>

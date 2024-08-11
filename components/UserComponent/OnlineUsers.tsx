@@ -8,7 +8,7 @@ export default function UserAvatar() {
   console.log("UserAvatar received users:", onlineUsers);
 
   const toggleUsersVisibility = () => {
-    setShowUsers(!showUsers); 
+    setShowUsers(!showUsers);
   };
 
 
@@ -51,7 +51,7 @@ export default function UserAvatar() {
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
       <button style={styles.button} onClick={toggleUsersVisibility}>
-       Online Users
+        Online Users
       </button>
 
       {showUsers && (
