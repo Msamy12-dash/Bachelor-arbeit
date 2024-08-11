@@ -33,6 +33,7 @@ const forceSpacesAroundRange = (editor: any, range: Range) => {
 
   if (range.index == 0) {
     const textBefore = editor.getText(range.index - 1, 1);
+
     if (textBefore !== " ") {
       editor.insertText(range.index, " ",{
         background: false});
@@ -43,6 +44,7 @@ const forceSpacesAroundRange = (editor: any, range: Range) => {
   // Check if the range ends at the last position in the editor
   if (range.index + range.length == editor.getLength()) {
     const textAfter = editor.getText(range.index + range.length, 1);
+
     if (textAfter !== " ") {
       editor.insertText(range.index + range.length, " ",{
         background: false});
@@ -74,6 +76,7 @@ export const addElementToYArray = (doc: Y.Doc, element: Omit<Range,"id"|"current
 
   if (maxIdRange.id !== 0) {
     const updatedRange = { ...maxIdRange, current: false };
+
     yarray.delete(currentRanges.indexOf(maxIdRange), 1);
     yarray.insert(currentRanges.indexOf(maxIdRange), [updatedRange]);
   }
@@ -86,6 +89,7 @@ export const addElementToYArray = (doc: Y.Doc, element: Omit<Range,"id"|"current
   };
 
   const editor = quill?.current?.getEditor();
+
   if (editor) {
     forceSpacesAroundRange(editor, newRange);
   }
@@ -358,6 +362,7 @@ export const deleteCurrent = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, pr
       console.log(JSON.stringify(yarray.toArray()));
 
       const editor = quill.current?.getEditor();
+
       if (editor) {
         editor.formatText(currentRange.index, currentRange.length, { background: false });
       }
@@ -368,6 +373,7 @@ export const deleteCurrent = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, pr
 
 export const getCurrentId = (doc: Y.Doc,provider: YPartyKitProvider): number => {
   const localState = provider.awareness.getLocalState();
+
   return localState ? localState['currentId'] : 0;
 };
 export const setCurrentRangeForUser = (rangeId:any ,provider:YPartyKitProvider )=> {
@@ -380,10 +386,12 @@ export const addRelRangeToDoc = (doc: Y.Doc, start: number, length: number, ytex
   const yMap = doc.getMap<RelRange>("relRanges");
 
   let currentId = 0;
+
   if (yMap.size > 0) {
     const maxId = Array.from(yMap.values()).reduce((max, range) => {
       return range.id > max ? range.id : max;
     }, 0);
+
     currentId = maxId + 1;
   }
 
@@ -434,6 +442,7 @@ export const deleteRelRange = (doc: Y.Doc, id: number, quill: React.RefObject<Re
 
   if (relRange) {
     const editor = quill.current?.getEditor();
+
     if (editor) {
       editor.formatText(relRange.start, relRange.end - relRange.start, { background: false });
       //ytext.delete(relRange.start, relRange.end - relRange.start);
@@ -483,6 +492,7 @@ export const saveRelRange = (quill: React.RefObject<ReactQuill>, doc: Y.Doc, pro
 export const deleteCurrentRelRange = (doc: Y.Doc, provider: YPartyKitProvider, quill: React.RefObject<ReactQuill>) => {
   const currentId = getCurrentId(doc, provider);
   const ytext = provider.doc.getText('quill');
+
   if (currentId !== null) {
     deleteRelRange(doc, currentId, quill, ytext);
   }
@@ -511,6 +521,7 @@ export const handleRORelSelectionChange = async (
         // Check if the provided range overlaps with the current range
         return start <= rangeEnd && end > rangeStart;
       }
+
       return false;
     });
 
@@ -534,6 +545,7 @@ const forceSpacesAroundRelRange = (doc: Y.Doc, relRange: RelRange, quill: React.
       // Add space before the range if it's not already there
       if (start > 0) {
         const textBefore = editor.getText(start - 1, 1);
+
         if (textBefore !== " ") {
           editor.insertText(start, " ", { background: false });
           start += 1; // Adjust start position
@@ -544,6 +556,7 @@ const forceSpacesAroundRelRange = (doc: Y.Doc, relRange: RelRange, quill: React.
       // Add space after the range if it's not already there
       if (end < editor.getLength()) {
         const textAfter = editor.getText(end, 1);
+
         if (textAfter !== " ") {
           editor.insertText(end, " ", { background: false });
           end += 1; // Adjust end position
@@ -559,6 +572,7 @@ const forceSpacesAroundRelRange = (doc: Y.Doc, relRange: RelRange, quill: React.
 
       // Update the relRange in the Y.Map
       const yMap = doc.getMap<RelRange>("relRanges");
+
       yMap.set(relRange.id.toString(), relRange);
     }
   }
@@ -600,6 +614,7 @@ export const unlockRange = (
 
   if (relRange) {
     const editor = quill.current?.getEditor();
+
     if (editor) {
       if (replaceText && relRange.newText) {
         const rangeStart = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc)?.index;
@@ -667,6 +682,7 @@ export const restoreSelectionToCurrentRange = (
         const end = endPos.index;
 
         const editor = quill.current?.getEditor();
+
         if (editor) {
           editor.setSelection(start, end - start);
         }
