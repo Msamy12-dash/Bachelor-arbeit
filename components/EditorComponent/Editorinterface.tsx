@@ -177,6 +177,7 @@ export default function EditorPage({
                   highlightText={editor?.highlightText}
                   removeHighlight={editor?.removeHighlight}
                   user={user}
+                  selectedModel={selectedModel}
                 />
               </Card>
             </div>
