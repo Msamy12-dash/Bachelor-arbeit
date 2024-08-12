@@ -12,6 +12,7 @@ import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
 import colors from "../../highlightColors.js";
 import CommentSummarizer from "../AIsumComponent/CommentSummarizer";
+import { Tabs } from "@mui/material";
 
 
 
@@ -288,55 +289,66 @@ export default function CommentHandler({
 
   return (
     <div className="comments">
-      <Box sx={{ width: "100%", typography: "body1" }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          maxWidth: { xs: 320, sm: 480 },
+         
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
         <TabContext value={value}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={handleChange} aria-label="lab API tabs example">
-              <Tab label="Comment" value="0" />
-              <Tab label={<span className="mr-4">Summarize Comments</span>} value="1" />
-              <Tab label="Prompt List" value="2" />
-            </TabList>
-          </Box>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons
+            allowScrollButtonsMobile
+            aria-label="visible arrows tabs example"
+          >
+            <Tab label={<span className="mr-4">Comments</span>} value="0" />
+            <Tab label={<span className="mr-4">Summarize Comments</span>} value="1" />
+            <Tab label={<span className="mr-4">Prompt List</span>} value="2" />
+          </Tabs>
           <TabPanel value="0">
-                    <div className="comments text-center block">
-                <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
-                <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
-                  {showComments ? "Hide Comments" : "Show Comments"}
-                </button>
-                {showComments && (
-                  <div className="mt-8">
-                    <CommentList
-                      comments={comments}
-                      selectedText={selectedText}
-                      selectedRange={selectedRange}
-                      incrementUpvote={incrementUpvote}
-                      deleteComment={deleteComment}
-                      editComment={editComment}
-                      addComment={addComment}
-                      editor={editor}
-                      getRange={getRange}
-                      setAIChanges={setAIChanges}
-                      setCheckedKeys={setCheckedKeys}
-                      //promptList={promptList}
-                      highlightText={handleHighlightText}
-                      removeHighlight={handleRemoveHighlight}
-                      selectedModel={selectedModel}
+            <div className="comments text-center block">
+              <div className="Comment-font text-xl font-bold">Comments</div>
+              <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-1 px-4 rounded">
+                {showComments ? "Hide Comments" : "Show Comments"}
+              </button>
+              {showComments && (
+                <div className="mt-6">
+                  <CommentList
+                    comments={comments}
+                    incrementUpvote={incrementUpvote}
+                    deleteComment={deleteComment}
+                    editComment={editComment}
+                    addComment={addComment}
+                    editor={editor}
+                    getRange={getRange}
+                    setAIChanges={setAIChanges}
+                    setCheckedKeys={setCheckedKeys}
+                    selectedText={selectedText} // Ensure selectedText and selectedRange are passed
+                    selectedRange={selectedRange}
+                    highlightText={handleHighlightText}
+                    removeHighlight={handleRemoveHighlight}
+                    selectedModel={selectedModel}
                   />
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
           </TabPanel>
-
           <TabPanel value="1" className="py-2">
             <CommentSummarizer comments={comments} selectedModel={selectedModel}/>
           </TabPanel>
-
-          <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
+          <TabPanel value="2" className="py-2">
             <PromptList promptList={promptList} yDoc={yDoc} />
           </TabPanel>
         </TabContext>
       </Box>
-      </div>
-
+    </div>
   );
 }
+

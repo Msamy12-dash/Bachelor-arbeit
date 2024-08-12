@@ -198,7 +198,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     const { showTextarea, showAllSubcomments, sortBy } = this.state;
     return (
       <div>
-        <div className="comment-list-container h-[35vw] overflow-auto">
+        <div className="comment-list-container h-[30vw] overflow-auto">
           <div className="flex justify-center items-center mb-2">
             <div className="text-lg font-semibold mr-2">Sort by:</div>
             <button
@@ -240,7 +240,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
               <input type="checkbox" style={{marginLeft: "0.75vw", marginRight: "0.5vw"}}/>
             </div> */}
         <div style={{justifyContent: "center"}}>
-          <Button style={{marginTop: "1vw"}} color="primary" onClick={this.handleSubmitOnClick} className="submitToAI-btn">
+          <Button style={{marginTop: "1vw"}} color="primary" onClick={this.handleSubmitOnClick} size="lg">
             {this.state.loading ? (
               <div className="flex items-center justify-center space-x-2">
                   <Spinner color="current" />

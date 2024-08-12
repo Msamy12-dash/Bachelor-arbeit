@@ -77,9 +77,9 @@ export default function CardContainer({
     const selection = editor.getSelection();
 
 
-    if(selectedText.length > 30){
-      selectedText = selectedText.substring(0,30) + "...";
-    }
+    // if(selectedText.length > 30){
+    //   selectedText = selectedText.substring(0,30) + "...";
+    // }
 
     if (selection) {
       const newCard: CardData = {
@@ -144,7 +144,7 @@ export default function CardContainer({
   if (isLoading) return <div>Loading...</div>;
 
   return (
-        <div className={`card bg-gradient-to-b ${theme === 'dark' ?  'black' : 'from-gray-100 to-gray-200 rounded-lg'}flex flex-col  shadow-lg overflow-y-auto relative h-full`}>
+        <div className={`card bg-gradient-to-b ${theme === 'dark' ?  'black' : 'from-gray-100 to-gray-200 rounded-lg'}flex flex-col  shadow-lg overflow-y-auto relative h-[40vw]`}>
           <div className={`card ${theme === 'dark' ?  'gray-900' : 'gray-100'} mb-2 mx-4`}>
             <Button color="primary"
               className={`inline-flex justify-center m-6 px-6 py-6 text-lg ${
@@ -164,7 +164,9 @@ export default function CardContainer({
               Ask AI
             </Button>
           </div>
-          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 px-2 pb-6">
+
+
+          <div className="flex-1 px-2 pb-6">
             <div className="flex flex-col space-y-6">
               {cards.map((card) => (
                 <MUPCard
