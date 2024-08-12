@@ -12,6 +12,7 @@ import * as Y from "yjs";
 import { IconButton } from '@mui/material';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import { Role,User } from "@/party/types"
 
 
 
@@ -34,12 +35,14 @@ export default function EditorPage({
   currentRoom,
   yDoc,
   yProvider,
-  selectedModel
+  selectedModel,
+  user,
 }: {
   currentRoom: string;
   yDoc: Y.Doc;
   yProvider: YPartyKitProvider;
   selectedModel: string;
+  user: User | null;
 }) {
   const [prompts, setPrompts] = useState<string[]>([]);
   const userColor = useMemo(() => getRandomColor(), []);

@@ -5,7 +5,8 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
 import { Spinner, Button, button } from "@nextui-org/react";
-import {requestResponseForMCP, requestChangesSummaryForMCP} from "../../Prompting/MCPFunction"
+import {requestResponseForMCP, requestChangesSummaryForMCP} from "../../Prompting/MCPFunction";
+import {Role, User} from "@/party/types";
 
 interface Comment {
   key: number;
@@ -44,6 +45,7 @@ interface CommentListProps {
   setCheckedKeys: Function;
   highlightText: (index:number, length: number, color: string) => void;
   removeHighlight: (index:number, length: number) => void;
+  user: User | null
   selectedModel: string;
 }
 

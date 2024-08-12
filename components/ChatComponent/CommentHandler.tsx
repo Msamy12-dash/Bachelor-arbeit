@@ -13,6 +13,9 @@ import YPartyKitProvider from "y-partykit/provider";
 import colors from "../../highlightColors.js"
 import { Role, User } from "@/party/types";
 import { Comment } from "./CommentCard";
+import { Tabs } from "@mui/material";
+import CommentSummarizer from "./CommentSummarizer";
+
 
 interface Range {
   index: number;
@@ -33,6 +36,7 @@ interface CommentHandlerProps {
   selectedRange: Range | null | undefined;
   highlightText: ((index: number, length: number, color: string) => void) | undefined;
   removeHighlight: ((index: number, length: number) => void) | undefined; 
+  user: User | null;
   selectedModel: string;
 }
 
@@ -50,6 +54,7 @@ export default function CommentHandler({
   setDeleteSelectedComments,
   highlightText,
   removeHighlight,
+  user,
   selectedModel
 }: Readonly<CommentHandlerProps>){
   const [comments, setComments] = useState<Comment[]>([]);
@@ -323,10 +328,11 @@ export default function CommentHandler({
                     getRange={getRange}
                     setAIChanges={setAIChanges}
                     setCheckedKeys={setCheckedKeys}
-                    selectedText={selectedText} // Ensure selectedText and selectedRange are passed
+                    selectedText={selectedText} 
                     selectedRange={selectedRange}
                     highlightText={handleHighlightText}
                     removeHighlight={handleRemoveHighlight}
+                    user={user}
                     selectedModel={selectedModel}
                   />
                 </div>
