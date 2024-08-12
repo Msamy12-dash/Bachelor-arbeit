@@ -32,7 +32,7 @@ function getUniqueColor() {
   while (usedColors.has(color)) {
     color = colors[Math.floor(Math.random() * colors.length)];
   }
-
+  console.log(`Assigning color: ${color}`); // Debug logging
   usedColors.add(color);
   return color;
 }

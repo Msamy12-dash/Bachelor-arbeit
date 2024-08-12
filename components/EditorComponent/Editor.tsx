@@ -111,7 +111,7 @@ export default function Editor({
         name: userOriginalName,
         color: userColor,
       });
-      console.log(`User color set to: ${userColor}`);
+
     }, 10); // Reset to original name after 1 second of inactivity
 
     // If text is selected

@@ -25,8 +25,7 @@ export default function IndexPage({
   const [yDoc, setYDoc] = useState<Y.Doc | null>(null); //hand this down to your component, if you need it
   const [selectedModel, setSelectedModel] = useState("OpenAI");
   const { onlineUsers, setOnlineUsers } = useOnlineUsers();  // Use the context hook
-
-
+  
   const createProvider = useCallback(() => {
     if (!user) return;
     const provider = new YPartyKitProvider(
