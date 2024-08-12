@@ -68,7 +68,7 @@ export default class EditorServer implements Party.Server {
         handler: (doc) => {
           this.handleYDocChange(doc);
         },
-        debounceWait: 5000, //set this back to 10000
+        debounceWait: 50, //set this back to 10000
         debounceMaxWait: 20000,
         timeout: 5000,
       },
@@ -155,8 +155,9 @@ export default class EditorServer implements Party.Server {
     const update = Y.encodeStateAsUpdate(doc);
     const base64State = Buffer.from(update).toString("base64");
 
-    try {
-      const response = await fetch("http://localhost:3000/api/setYDocForRoom", {
+    try {     console.log("saving the stupid ydoc every fucking time  ")
+
+            const response = await fetch("http://localhost:3000/api/setYDocForRoom", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ state: base64State, room: this.room.id }),

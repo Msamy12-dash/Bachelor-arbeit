@@ -7,6 +7,7 @@ interface Update {
   connectionId: string;
   roomId: string;
   poll: Poll;
+
 }
 
 export default class NotificationServer implements Party.Server {
@@ -30,8 +31,8 @@ export default class NotificationServer implements Party.Server {
         const count = this.connections[update.roomId] ?? 0;
 
         if (update.type === "delete") {
-          console.log("Deleting connection with Room_id " + update.poll.Room_id);
-
+          console.log("update.poll.Room_id+update.poll.options[0]" + update.poll.makeChange);
+          
           // Filter out the connection to delete
           const filteredConnections: Record<string, number> = {};
 
@@ -54,6 +55,7 @@ export default class NotificationServer implements Party.Server {
           // Broadcast the updated connections state
           this.party.broadcast(JSON.stringify({
             update: "delete vote",
+            makechanges : update.poll.makeChange,
             block_id: update.poll.bolck_id,
             connectionKeys: Object.keys(this.connections)
           }));

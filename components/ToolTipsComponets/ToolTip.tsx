@@ -4,6 +4,7 @@ import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
 import Draggable from 'react-draggable';
 import { IconButton } from "@mui/material";
+import usePartySocket from "partysocket/react";
 
 import {
   saveRangeWithText,
@@ -15,8 +16,8 @@ import {
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 
 import CustomMenu from "./AIInteractionComponent";
+
 import { PARTYKIT_HOST } from "@/pages/env";
-import usePartySocket from "partysocket/react";
 
 function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
   return usePartySocket({
@@ -55,7 +56,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
       console.log(JSON.stringify(data))
       
 if(data.update=="delete vote"){
-  unlockRange(doc,data.block_id,false,quill)}
+  unlockRange(doc,data.block_id,true,quill)}
     } catch (error) {
       console.error("Failed to parse message:", error);
       //console.log("Received message:", event.data);
@@ -132,8 +133,10 @@ const User ={
     saveNewTextForCurrentRange(doc, provider, modifiedText);
 
     const rangeId = getCurrentId(doc,provider);
+
     console.log("blocked id = "+rangeId)
     const examplePoll = {
+      makeChage:false,
       Room_id :randomId,
       title:"a",
       id: "Vote on the Text",

@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { boolean } from "zod";
 export const allowedReactions = ["thumbsup","heart"] as const;
 export const allowedReactionsSchema = z.enum(allowedReactions);
 
@@ -18,7 +18,7 @@ export const ReactionUpdateSchema = z.object({
 
 
   export type Poll = {
-
+    makeChange?:boolean;
     Room_id:string;
     title: string;
     options: string[];
