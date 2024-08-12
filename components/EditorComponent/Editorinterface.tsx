@@ -132,8 +132,8 @@ export default function EditorPage({
           <ResizableBox
             width={400}
             height={Infinity}
-            minConstraints={[400, Infinity]}
-            maxConstraints={[450, Infinity]}
+            minConstraints={[330, Infinity]}
+            maxConstraints={[530, Infinity]}
             axis="x"
             resizeHandles={['e']}
           >

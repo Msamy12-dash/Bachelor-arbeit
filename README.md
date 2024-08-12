@@ -64,3 +64,19 @@ npm run dev1
 ## License
 
 Licensed under the [MIT license](https://github.com/nextui-org/next-pages-template/blob/main/LICENSE).
+
+
+**Everyone who contributed:**
+        Omar Alabed Alsalh
+        Shahrzad Azimi
+        Mohamed Elnemr
+        Matin Goodarzi
+        Daniel Hadirahardjo
+        Paula Hummel
+        Ghofrane Kamoun
+        Wafi Kamoun
+        Pascal Lange 
+        Leon Lehner
+        Felix Plenk
+        Samuel Richter 
+

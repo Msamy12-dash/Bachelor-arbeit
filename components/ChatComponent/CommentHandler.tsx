@@ -14,7 +14,7 @@ import colors from "../../highlightColors.js"
 import { Role, User } from "@/party/types";
 import { Comment } from "./CommentCard";
 import { Tabs } from "@mui/material";
-import CommentSummarizer from "./CommentSummarizer";
+import CommentSummarizer from "../AIsumComponent/CommentSummarizer";
 
 
 interface Range {
@@ -290,7 +290,7 @@ export default function CommentHandler({
       <Box
         sx={{
           flexGrow: 1,
-          maxWidth: { xs: 320, sm: 480 },
+          maxWidth: { xs: 300, sm: 480 },
          
           display: "flex",
           flexDirection: "column",
@@ -310,14 +310,10 @@ export default function CommentHandler({
             <Tab label={<span className="mr-4">Summarize Comments</span>} value="1" />
             <Tab label={<span className="mr-4">Prompt List</span>} value="2" />
           </Tabs>
-          <TabPanel value="0">
+          <TabPanel value="0" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}}>
             <div className="comments text-center block">
-              <div className="Comment-font text-xl font-bold">Comments</div>
-              <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-1 px-4 rounded">
-                {showComments ? "Hide Comments" : "Show Comments"}
-              </button>
               {showComments && (
-                <div className="mt-6">
+                <div className="mt-2">
                   <CommentList
                     comments={comments}
                     incrementUpvote={incrementUpvote}
@@ -339,10 +335,10 @@ export default function CommentHandler({
               )}
             </div>
           </TabPanel>
-          <TabPanel value="1" className="py-2">
+          <TabPanel value="1" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}} >
             <CommentSummarizer comments={comments} selectedModel={selectedModel}/>
           </TabPanel>
-          <TabPanel value="2" className="py-2">
+          <TabPanel value="2" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}}>
             <PromptList promptList={promptList} yDoc={yDoc} />
           </TabPanel>
         </TabContext>
