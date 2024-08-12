@@ -22,11 +22,19 @@ interface MCP_AI_responses {
   summary: string;
   changes: string;
 }
+const usedColors = new Set<string>();
+function getUniqueColor() {
+  const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink", "brown", "cyan", "magenta", "lime", "indigo", "teal"];
 
-function getRandomColor() {
-  const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
+  let color = colors[Math.floor(Math.random() * colors.length)];
 
-  return colors[Math.floor(Math.random() * colors.length)];
+  // Ensure the color is unique
+  while (usedColors.has(color)) {
+    color = colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  usedColors.add(color);
+  return color;
 }
 
 export default function EditorPage({
@@ -39,7 +47,7 @@ export default function EditorPage({
   yProvider: YPartyKitProvider;
 }) {
   const [prompts, setPrompts] = useState<string[]>([]);
-  const userColor = useMemo(() => getRandomColor(), []);
+  const userColor = useMemo(() => getUniqueColor(), []);
   const Editor = useMemo(() => {
     return dynamic(() => import("@/components/EditorComponent/Editor"), {
       loading: () => <p>Loading...</p>,

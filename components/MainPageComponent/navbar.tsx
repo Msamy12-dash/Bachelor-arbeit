@@ -58,7 +58,7 @@ export const Navbar = ({
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem>
-        <OnlineUsers></OnlineUsers>
+       <OnlineUsers/>
         </NavbarItem>
       </NavbarContent>
     </NextUINavbar>

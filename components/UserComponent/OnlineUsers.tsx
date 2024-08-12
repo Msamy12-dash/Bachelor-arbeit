@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { useOnlineUsers } from '@/contexts/OnlineUsersContext';  // Ensure the correct import path
+import { useOnlineUsers } from '@/contexts/OnlineUsersContext';
 
 export default function UserAvatar() {
-  const { onlineUsers } = useOnlineUsers();  // Use the context to get online users
-  const [showUsers, setShowUsers] = useState(false);  // State to control the visibility of the user list
-
-  console.log("UserAvatar received users:", onlineUsers);
+  const { onlineUsers } = useOnlineUsers();
+  const [showUsers, setShowUsers] = useState(false);
 
   const toggleUsersVisibility = () => {
     setShowUsers(!showUsers);
   };
-
 
   const styles = {
     button: {
@@ -41,10 +38,15 @@ export default function UserAvatar() {
     listItem: {
       padding: '8px 10px',
       borderBottom: '1px solid #ddd',
+      display: 'flex',
+      alignItems: 'center',
     },
-    listHeader: {
-      marginBottom: '10px',
-      fontWeight: 'bold',
+    colorDot: {
+      height: '10px',
+      width: '10px',
+      borderRadius: '50%',
+      marginRight: '10px',
+      backgroundColor: 'black',  // Fixed color for testing
     },
   };
 
@@ -62,10 +64,17 @@ export default function UserAvatar() {
             </div>
           ) : (
             <div style={styles.dropdownContent}>
-
               <ul>
                 {onlineUsers.map(user => (
-                  <li key={user.id} style={styles.listItem}>{user.name}</li>
+                  <li key={user.id} style={styles.listItem}>
+                    <span
+                      style={{
+                        ...styles.colorDot,
+                        backgroundColor: user.color,
+                      }}
+                    ></span>
+                    {user.name}
+                  </li>
                 ))}
               </ul>
             </div>
