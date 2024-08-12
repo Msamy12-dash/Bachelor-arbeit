@@ -5,8 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
 import { Spinner, Button, button } from "@nextui-org/react";
-import {requestResponseForMCP, requestChangesSummaryForMCP} from "../../OllamaSinglePromptFunction/ollamaMCPFunction"
-import { Role, User } from "@/party/types";
+import {requestResponseForMCP, requestChangesSummaryForMCP} from "../../Prompting/MCPFunction"
 
 interface Comment {
   key: number;
@@ -45,7 +44,7 @@ interface CommentListProps {
   setCheckedKeys: Function;
   highlightText: (index:number, length: number, color: string) => void;
   removeHighlight: (index:number, length: number) => void;
-  user: User | null;
+  selectedModel: string;
 }
 
 interface CommentListState {
@@ -136,12 +135,12 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
         }
         index += 1;
       }
-      const response = await requestResponseForMCP(completeText, userComments, userCommentsContext);
+      const response = await requestResponseForMCP(this.props.selectedModel, completeText, userComments, userCommentsContext);
       //const response = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 
       const currentText = completeText;
       // Get summary from AI on what the AI has changed
-      const summary = await requestChangesSummaryForMCP(currentText, response);
+      const summary = await requestChangesSummaryForMCP(this.props.selectedModel, currentText, response);
       // Send to editor
       this.props.setAIChanges({summary: summary, changes: response});
 
@@ -202,7 +201,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
     const { showTextarea, showAllSubcomments, sortBy } = this.state;
     return (
       <div>
-        <div className="comment-list-container h-[35vw] overflow-auto">
+        <div className="comment-list-container h-[30vw] overflow-auto">
           <div className="flex justify-center items-center mb-2">
           <div className="text-lg font-normal mr-2">Sort by:</div>
             <button
@@ -245,7 +244,7 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
               <input type="checkbox" style={{marginLeft: "0.75vw", marginRight: "0.5vw"}}/>
             </div> */}
         <div style={{justifyContent: "center"}}>
-          <Button style={{marginTop: "1vw"}} color="primary" onClick={this.handleSubmitOnClick} className="submitToAI-btn">
+          <Button style={{marginTop: "1vw"}} color="primary" onClick={this.handleSubmitOnClick} size="lg">
             {this.state.loading ? (
               <div className="flex items-center justify-center space-x-2">
                   <Spinner color="current" />

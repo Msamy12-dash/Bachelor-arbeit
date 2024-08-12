@@ -33,7 +33,7 @@ interface CommentHandlerProps {
   selectedRange: Range | null | undefined;
   highlightText: ((index: number, length: number, color: string) => void) | undefined;
   removeHighlight: ((index: number, length: number) => void) | undefined; 
-  user: User | null;
+  selectedModel: string;
 }
 
 export default function CommentHandler({
@@ -50,7 +50,7 @@ export default function CommentHandler({
   setDeleteSelectedComments,
   highlightText,
   removeHighlight,
-  user
+  selectedModel
 }: Readonly<CommentHandlerProps>){
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState<boolean>(true);
@@ -282,28 +282,39 @@ export default function CommentHandler({
 
   return (
     <div className="comments">
-      <Box sx={{ width: "100%", typography: "body1" }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          maxWidth: { xs: 320, sm: 480 },
+         
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
         <TabContext value={value}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList
-              onChange={handleChange}
-              aria-label="lab API tabs example"
-              sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}
-            >
-              <Tab label="Comment" value="1" sx={{ flex: 1, padding: 0 }} />
-              <Tab label="Prompt List" value="2" sx={{ flex: 1, padding: 0 }} />
-            </TabList>
-          </Box>
-          <TabPanel value="1" sx={{ padding: 0, paddingTop: 2 }}>
-            <div className="text-center block">
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons
+            allowScrollButtonsMobile
+            aria-label="visible arrows tabs example"
+          >
+            <Tab label={<span className="mr-4">Comments</span>} value="0" />
+            <Tab label={<span className="mr-4">Summarize Comments</span>} value="1" />
+            <Tab label={<span className="mr-4">Prompt List</span>} value="2" />
+          </Tabs>
+          <TabPanel value="0">
+            <div className="comments text-center block">
               <div className="Comment-font text-xl font-bold">Comments</div>
-              
+              <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-1 px-4 rounded">
+                {showComments ? "Hide Comments" : "Show Comments"}
+              </button>
               {showComments && (
-                <div className="mt-4">
+                <div className="mt-6">
                   <CommentList
                     comments={comments}
-                    selectedText={selectedText}
-                    selectedRange={selectedRange}
                     incrementUpvote={incrementUpvote}
                     deleteComment={deleteComment}
                     editComment={editComment}
@@ -312,15 +323,20 @@ export default function CommentHandler({
                     getRange={getRange}
                     setAIChanges={setAIChanges}
                     setCheckedKeys={setCheckedKeys}
+                    selectedText={selectedText} // Ensure selectedText and selectedRange are passed
+                    selectedRange={selectedRange}
                     highlightText={handleHighlightText}
                     removeHighlight={handleRemoveHighlight}
-                    user={user}
+                    selectedModel={selectedModel}
                   />
                 </div>
               )}
             </div>
           </TabPanel>
-          <TabPanel value="2" sx={{ padding: 0 }}>
+          <TabPanel value="1" className="py-2">
+            <CommentSummarizer comments={comments} selectedModel={selectedModel}/>
+          </TabPanel>
+          <TabPanel value="2" className="py-2">
             <PromptList promptList={promptList} yDoc={yDoc} />
           </TabPanel>
         </TabContext>

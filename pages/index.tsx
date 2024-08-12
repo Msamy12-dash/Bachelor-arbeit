@@ -21,6 +21,7 @@ export default function IndexPage({
   const [currentRoom, setCurrentRoom] = useState("default");
   const [yProvider, setYProvider] = useState<YPartyKitProvider | null>(null); //hand this down to your component, if you need it
   const [yDoc, setYDoc] = useState<Y.Doc | null>(null); //hand this down to your component, if you need it
+  const [selectedModel, setSelectedModel] = useState("OpenAI");
 
   const createProvider = useCallback(() => {
     if (!user) return;

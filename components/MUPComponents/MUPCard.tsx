@@ -2,6 +2,14 @@ import React, { useState } from "react";
 import { Button, Spinner } from "@nextui-org/react";
 import { useTheme } from "next-themes";
 import * as Y from "yjs";
+import { IconButton } from "@mui/material";
+import MinimizeIcon from '@mui/icons-material/Minimize';
+import CloseIcon from '@mui/icons-material/Close';
+import Quill from "quill";
+import { requestResponseForMUP } from "@/Prompting/MUPFunction";
+import colors from "../../highlightColors.js";
+
+
 
 
 interface CardData {
@@ -14,6 +22,12 @@ interface CardData {
   range: { index: number; length: number };
 }
 
+interface Range{
+  index: number;
+  length: number;
+}
+
+
 export default function MUPCard({
   cardData,
   room,
@@ -23,6 +37,9 @@ export default function MUPCard({
   onDiscard,
   yDoc,
   setPrompts,
+  editor,
+  range,
+  selectedModel
 }: Readonly<{
   cardData: CardData;
   room: string;
@@ -32,6 +49,14 @@ export default function MUPCard({
   onDiscard: (id: string) => void;
   yDoc: Y.Doc;
   setPrompts: Function;
+  editor: Quill & {
+    highlightText: (index: number, length: number, color: string) => void;
+    removeHighlight: (index: number, length: number) => void;
+    getSelection: () => { index: number; length: number } | null;
+  } | null;
+  range: Range | undefined;
+  selectedModel: string;
+
 }>) {
   const [loading, setLoading] = useState(false);
   const [inputText, setInputText] = useState('')
@@ -44,33 +69,16 @@ export default function MUPCard({
     onTextChange(cardData.id, newText);
   };
 
+  
+    
   const handleSubmitToAI = async () => {
     try {
       setLoading(true);
       onSubmittingChange(cardData.id, true);
 
-      const requestBody = {
-        completeText: "",
-        highlightedText: cardData.selectedTextOnMUPCard,
-        multiUserPrompt: cardData.promptText,
-      };
+      const response = await requestResponseForMUP(selectedModel, "", cardData.selectedTextOnMUPCard, cardData.promptText);
 
-      const response = await fetch("/api/getOllamaMUPResponse", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      console.log(data);
-
-      onResponseChange(cardData.id, data.response);
+      onResponseChange(cardData.id, response);
     } catch (error) {
       console.error("Error submitting to AI:", error);
       onResponseChange(cardData.id, "Error submitting to AI");
@@ -80,9 +88,15 @@ export default function MUPCard({
     }
   };
 
+  const handleMinimize = () => {
+    editor?.highlightText(cardData.range.index, cardData.range.length, colors.prevMUPSectionLYellow);
+    
+  };
+
   const handleDiscard = () => {
     onDiscard(cardData.id);
   };
+    
 
   const handleSave = () => {
     const savedPrompts = JSON.parse(
@@ -98,18 +112,39 @@ export default function MUPCard({
     setInputText("");
   };
 
+  const handleCommit = () => {
+    if(editor){
+      editor.editor.deleteText(range!.index, range!.length);
+      editor.editor.insertText(range!.index, cardData.responseText);
+      handleDiscard();
+    }
+  }
+
+  
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 w-full box-border">
-      <div className="mb-4 p-4 bg-gray-50 border border-gray-300 rounded-lg box-border">
-        {cardData.selectedTextOnMUPCard}
+    <div className={`${theme === 'dark' ?  'bg-gray-700' : 'bg-white'} p-6  rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 w-full box-border`}>
+      <div className="h-6">
+        <IconButton onClick={handleDiscard} className="float-right" sx={{ color: `${theme === 'dark' ?  '#fff' : 'gray'}`}}>
+          <CloseIcon/>
+        </IconButton>
+        <IconButton onClick={handleMinimize} className="float-right" sx={{ color: `${theme === 'dark' ?  '#fff' : 'gray'}`}}>
+          <MinimizeIcon/>
+        </IconButton>
+        
       </div>
-      <textarea
-        className="w-full p-4 mb-4 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 box-border"
-        value={cardData.promptText}
-        onChange={handleTextChange}
-      />
+       <p>Selected Text: </p>
+       <div className={`${theme === 'dark' ?  'bg-gray-900' : 'bg-gray-50'} mb-4 p-2`}>
+         <p className="text-small font-medium">{cardData.selectedTextOnMUPCard}</p>
+       </div>
+       <p>Prompt:</p>
+       <button className="underline float-right" onClick={handleSave}>Add to favourites</button>
+       <textarea
+         className={`${theme === 'dark' ?  'bg-gray-900' : 'bg-gray-50'} w-full p-4 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 box-border`}
+         value={cardData.promptText}
+         onChange={handleTextChange}
+       />
       <Button
-        className={`inline-flex items-center justify-center w-full px-6 py-3 text-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-md ${
+        className={`mb-4 inline-flex items-center justify-center px-6 py-3 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md ${
           cardData.submitting ? "cursor-not-allowed" : "hover:from-blue-600 hover:to-indigo-600"
         } transition-all duration-300`}
         onClick={handleSubmitToAI}
@@ -124,28 +159,23 @@ export default function MUPCard({
           "Submit to AI"
         )}
       </Button>
-      {cardData.responseText && (
-         <div className="mt-4 p-4 bg-gray-50 border border-gray-300 rounded-lg box -border">
-         {JSON.stringify(cardData.responseText)}
-       </div>
+      
+       {cardData.responseText && (
+        <div>
+          <p>Response:</p>
+          <div className="p-4 bg-gray-50 border border-gray-300 rounded-lg box-border">
+            {cardData.responseText}
+          </div>
+      
+          <div className="mt-4 flex space-x-2">
+            
+            <Button onClick={handleCommit} className="px-7 py-3 text-medium text-white bg-blue-500 shadow-md hover:bg-blue-600 transition-all duration-300">
+              Commit
+            </Button>
+          </div>
+        </div>
       )}
-      <div className="mt-4 flex space-x-2 w-full">
-        <Button 
-          className="flex-grow flex-shrink min-w-0 px-2 py-3 text-lg text-white bg-green-500 rounded-full shadow-md hover:bg-green-600 transition-all duration-300"
-          onClick={handleSave}
-        >
-          Save
-        </Button>
-        <Button 
-          className="flex-grow flex-shrink min-w-0 px-2 py-3 text-lg text-white bg-red-500 rounded-full shadow-md hover:bg-red-600 transition-all duration-300"
-          onClick={handleDiscard}
-        >
-          Discard
-        </Button>
-        <Button className="flex-grow flex-shrink min-w-0 px-2 py-3 text-lg text-white bg-blue-500 rounded-full shadow-md hover:bg-blue-600 transition-all duration-300">
-          Commit
-        </Button>
-      </div>
     </div>
-  );
+   );
 }
+
