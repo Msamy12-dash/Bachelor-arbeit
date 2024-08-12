@@ -1,4 +1,4 @@
-import  DeltaStatic from "quill-delta";
+import {DeltaStatic}  from "quill/index";
 import * as Y from "yjs";
 
 
