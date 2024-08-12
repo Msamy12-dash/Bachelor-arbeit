@@ -9,7 +9,7 @@ import Tooltip from "../ToolTipsComponets/ToolTip";
 import { PARTYKIT_HOST } from "@/pages/env";
 import YPartyKitProvider from "y-partykit/provider";
 import { handleCommentRangeShift } from "../ChatComponent/handleCommentRangeShift";
-import { DeltaStatic } from "quill/index";
+import DeltaStatic from "quill/index";
 
 interface Range {
   index: number;
@@ -33,7 +33,8 @@ export default function Editor({
   setSelectedText,
   setCompleteText,
   selectedRange,
-  setSelectedRange
+  setSelectedRange,
+  setRange
 }: Readonly<{
   currentRoom: string;
   yDoc: Y.Doc;
@@ -45,6 +46,7 @@ export default function Editor({
   setCompleteText: (text: string) => void;
   selectedRange: Range | undefined | null;
   setSelectedRange: (range: Range | undefined | null) => void;
+  setRange: Function;
 }>) {
   const [text, setText] = useState("");
   const [shortenedSelectedText, setShortenedSelectedText] = useState("");
@@ -120,6 +122,9 @@ export default function Editor({
       const selection = quillRef.current!.getEditor().getSelection();
 
       setSelectedRange(selection);
+
+      //For MUP
+      setRange(selection);
 
       // Update selectedText
       const getText = quillRef

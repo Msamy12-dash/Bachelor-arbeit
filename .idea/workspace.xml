@@ -5,9 +5,32 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Prompting/MUPFunction.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prompting/OpenAIPrompting.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prompting/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/EditorComponent/HighlightBlot.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/babel.config.cjs" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/babel.config.cjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/jest.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/jest.config.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/ollamaMCPFunction.js" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/MCPFunction.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/ollamaMCPFunction.test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/ollamaMUPFunction.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/ollamaMUPFunction.test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/ollamaPrompting.js" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/ollamaPrompting.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ChatComponent/CommentHandler.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ChatComponent/CommentHandler.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ChatComponent/CommentList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ChatComponent/CommentList.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/MUPComponents/CardContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MUPComponents/CardContainer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/MUPComponents/MUPCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MUPComponents/MUPCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/MainPageComponent/navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainPageComponent/navbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/layouts/default.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/layouts/default.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/api/getOllamaMCPResponse.ts" beforeDir="false" afterPath="$PROJECT_DIR$/pages/api/getOllamaMCPResponse.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/api/getOllamaMUPResponse.ts" beforeDir="false" afterPath="$PROJECT_DIR$/pages/api/getOllamaMUPResponse.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/pages/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,26 +65,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;shows-logged-in&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/shahr/OneDrive/Desktop&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.grazie&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.2\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "Merging shows-logged-in",
+    "last_opened_file_path": "C:/Users/shahr/OneDrive/Desktop",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.grazie",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.2\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="inlp2024" />
@@ -159,6 +182,7 @@
       <workItem from="1723387872123" duration="22000" />
       <workItem from="1723392303847" duration="612000" />
       <workItem from="1723448032899" duration="11553000" />
+      <workItem from="1723462796412" duration="890000" />
     </task>
     <servers />
   </component>

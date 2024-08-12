@@ -24,8 +24,11 @@ export default function IndexPage({
   const [yProvider, setYProvider] = useState<YPartyKitProvider | null>(null); //hand this down to your component, if you need it
   const [yDoc, setYDoc] = useState<Y.Doc | null>(null); //hand this down to your component, if you need it
   const [selectedModel, setSelectedModel] = useState("OpenAI");
+
   const { onlineUsers, setOnlineUsers } = useOnlineUsers();  // Use the context hook
   
+
+
   const createProvider = useCallback(() => {
     if (!user) return;
     const provider = new YPartyKitProvider(
@@ -72,9 +75,10 @@ export default function IndexPage({
   }
 
   return (
-    <DefaultLayout currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} rooms={rooms} setRooms={setRooms}>
 
-      <EditorPage currentRoom={currentRoom} yDoc={yDoc} yProvider={yProvider} />
+    <DefaultLayout currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} rooms={rooms} setRooms={setRooms} selectedModel={selectedModel} setSelectedModel={setSelectedModel}>
+      <EditorPage currentRoom={currentRoom} yDoc={yDoc} yProvider={yProvider} selectedModel={selectedModel}/>
+
     </DefaultLayout>
   );
 }

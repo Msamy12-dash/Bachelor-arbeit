@@ -5,7 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import Quill from "react-quill";
 import { Spinner, Button, button } from "@nextui-org/react";
-import {requestResponseForMCP, requestChangesSummaryForMCP} from "../../OllamaSinglePromptFunction/ollamaMCPFunction"
+import {requestResponseForMCP, requestChangesSummaryForMCP} from "../../Prompting/MCPFunction"
 
 interface Comment {
   key: number;
@@ -42,6 +42,7 @@ interface CommentListProps {
   setCheckedKeys: Function;
   highlightText: (index:number, length: number, color: string) => void;
   removeHighlight: (index:number, length: number) => void;
+  selectedModel: string;
 }
 
 interface CommentListState {
@@ -132,12 +133,12 @@ class CommentList extends Component<CommentListProps, CommentListState>  {
         }
         index += 1;
       }
-      const response = await requestResponseForMCP(completeText, userComments, userCommentsContext);
+      const response = await requestResponseForMCP(this.props.selectedModel, completeText, userComments, userCommentsContext);
       //const response = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 
       const currentText = completeText;
       // Get summary from AI on what the AI has changed
-      const summary = await requestChangesSummaryForMCP(currentText, response);
+      const summary = await requestChangesSummaryForMCP(this.props.selectedModel, currentText, response);
       // Send to editor
       this.props.setAIChanges({summary: summary, changes: response});
 
