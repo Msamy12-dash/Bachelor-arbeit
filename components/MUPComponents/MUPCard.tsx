@@ -7,6 +7,8 @@ import MinimizeIcon from '@mui/icons-material/Minimize';
 import CloseIcon from '@mui/icons-material/Close';
 import Quill from "quill";
 import { requestResponseForMUP } from "@/Prompting/MUPFunction";
+import colors from "../../highlightColors.js";
+
 
 
 
@@ -86,6 +88,11 @@ export default function MUPCard({
     }
   };
 
+  const handleMinimize = () => {
+    editor?.highlightText(cardData.range.index, cardData.range.length, colors.prevMUPSectionLYellow);
+    
+  };
+
   const handleDiscard = () => {
     onDiscard(cardData.id);
   };
@@ -113,26 +120,26 @@ export default function MUPCard({
     }
   }
 
-
+  
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 w-full box-border">
+    <div className={`${theme === 'dark' ?  'bg-gray-700' : 'bg-white'} p-6  rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 w-full box-border`}>
       <div className="h-6">
-        <IconButton onClick={handleDiscard} className="float-right">
+        <IconButton onClick={handleDiscard} className="float-right" sx={{ color: `${theme === 'dark' ?  '#fff' : 'gray'}`}}>
           <CloseIcon/>
         </IconButton>
-        <IconButton className="float-right">
+        <IconButton onClick={handleMinimize} className="float-right" sx={{ color: `${theme === 'dark' ?  '#fff' : 'gray'}`}}>
           <MinimizeIcon/>
         </IconButton>
         
       </div>
        <p>Selected Text: </p>
-       <div className="mb-4 p-2 bg-gray-50">
+       <div className={`${theme === 'dark' ?  'bg-gray-900' : 'bg-gray-50'} mb-4 p-2`}>
          <p className="text-small font-medium">{cardData.selectedTextOnMUPCard}</p>
        </div>
        <p>Prompt:</p>
        <button className="underline float-right" onClick={handleSave}>Add to favourites</button>
        <textarea
-         className="w-full p-4 mb-4 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 box-border"
+         className={`${theme === 'dark' ?  'bg-gray-900' : 'bg-gray-50'} w-full p-4 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 box-border`}
          value={cardData.promptText}
          onChange={handleTextChange}
        />
