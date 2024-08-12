@@ -6,13 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MainPageComponent/navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainPageComponent/navbar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/UserComponent/OnlineUsers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/UserComponent/OnlineUsers.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/UserComponent/UserAvatar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/UserComponent/UserAvatar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/userUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/userUtils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/party/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/party/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/pages/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +156,7 @@
       <workItem from="1723366587552" duration="3196000" />
       <workItem from="1723387872123" duration="22000" />
       <workItem from="1723392303847" duration="612000" />
-      <workItem from="1723448032899" duration="8345000" />
+      <workItem from="1723448032899" duration="8922000" />
     </task>
     <servers />
   </component>

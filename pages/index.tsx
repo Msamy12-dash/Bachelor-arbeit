@@ -21,8 +21,9 @@ export default function IndexPage({
   setRooms: Function;
 }): JSX.Element {
   const [currentRoom, setCurrentRoom] = useState("default");
-  const [yProvider, setYProvider] = useState<YPartyKitProvider | null>(null);
-  const [yDoc, setYDoc] = useState<Y.Doc | null>(null);
+  const [yProvider, setYProvider] = useState<YPartyKitProvider | null>(null); //hand this down to your component, if you need it
+  const [yDoc, setYDoc] = useState<Y.Doc | null>(null); //hand this down to your component, if you need it
+  const [selectedModel, setSelectedModel] = useState("OpenAI");
   const { onlineUsers, setOnlineUsers } = useOnlineUsers();  // Use the context hook
 
 
