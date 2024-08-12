@@ -10,7 +10,10 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
-import colors from "../../highlightColors.js"
+import colors from "../../highlightColors.js";
+import CommentSummarizer from "../AIsumComponent/CommentSummarizer";
+
+
 
 interface Comment {
   key: number;
@@ -289,39 +292,45 @@ export default function CommentHandler({
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList onChange={handleChange} aria-label="lab API tabs example">
-              <Tab label="Comment" value="1" />
+              <Tab label="Comment" value="0" />
+              <Tab label={<span className="mr-4">Summarize Comments</span>} value="1" />
               <Tab label="Prompt List" value="2" />
             </TabList>
           </Box>
-          <TabPanel value="1">
-          <div className="comments text-center block">
-      <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
-      <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
-        {showComments ? "Hide Comments" : "Show Comments"}
-      </button>
-      {showComments && (
-        <div className="mt-8">
-          <CommentList
-            comments={comments}
-            selectedText={selectedText}
-            selectedRange={selectedRange}
-            incrementUpvote={incrementUpvote}
-            deleteComment={deleteComment}
-            editComment={editComment}
-            addComment={addComment}
-            editor={editor}
-            getRange={getRange}
-            setAIChanges={setAIChanges}
-            setCheckedKeys={setCheckedKeys}
-            //promptList={promptList}
-            highlightText={handleHighlightText}
-            removeHighlight={handleRemoveHighlight}
-            selectedModel={selectedModel}
-        />
-        </div>
-      )}
-    </div>
+          <TabPanel value="0">
+                    <div className="comments text-center block">
+                <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
+                <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
+                  {showComments ? "Hide Comments" : "Show Comments"}
+                </button>
+                {showComments && (
+                  <div className="mt-8">
+                    <CommentList
+                      comments={comments}
+                      selectedText={selectedText}
+                      selectedRange={selectedRange}
+                      incrementUpvote={incrementUpvote}
+                      deleteComment={deleteComment}
+                      editComment={editComment}
+                      addComment={addComment}
+                      editor={editor}
+                      getRange={getRange}
+                      setAIChanges={setAIChanges}
+                      setCheckedKeys={setCheckedKeys}
+                      //promptList={promptList}
+                      highlightText={handleHighlightText}
+                      removeHighlight={handleRemoveHighlight}
+                      selectedModel={selectedModel}
+                  />
+                  </div>
+                )}
+              </div>
           </TabPanel>
+
+          <TabPanel value="1" className="py-2">
+            <CommentSummarizer comments={comments} selectedModel={selectedModel}/>
+          </TabPanel>
+
           <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
             <PromptList promptList={promptList} yDoc={yDoc} />
           </TabPanel>
