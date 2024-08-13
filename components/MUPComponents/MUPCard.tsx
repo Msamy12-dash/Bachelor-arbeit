@@ -76,7 +76,8 @@ export default function MUPCard({
     try {
       setLoading(true);
       onSubmittingChange(cardData.id, true);
-
+      
+      // Request answer from selected AI
       const response = await requestResponseForMUP(selectedModel, "", cardData.selectedTextOnMUPCard, cardData.promptText);
 
       onResponseChange(cardData.id, response);
@@ -106,6 +107,7 @@ export default function MUPCard({
 
   const handleCommit = () => {
     if(editor){
+      // Replace selected text with response from AI
       editor.editor.deleteText(range!.index, range!.length);
       editor.editor.insertText(range!.index, cardData.responseText);
       handleDiscard();
@@ -169,7 +171,7 @@ export default function MUPCard({
        {cardData.responseText && (
         <div>
           <p>Response:</p>
-          <div className="p-4 bg-gray-50 border border-gray-300 rounded-lg box-border">
+          <div className={`${theme === 'dark' ?  'bg-gray-900' : 'bg-gray-50'} p-4 border border-gray-300 rounded-lg box-border`}>
             {cardData.responseText}
           </div>
       

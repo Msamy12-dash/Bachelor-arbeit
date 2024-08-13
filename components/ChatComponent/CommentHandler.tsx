@@ -13,26 +13,11 @@ import YPartyKitProvider from "y-partykit/provider";
 import ListIcon from "@mui/icons-material/List";
 import TocIcon from "@mui/icons-material/Toc";
 import colors from "../../highlightColors.js";
-import CommentSummarizer from "../AIsumComponent/CommentSummarizer";
+import { Role, User } from "@/party/types";
+import { Comment } from "./CommentCard";
 import { Tabs } from "@mui/material";
+import CommentSummarizer from "../AIsumComponent/CommentSummarizer";
 
-
-
-interface Comment {
-  key: number;
-  name: string;
-  content: string;
-  date: string;
-  upvotes: number;
-  isTextSpecific: boolean;
-  shortenedSelectedText: string;
-  index: number;
-  length: number;
-  history: string[];
-  replies: Comment[];
-  parentKey: number | null;
-  canReply: boolean;
-}
 
 interface Range {
   index: number;
@@ -53,6 +38,7 @@ interface CommentHandlerProps {
   selectedRange: Range | null | undefined;
   highlightText: ((index: number, length: number, color: string) => void) | undefined;
   removeHighlight: ((index: number, length: number) => void) | undefined; 
+  user: User | null;
   selectedModel: string;
 }
 
@@ -70,6 +56,7 @@ export default function CommentHandler({
   setDeleteSelectedComments,
   highlightText,
   removeHighlight,
+  user,
   selectedModel
 }: Readonly<CommentHandlerProps>){
   const [comments, setComments] = useState<Comment[]>([]);
@@ -146,7 +133,9 @@ export default function CommentHandler({
       history: [],
       replies: [],
       parentKey: comment.parentKey,
-      canReply: canReply
+      canReply: canReply,
+      user: comment.user,
+      likedBy: comment.likedBy
     };
 
     const yarray = yDoc.getArray<Comment>("comments");
@@ -198,16 +187,25 @@ export default function CommentHandler({
   }, [deleteSelectedComments])
 
 
-  const incrementUpvote = async (IncrementComment: Comment) => {
+  const incrementUpvote = async (IncrementComment: Comment, decrement: boolean) => {
     const yarray = yDoc.getArray<Comment>("comments");
 
     const updateUpvote = (comments: Comment[]): Comment[] => {
       return comments.map(comment => {
         if (comment.key === IncrementComment.key) {
-          return {
-            ...comment,
-            upvotes: comment.upvotes + 1
-          };
+          if(decrement) {
+            return {
+              ...comment,
+              upvotes: comment.upvotes - 1,
+              likedBy: IncrementComment.likedBy
+            };
+          } else {
+            return {
+              ...comment,
+              upvotes: comment.upvotes + 1,
+              likedBy: IncrementComment.likedBy
+            }
+          }
         } else if (comment.replies.length > 0) {
           return {
             ...comment,
@@ -294,7 +292,7 @@ export default function CommentHandler({
       <Box
         sx={{
           flexGrow: 1,
-          maxWidth: { xs: 320, sm: 480 },
+          maxWidth: { xs: 300, sm: 480 },
          
           display: "flex",
           flexDirection: "column",
@@ -337,14 +335,10 @@ export default function CommentHandler({
               value="3"
             />
           </Tabs>
-          <TabPanel value="0">
+          <TabPanel value="0" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}}>
             <div className="comments text-center block">
-              <div className="Comment-font text-xl font-bold">Comments</div>
-              <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-1 px-4 rounded">
-                {showComments ? "Hide Comments" : "Show Comments"}
-              </button>
               {showComments && (
-                <div className="mt-6">
+                <div className="mt-2">
                   <CommentList
                     comments={comments}
                     incrementUpvote={incrementUpvote}
@@ -355,17 +349,18 @@ export default function CommentHandler({
                     getRange={getRange}
                     setAIChanges={setAIChanges}
                     setCheckedKeys={setCheckedKeys}
-                    selectedText={selectedText} // Ensure selectedText and selectedRange are passed
+                    selectedText={selectedText} 
                     selectedRange={selectedRange}
                     highlightText={handleHighlightText}
                     removeHighlight={handleRemoveHighlight}
+                    user={user}
                     selectedModel={selectedModel}
                   />
                 </div>
               )}
             </div>
           </TabPanel>
-          <TabPanel value="1" className="py-2">
+          <TabPanel value="1" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}} >
             <CommentSummarizer comments={comments} selectedModel={selectedModel}/>
           </TabPanel>
           <TabPanel value="3" className="py-2">
@@ -376,4 +371,3 @@ export default function CommentHandler({
     </div>
   );
 }
-

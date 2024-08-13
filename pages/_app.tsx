@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import usePartySocket from "partysocket/react";
 import { PARTYKIT_HOST } from "./env";
 import { Rooms, SINGLETON_ROOM_ID, User } from "@/party/types";
+import { OnlineUsersProvider } from "@/contexts/OnlineUsersContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [user, setUser] = useState<User | null>(null);
@@ -44,7 +45,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <NextUIProvider navigate={router.push}>
       <NextThemesProvider>
+        <OnlineUsersProvider>
       <Component {...pageProps} user={user} setUser={setUser} rooms={rooms} setRooms={setRooms} roomserverPartySocket={roomserverPartySocket} />
+        </OnlineUsersProvider>
       </NextThemesProvider>
     </NextUIProvider>
   );

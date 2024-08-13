@@ -57,6 +57,8 @@ export type UserCore = {
 
 export type User = UserCore & {
   role: Role;
+  color:string
+
 };
 
 export const SINGLETON_ROOM_ID = "index";
