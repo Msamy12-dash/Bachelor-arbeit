@@ -1,8 +1,11 @@
 import type * as Party from "partykit/server";
+
+import { Buffer } from "buffer";
+
 import { onConnect, type YPartyKitOptions } from "y-partykit";
 import * as Y from "yjs";
-import { Buffer } from "buffer";
-import { SINGLETON_ROOM_ID } from "./types";
+import { SINGLETON_ROOM_ID } from "./src/types";
+
 
 export default class EditorServer implements Party.Server {
   constructor(public room: Party.Room) {}
@@ -16,7 +19,7 @@ export default class EditorServer implements Party.Server {
     lobby: Party.Lobby,
     ctx: Party.ExecutionContext
   ) {
-    console.log("onBeforeConnect req url:", req.url);
+    //console.log("onBeforeConnect req url:", req.url);
     //return new Response("Access denied", { status: 403 });
 
 
@@ -46,14 +49,16 @@ export default class EditorServer implements Party.Server {
     const roomId = this.room.id;
     const existingConnections = this.room.getConnections();
     const numberOfExistingConnections: string[] = [];
+
     Array.from(existingConnections).forEach((c: Party.Connection) =>
       numberOfExistingConnections.push(c.id)
     );
     const connectionID = conn.id;
-    console.log(`* onConnect at ${partyName}/${roomId}:
-    Connection ID: ${connectionID},
-    Number of connections: ${numberOfExistingConnections}
------------------------------------------------`);
+
+    //console.log(`* onConnect at ${partyName}/${roomId}:
+    //Connection ID: ${connectionID},
+   // Number of connections: ${numberOfExistingConnections}
+//-----------------------------------------------`);
 
     await this.updateCount();
 
@@ -63,7 +68,7 @@ export default class EditorServer implements Party.Server {
         handler: (doc) => {
           this.handleYDocChange(doc);
         },
-        debounceWait: 5000, //set this back to 10000
+        debounceWait: 50, //set this back to 10000
         debounceMaxWait: 20000,
         timeout: 5000,
       },
@@ -75,16 +80,19 @@ export default class EditorServer implements Party.Server {
     const roomId = this.room.id;
     const existingConnections = this.room.getConnections();
     const numberOfExistingConnections: string[] = [];
+
     Array.from(existingConnections).forEach((c: Party.Connection) =>
       numberOfExistingConnections.push(c.id)
     );
     const connectionID = conn.id;
-    console.log(`* onConnect at ${partyName}/${roomId}:
-    Connection ID: ${connectionID},
-    Number of connections: ${numberOfExistingConnections}
------------------------------------------------`);
+
+ //   console.log(`* onConnect at ${partyName}/${roomId}:
+//    Connection ID: ${connectionID},
+//    Number of connections: ${numberOfExistingConnections}
+//-----------------------------------------------`);
 
     await this.updateCount();
+    
   }
 
   static async isUserIDAlreadyInUse(
@@ -107,9 +115,11 @@ export default class EditorServer implements Party.Server {
 
       const data = await response.json();
       const activeUserIds = new Set(data.activeUserIds);
+
       return activeUserIds.has(connectionID);
     } catch (error) {
-      console.error("Error checking if user ID is already in use:", error);
+      //console.error("Error checking if user ID is already in use:", error);
+
       return false;
     }
   }
@@ -125,15 +135,19 @@ export default class EditorServer implements Party.Server {
       }
 
       const { state } = await response.json();
+
       if (state) {
         const uint8Array = Buffer.from(state, "base64");
         const yDoc = new Y.Doc();
+
         Y.applyUpdate(yDoc, uint8Array);
+
         return yDoc;
       }
     } catch (error) {
-      console.error("Error loading from DB:", error);
+      //console.error("Error loading from DB:", error);
     }
+
     return new Y.Doc();
   }
 
@@ -141,8 +155,9 @@ export default class EditorServer implements Party.Server {
     const update = Y.encodeStateAsUpdate(doc);
     const base64State = Buffer.from(update).toString("base64");
 
-    try {
-      const response = await fetch("http://localhost:3000/api/setYDocForRoom", {
+    try {     console.log("saving the stupid ydoc every fucking time  ")
+
+            const response = await fetch("http://localhost:3000/api/setYDocForRoom", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ state: base64State, room: this.room.id }),
@@ -150,18 +165,20 @@ export default class EditorServer implements Party.Server {
 
       if (!response.ok) {
         const errorText = await response.text();
+
         throw new Error(
           `Failed to save state. Status: ${response.status}, Response: ${errorText}`
         );
       }
     } catch (error) {
-      console.error("Error saving state:", error);
+      //console.error("Error saving state:", error);
       throw error;
     }
   }
 
   async updateCount() {
     const count = [...this.room.getConnections()].length;
+
     try {
       const response = await this.room.context.parties.roomserver
         .get(SINGLETON_ROOM_ID)
@@ -170,11 +187,12 @@ export default class EditorServer implements Party.Server {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ room: this.room.id, count: count }),
         });
+
       if (!response.ok) {
         throw new Error(`Failed to update count. Status: ${response.status}`);
       }
     } catch (error) {
-      console.error("Error updating count:", error);
+      //console.error("Error updating count:", error);
     }
   }
 }

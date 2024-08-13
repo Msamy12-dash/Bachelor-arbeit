@@ -7,7 +7,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         try {
             const user: User = req.body;
             const time = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }); 
-            console.log('Saving user to database.', time);
+            //console.log('Saving user to database.', time);
             
             const client = await clientPromise;
             const db = client.db('partykit');
@@ -16,7 +16,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             const result = await usersCollection.insertOne(user);
 
             const newTime = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' });
-            console.log('User saved successfully:', result.insertedId, newTime);
+            //console.log('User saved successfully:', result.insertedId, newTime);
             
             res.status(200).json({ success: true, userId: result.insertedId });
         } catch (error) {

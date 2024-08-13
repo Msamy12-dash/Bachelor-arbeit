@@ -12,10 +12,10 @@ import UserAvatar from "@/components/UserComponent/UserAvatar";
 import { useOnlineUsers } from "@/contexts/OnlineUsersContext";
 
 export default function IndexPage({
-                                    user,
-                                    rooms,
-                                    setRooms,
-                                  }: {
+  user,
+  rooms,
+  setRooms,
+}: {
   user: User;
   rooms: Rooms;
   setRooms: Function;
@@ -26,7 +26,7 @@ export default function IndexPage({
   const [selectedModel, setSelectedModel] = useState("OpenAI");
 
   const { onlineUsers, setOnlineUsers } = useOnlineUsers();  // Use the context hook
-  
+
 
 
   const createProvider = useCallback(() => {
@@ -57,6 +57,7 @@ export default function IndexPage({
 
     setYProvider(provider);
     setYDoc(provider.doc);
+
     return provider;
   }, [currentRoom, user]);
 

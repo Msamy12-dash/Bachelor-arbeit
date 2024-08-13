@@ -9,7 +9,12 @@ import Tooltip from "../ToolTipsComponets/ToolTip";
 import { PARTYKIT_HOST } from "@/pages/env";
 import YPartyKitProvider from "y-partykit/provider";
 import { handleCommentRangeShift } from "../ChatComponent/handleCommentRangeShift";
-import DeltaStatic from "quill/index";
+import { handleRORelSelectionChange,
+  restoreSelectionToCurrentRange,
+  saveRelRange
+} from "../VoteComponent/TextBlocking";
+import {DeltaStatic} from "quill/index";
+
 
 interface Range {
   index: number;
@@ -56,6 +61,12 @@ export default function Editor({
     y: 0,
     maxWidth: 0,
   });
+  const [, setVoteRange] = useState<Range | null>();
+  const [showButton, setShowButton] = useState(false);
+
+
+  const [buttonPosition, setButtonPosition] = useState<Position>();
+
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const quillRef = useRef<ReactQuill>(null);
@@ -103,6 +114,8 @@ export default function Editor({
   }, [userColor, yProvider]);
 
   function handleSelectionChange(range: Range) {
+    handleRORelSelectionChange(quillRef, range, yProvider.doc, yProvider.doc.getText("quill"));
+
     // ADDED CODE: Handle typing status reset
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
@@ -121,32 +134,31 @@ export default function Editor({
       // Get range the user selected and store it in state
       const selection = quillRef.current!.getEditor().getSelection();
 
-      setSelectedRange(selection);
+      if (selection) {
+        setSelectedRange(selection);
 
-      //For MUP
-      setRange(selection);
+        //For MUP
+        setRange(selection);
 
+      }
       // Update selectedText
       const getText = quillRef
         .current!.getEditor()
         .getText(range.index, range.length);
       setSelectedText(getText);
-
-      // Get positions of Editor itself and selected range (in pixels)
-      const bounds = quillRef.current!.getEditor().getBounds(selection!.index);
-
-    } else {
-      setSelectedText("");
     }
   }
 
   useEffect(() => {
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
-      const maxWidth = editor.container.offsetWidth; // Get the width of the editor
+      const maxWidth = editor.root.offsetWidth; // Get the width of the editor
 
-      editor.on("selection-change", (range) => {
-        if (range && range.length > 0) {
+      const handleContextMenu = (event: MouseEvent) => {
+        event.preventDefault();
+        const range = editor.getSelection();
+
+        if (range) {
           const text = editor.getText(range.index, range.length);
 
           setSelectedText(text);
@@ -154,19 +166,41 @@ export default function Editor({
           const bounds = editor.getBounds(range.index, range.length);
 
           if (bounds) {
+            let tooltipX = bounds.left;
+            let tooltipY = bounds.top + 120;
+
+            const screenPadding = 10;
+            const tooltipWidth = 300;
+
+            if (tooltipX + tooltipWidth > window.innerWidth - screenPadding) {
+              tooltipX = window.innerWidth - tooltipWidth - screenPadding;
+            }
+
+            if (tooltipX < screenPadding) {
+              tooltipX = screenPadding;
+            }
+
             setTooltipPosition({
-              x: bounds.left,
-              y: bounds.top + 120,
-              maxWidth: maxWidth, // Adjusted for better vertical positioning
+              x: tooltipX,
+              y: tooltipY,
+              maxWidth: maxWidth,
             });
+            setShowTooltip(true);
+            saveRelRange(quillRef, yProvider.doc, yProvider,range);
+
           } else {
-            // Handle the case when bounds is null
+            // setShowTooltip(false);
           }
-          setShowTooltip(true);
         } else {
-          setShowTooltip(false);
+          // setShowTooltip(false);
         }
-      });
+      };
+
+      editor.root.addEventListener("contextmenu", handleContextMenu);
+
+      return () => {
+        editor.root.removeEventListener("contextmenu", handleContextMenu);
+      };
     }
   }, []);
 
@@ -187,7 +221,16 @@ export default function Editor({
       handleCommentRangeShift(delta, quillRef, yDoc);
     }
     setText(content);
+  };
+
+  const saveRange = ():void=>{
+    saveRelRange(quillRef, yProvider.doc, yProvider);
   }
+
+  const handleHideTooltip = () => {
+    setShowTooltip(false);
+  };
+
 
   return (
     <div>
@@ -203,10 +246,16 @@ export default function Editor({
         onChange={onChange}
       />
       <Tooltip
+        doc={yProvider.doc}
+        onsaveRelRange={saveRange}
         position={tooltipPosition}
+        provider={yProvider}
+        quill={quillRef}
         show={showTooltip}
         text={selectedText}
+        onCancel={handleHideTooltip}
       />
+
     </div>
   );
 }

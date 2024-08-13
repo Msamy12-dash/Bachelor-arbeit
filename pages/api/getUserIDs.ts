@@ -6,7 +6,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'GET') {
         try {
             const time = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }); 
-            console.log('Retrieving user IDs from database.', time);
+            //console.log('Retrieving user IDs from database.', time);
             
             const client = await clientPromise;
             const db = client.db('partykit');
@@ -21,7 +21,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             }));
 
             const newTime = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' });
-            console.log('User IDs retrieved successfully:', users.length, "users found.", newTime);
+            //console.log('User IDs retrieved successfully:', users.length, "users found.", newTime);
             
             res.status(200).json({ users });
         } catch (error) {

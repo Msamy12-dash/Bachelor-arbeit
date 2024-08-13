@@ -123,8 +123,8 @@ export default function MUPCard({
            </p>
    
            <div className="flex  items-center">
-             <IconButton className="float-right">
-               <MinimizeIcon />
+             <IconButton onClick={handleMinimize} className="float-right">
+               <MinimizeIcon/>
              </IconButton>
              <IconButton onClick={handleDiscard} className="float-right">
                <CloseIcon />
@@ -138,18 +138,13 @@ export default function MUPCard({
        <div className="flex">
           
          <textarea
-           className="w-full p-4 mb-4 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 box-border"
+           className={`${theme === 'dark' ?  'bg-gray-900' : 'bg-gray-50'} w-full p-4 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 box-border`}
            value={cardData.promptText}
            onChange={handleTextChange}
          />
           
           
-         <button
-             className="  h-fit ml-2  inline-flex items-center justify-center  text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md rounded-lg"
-             onClick={handleSave}
-           >
-              <StarIcon className=" text-yellow-300" />
-           </button>
+             <StarIcon onClick={handleSave} className="h-fit ml-2  inline-flex items-center justify-center  rounded-lg text-yellow-400" />
            </div>
       <Button
         className={`mb-4 inline-flex items-center justify-center px-6 py-3 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md ${

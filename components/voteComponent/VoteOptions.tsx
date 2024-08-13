@@ -1,82 +1,52 @@
-/* eslint-disable prettier/prettier */
-"use client";
+import React from "react";
 
-import { Poll } from "@/party/types";
-
-
-export default function PollOptions({
-  options,
-  votes,
-  vote,
-  setVote,
-}: {
+interface VoteOptionsProps {
   options: string[];
   votes: number[];
   vote: number | null;
   setVote: (option: number) => void;
-}) {
-  const totalVotes = votes.reduce((a, b) => a + b, 0);
-  const mostVotes = Math.max(...votes);
+}
+
+const VoteOptions: React.FC<VoteOptionsProps> = ({ options = [], votes = [], vote, setVote }) => {
+  const totalVotes = votes.length > 0 ? votes.reduce((a, b) => a + b, 0) : 0;
+  const mostVotes = votes.length > 0 ? Math.max(...votes) : 0;
 
   return (
     <ul className="flex flex-col space-y-4">
-      {options.map((option, i) => (
-        <li key={`${option}-${i}`}>
-          <div className="relative w-full min-h-[40px] border rounded-md  border-black flex">
+      {options.map((option, index) => (
+        <li key={index}>
+          <div className="relative w-full min-h-[40px] border rounded-md border-black flex">
             <div
               className={`absolute top-0 left-0 bottom-0 w-full rounded-md transition-all duration-500 z-10 ${
-                votes[i] === mostVotes
+                votes[index] === mostVotes
                   ? "vote-bg-winning"
-                  : vote === i
-                    ? "vote-bg-own"
-                    : "vote-bg"
+                  : vote === index
+                  ? "vote-bg-own"
+                  : "vote-bg"
               }`}
               style={{
-                width:
-                  vote === null
-                    ? 0
-                    : `${((votes[i] ?? 0) / totalVotes) * 100}%`,
+                width: `${totalVotes > 0 ? ((votes[index] ?? 0) / totalVotes) * 100 : 0}%`
               }}
             />
-
             <div className="select-none w-full flex items-center justify-between px-4 z-20">
               <button
                 className={`flex flex-1 text-left py-2 ${
                   vote === null ? "cursor-pointer" : "cursor-default"
-                } ${vote !== null && votes[i] === mostVotes ? "font-bold" : ""}`}
-                onClick={() => setVote(i)}
+                } ${
+                  vote === null ? "" : votes[index] === mostVotes ? "font-bold" : ""
+                }`}
+                disabled={vote !== null}
+                onClick={() => setVote(index)}
               >
-                <span>
-                  {vote === i && <span className="relative"> </span>}
-                  {option}
-                </span>
+                {option}
               </button>
-
-              {vote === null ? null : <span>{votes[i] ?? 0}</span>}
+              {vote !== null ? <span>{votes[index] ?? 0}</span> : null}
             </div>
           </div>
         </li>
       ))}
     </ul>
   );
-}
+};
 
-export async function getcreatevote(examplePoll: Poll) {
-  await fetch(`/parties/vote/1`, {
-    method: "GET",
-    body: JSON.stringify(examplePoll),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-}
-
-export async function createvote(examplePoll: Poll) {
-  await fetch(`/parties/vote/1`, {
-    method: "POST",
-    body: JSON.stringify(examplePoll),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-}
+export default VoteOptions;

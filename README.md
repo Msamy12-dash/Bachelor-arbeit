@@ -36,6 +36,8 @@ npm install --legacy-peer-deps
 ```bash
 npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 ```
+### server configuration
+
 
 ## server configuration
 

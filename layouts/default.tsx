@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { Rooms } from "@/party/src/types";
 import { Head } from "./head";
 
 import { Navbar } from "@/components/MainPageComponent/navbar";
-import { Rooms } from "@/party/types";
 
 export default function DefaultLayout({
   children,

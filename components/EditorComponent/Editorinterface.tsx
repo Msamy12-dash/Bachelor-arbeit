@@ -4,6 +4,7 @@ import Quill from "react-quill";
 import CommentHandler from "../ChatComponent/CommentHandler";
 import { Card, Button } from "@nextui-org/react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { Resizable } from "react-resizable";
 import { ResizableBox  } from "react-resizable";
 import "react-resizable/css/styles.css";
 import CardContainer from "../MUPComponents/CardContainer";
@@ -25,19 +26,11 @@ interface MCP_AI_responses {
   summary: string;
   changes: string;
 }
-const usedColors = new Set<string>();
-function getUniqueColor() {
-  const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink", "brown", "cyan", "magenta", "lime", "indigo", "teal"];
 
-  let color = colors[Math.floor(Math.random() * colors.length)];
+function getRandomColor() {
+  const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
 
-  // Ensure the color is unique
-  while (usedColors.has(color)) {
-    color = colors[Math.floor(Math.random() * colors.length)];
-  }
-  console.log(`Assigning color: ${color}`); // Debug logging
-  usedColors.add(color);
-  return color;
+  return colors[Math.floor(Math.random() * colors.length)];
 }
 
 export default function EditorPage({
@@ -54,13 +47,14 @@ export default function EditorPage({
   user: User | null;
 }) {
   const [prompts, setPrompts] = useState<string[]>([]);
-  const userColor = useMemo(() => getUniqueColor(), []);
+  const userColor = useMemo(() => getRandomColor(), []);
   const Editor = useMemo(() => {
     return dynamic(() => import("@/components/EditorComponent/Editor"), {
       loading: () => <p>Loading...</p>,
       ssr: false,
     });
   }, []);
+  const [, setIsModalOpen] = useState(false);
 
   const [editor, setEditor] = useState<
     | (Quill & {
@@ -294,6 +288,5 @@ export default function EditorPage({
         )}
       </div>
     </>
-
   );
 }

@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Try to find the document that stores the key state
       const keyDoc = await db.collection('keyState').findOne({});
 
-      console.log('Retrieved key document:', keyDoc);
+      //console.log('Retrieved key document:', keyDoc);
       
       // If the document exists, extract the key, otherwise default to 0
       const currentKey = keyDoc ? keyDoc.currentKey : 0;

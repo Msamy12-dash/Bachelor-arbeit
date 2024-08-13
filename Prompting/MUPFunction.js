@@ -26,7 +26,7 @@ function buildPromptForMUP(completeText, highlightedText, multiUserPrompt) {
   ${formattedUserFeedback}`;
 
   //for testing pruposes
-  console.log(prompt); 
+  //console.log(prompt); 
   return prompt;
 }
 
