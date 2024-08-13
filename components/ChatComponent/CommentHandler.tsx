@@ -10,7 +10,9 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
-import colors from "../../highlightColors.js"
+import ListIcon from "@mui/icons-material/List";
+import TocIcon from "@mui/icons-material/Toc";
+import colors from "../../highlightColors.js";
 import { Role, User } from "@/party/types";
 import { Comment } from "./CommentCard";
 import { Tabs } from "@mui/material";
@@ -306,9 +308,32 @@ export default function CommentHandler({
             allowScrollButtonsMobile
             aria-label="visible arrows tabs example"
           >
-            <Tab label={<span className="mr-4">Comments</span>} value="0" />
-            <Tab label={<span className="mr-4">Summarize Comments</span>} value="1" />
-            <Tab label={<span className="mr-4">Prompt List</span>} value="2" />
+            <Tab
+              label={
+                <div className="flex justify-center items-center ">
+                  <TocIcon className="mr-2" /> Comments
+                </div>
+              }
+              value="0"
+            />
+            <Tab 
+            
+            label={
+              <div className="flex justify-center items-center ">
+                <ListIcon className="mr-2" /> Summarize Comments
+              </div>
+            }
+            
+            value="1" />
+
+            <Tab
+              label={
+                <div className="flex justify-center items-center ">
+                  <ListIcon className="mr-2" /> Prompt List
+                </div>
+              }
+              value="3"
+            />
           </Tabs>
           <TabPanel value="0" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}}>
             <div className="comments text-center block">
@@ -338,8 +363,8 @@ export default function CommentHandler({
           <TabPanel value="1" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}} >
             <CommentSummarizer comments={comments} selectedModel={selectedModel}/>
           </TabPanel>
-          <TabPanel value="2" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}}>
-            <PromptList promptList={promptList} yDoc={yDoc} />
+          <TabPanel value="3" className="py-2">
+            <PromptList promptList={promptList} yProvider={yProvider} />
           </TabPanel>
         </TabContext>
       </Box>

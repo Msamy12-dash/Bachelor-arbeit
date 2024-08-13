@@ -72,25 +72,35 @@ export const Navbar = ({
         </div>
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full justify-center">
+      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="center">
+        <NavbarItem>
+          <RoomDropdown currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} rooms={rooms} setRooms={setRooms} />
+        </NavbarItem>
         <NavbarItem className="flex items-center justify-center">
           <UserAvatar userCount={userCount} />
         </NavbarItem>
       </NavbarContent>
 
-      <Dropdown>
-        <DropdownTrigger>
-          <Button className="w-32 m-4" color="primary" variant="bordered">
+     {/* Choose Model Section */}
+     <p className="text-small text-blue-500 font-semibold w-full text-end">Choose AI Model: </p>
+      <Dropdown className="p-5">
+        <DropdownTrigger >
+          <Button color="primary" variant="bordered" className="w-32">
+            <span className=" ml-2 ">
             {selectedModel}
+
+            <ArrowDropDown/>
+
+            </span>
           </Button>
         </DropdownTrigger>
-
+        
         <DropdownMenu
-          disallowEmptySelection
           aria-label="Single selection actions"
-          color="secondary"
-          selectedKeys={selectedModel}
+          // color="secondary"
+          disallowEmptySelection
           selectionMode="single"
+          selectedKeys={selectedModel}
           onSelectionChange={handleSelect}
         >
           <DropdownItem key="OpenAI">OpenAI</DropdownItem>
@@ -100,10 +110,10 @@ export const Navbar = ({
       </Dropdown>
 
       <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full justify-end items-center"
+        className="hidden sm:flex basis-1/5 sm:basis-full"
+        justify="end"
       >
-        <NavbarItem className="flex items-center gap-2">
-          <NotificationComponent />
+        <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
           <Lobby  currentRoom={currentRoom} rooms={rooms} setCurrentRoom={setCurrentRoom} setRooms={setRooms} />
         </NavbarItem>

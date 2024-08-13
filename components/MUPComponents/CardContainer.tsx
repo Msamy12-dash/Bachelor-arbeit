@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import MUPCard from "./MUPCard";
 import { Button } from "@nextui-org/react";
 import Quill from "react-quill";
+import colors from "../../highlightColors.js";
+import { PARTYKIT_HOST } from "@/pages/env";
 import YPartyKitProvider from "y-partykit/provider";
 import * as Y from "yjs";
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { IconButton } from "@mui/material";
 import { useTheme } from 'next-themes';
-
-import colors from "../../highlightColors.js";
-
-import MUPCard from "./MUPCard";
 
 interface CardData {
   id: string;
@@ -105,10 +104,8 @@ export default function CardContainer({
   const handleCardTextChange = (id: string, newText: string) => {
     const yarray = yProvider.doc.getArray<CardData>("cards");
     const index = yarray.toArray().findIndex((card) => card.id === id);
-
     if (index !== -1) {
       const updatedCard = { ...yarray.get(index), promptText: newText };
-
       yarray.delete(index, 1);
       yarray.insert(index, [updatedCard]);
     }
@@ -117,10 +114,8 @@ export default function CardContainer({
   const handleResponseChange = (id: string, newResponse: string) => {
     const yarray = yProvider.doc.getArray<CardData>("cards");
     const index = yarray.toArray().findIndex((card) => card.id === id);
-
     if (index !== -1) {
       const updatedCard = { ...yarray.get(index), responseText: newResponse };
-
       yarray.delete(index, 1);
       yarray.insert(index, [updatedCard]);
     }
@@ -129,10 +124,8 @@ export default function CardContainer({
   const handleSubmittingChange = (id: string, isSubmitting: boolean) => {
     const yarray = yProvider.doc.getArray<CardData>("cards");
     const index = yarray.toArray().findIndex((card) => card.id === id);
-
     if (index !== -1) {
       const updatedCard = { ...yarray.get(index), submitting: isSubmitting };
-
       yarray.delete(index, 1);
       yarray.insert(index, [updatedCard]);
     }
@@ -141,10 +134,8 @@ export default function CardContainer({
   const handleDiscardCard = (id: string) => {
     const yarray = yProvider.doc.getArray<CardData>("cards");
     const index = yarray.toArray().findIndex((card) => card.id === id);
-
     if (index !== -1) {
       const card = yarray.get(index);
-
       editor?.removeHighlight(card.range.index, card.range.length);
       yarray.delete(index, 1);
     }
@@ -161,13 +152,13 @@ export default function CardContainer({
                   ? "hover:blue-600 "
                   : "opacity-60 cursor-not-allowed"
               } transition-all duration-300`}
+              onClick={handleAddCard}
               disabled={!selectedText}
               style={{
                 minWidth: "60px",
                 maxWidth: "100%",
                 wordWrap: "break-word",
               }}
-              onClick={handleAddCard}
             >
               <IconButton> <AutoAwesomeIcon sx={{ color: "#fff" }}/></IconButton>
               Ask AI
@@ -181,21 +172,24 @@ export default function CardContainer({
                 <MUPCard
                   key={card.id}
                   cardData={card}
-                  editor={editor}
-                  range={range}
                   room={currentRoom}
-                  selectedModel={selectedModel}
-                  setPrompts={setPrompts}
-                  yDoc={yDoc}
-                  onDiscard={handleDiscardCard}
+                  onTextChange={handleCardTextChange}
                   onResponseChange={handleResponseChange}
                   onSubmittingChange={handleSubmittingChange}
-                  onTextChange={handleCardTextChange}
+                  onDiscard={handleDiscardCard}
+                  yProvider={yProvider}
+                  setPrompts={setPrompts}
+                  editor={editor}
+                  range={range}
+                  selectedModel={selectedModel}
 
                 />
-              ))}
-            </div>
-          </div>
+            ))}
+
+              </div>
+
         </div>
+      </div>
+    // </div>
   );
 }
