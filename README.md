@@ -14,7 +14,7 @@
 
 ## Component Tree
 
-![Component Tree](public\Component Architecture.png)
+![Component Tree](public\Component-Architecture.png)
 
 ## How to Use
 
