@@ -160,7 +160,13 @@ export const parseReactionMessage = (message: string) => {
   }
   export async function deletevote(type: "delete",poll: Poll) {
     try {
-      poll.makeChange = poll.votes[1] > poll.votes[0];  
+      poll.makeChange = poll.votes[1] > poll.votes[0];
+      if(!poll.makeChange){
+        poll.isTied = poll.votes[1] == poll.votes[0];
+      } else {
+        poll.isTied = false;
+      }
+
       console.log("make change "+poll.makeChange )
       // get handle to a shared room instance of the "connections" party
      console.log("deleting this pool"+poll.votes)

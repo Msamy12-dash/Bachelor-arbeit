@@ -4,12 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="Tooltip bug-fix and Range shift bug-fix">
+    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="Fixed vote end unlock bug and added initial openAI api calls">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/ToolTipsComponets/AIInteractionComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ToolTipsComponets/AIInteractionComponent.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/VoteComponent/AIVotingFunctions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VoteComponent/AIVotingFunctions.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/VoteComponent/TextBlocking.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VoteComponent/TextBlocking.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/party/src/VoteFunction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/party/src/VoteFunction.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/party/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/party/src/types.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +31,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="29-text-blocking-and-vote-ui" />
+        <entry key="$PROJECT_DIR$" value="Connected_users_to_comments" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -57,29 +59,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;Notification.DisplayName-DoNotAsk-JavaScript: Code Vision Performance&quot;: &quot;JavaScript: code vision performance watcher&quot;,
-    &quot;Notification.DoNotAsk-JavaScript: Code Vision Performance&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;comments-in-database&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Projectinlp/inlp2024&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.1.2\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Notification.DisplayName-DoNotAsk-JavaScript: Code Vision Performance": "JavaScript: code vision performance watcher",
+    "Notification.DoNotAsk-JavaScript: Code Vision Performance": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "comments-in-database",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Projectinlp/inlp2024",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "C:\\Bachelor_Projekt_INLP\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
@@ -93,6 +95,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.dev" />
         <item itemvalue="npm.dev" />
         <item itemvalue="npm.dev" />
         <item itemvalue="npm.dev" />
@@ -151,6 +154,7 @@
       <workItem from="1721921966704" duration="1768000" />
       <workItem from="1722334107834" duration="1115000" />
       <workItem from="1722971213584" duration="19429000" />
+      <workItem from="1723539540485" duration="9681000" />
     </task>
     <task id="LOCAL-00001" summary=" Improve vote UI + Fixing text blocking bugs">
       <option name="closed" value="true" />
@@ -168,7 +172,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722334202471</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Fixed vote end unlock bug and added initial openAI api calls">
+      <option name="closed" value="true" />
+      <created>1723538085682</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1723538085682</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -189,6 +201,7 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value=" Improve vote UI + Fixing text blocking bugs" />
     <MESSAGE value="Tooltip bug-fix and Range shift bug-fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="Tooltip bug-fix and Range shift bug-fix" />
+    <MESSAGE value="Fixed vote end unlock bug and added initial openAI api calls" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed vote end unlock bug and added initial openAI api calls" />
   </component>
 </project>

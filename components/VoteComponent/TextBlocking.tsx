@@ -2,6 +2,7 @@ import { DeltaStatic, RangeStatic } from "quill/index";
 import ReactQuill from "react-quill";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
+import { generatePollTitle } from "@/components/VoteComponent/AIVotingFunctions";
 
 interface ReadOnlyContext {
   quill: any;
@@ -12,17 +13,12 @@ interface Range {
   index: number;
   length: number;
 }
-interface VoteRange {
-  id: number;
-  index: number;
-  length: number;
-  text: string;
-}
-interface RelRange{
+export interface RelRange{
   start: Y.RelativePosition;
   end: Y.RelativePosition;
   oldText: string;
   newText?: string;
+  pollTitle?:string;
 }
 
 const localVoteRangesDoc = new Y.Doc();
@@ -88,6 +84,21 @@ export const getRelRangeFromDoc = (doc: Y.Doc, id: string): { start: number, end
 
   return null;
 };
+
+export const getRelRangeTextsFromDoc = (doc: Y.Doc, id: string): { oldText: string, newText?: string } | null => {
+  const yMap = doc.getMap<RelRange>("relRanges");
+  const relRange = yMap.get(id);
+
+  if (relRange) {
+    return {
+      oldText: relRange.oldText,
+      newText: relRange.newText
+    };
+  }
+
+  return null;
+};
+
 
 
 export const deleteRelRange = (doc: Y.Doc, id: string, quill: React.RefObject<ReactQuill>) => {
@@ -233,14 +244,14 @@ const forceSpacesAroundRelRange = (
 };
 
 
-export const saveNewTextForCurrentRange = (
+export const saveNewTextForCurrentRange = async (
   doc: Y.Doc,
   provider: YPartyKitProvider,
   newText: string
 ) => {
   const currentId = getCurrentId(doc, provider);
 
-  if (currentId !== null) {
+  if (currentId && currentId !== null) {
     const yMap = doc.getMap<RelRange>("relRanges");
 
     const relRange = yMap.get(currentId.toString());
@@ -248,14 +259,18 @@ export const saveNewTextForCurrentRange = (
     if (relRange) {
       relRange.newText = newText;
 
+      const pollTitle = await generatePollTitle(relRange.oldText, newText);
+      relRange.pollTitle = pollTitle || "Untitled Poll";
+
       yMap.set(currentId.toString(), relRange);
     } else {
-      console.error(`RelRange with ID ${currentId} not found.`);
+      console.log(`RelRange with ID ${currentId} not found.`);
     }
   } else {
-    console.error("No current ID found for the user.");
+    console.log("No current ID found for the user.");
   }
 };
+
 
 export const unlockRange = (
   doc: Y.Doc,
@@ -289,7 +304,7 @@ export const unlockRange = (
       deleteRelRange(doc,rangeId,quill)
     }
   } else {
-    console.error(`RelRange with ID ${rangeId} not found.`);
+    console.log(`RelRange with ID ${rangeId} not found.`);
   }
 
 };
@@ -340,6 +355,17 @@ export const restoreSelectionToCurrentRange = (
   } else {
     console.error("No current ID found for the user.");
   }
+};
+
+export const getPollTitle = (doc: Y.Doc, id: string): string | null => {
+  const yMap = doc.getMap<RelRange>("relRanges");
+  const relRange = yMap.get(id);
+
+  if (relRange && relRange.pollTitle) {
+    return relRange.pollTitle;
+  }
+
+  return null;
 };
 
 

@@ -9,13 +9,14 @@ import usePartySocket from "partysocket/react";
 import {
   getCurrentId, deleteCurrentRelRange, saveNewTextForCurrentRange,
   unlockRange,
-  clearAllRelRanges
+  clearAllRelRanges, getPollTitle
 } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 
 import CustomMenu from "./AIInteractionComponent";
 
 import { PARTYKIT_HOST } from "@/pages/env";
+import { generateOpenAIShortCommand,tieBreakerAI } from "../VoteComponent/AIVotingFunctions";
 
 function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
   return usePartySocket({
@@ -54,7 +55,13 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
       console.log(JSON.stringify(data))
       
 if(data.update=="delete vote"){
-  unlockRange(doc,data.block_id,true,quill)}
+  console.log("Received data:", JSON.stringify(data, null, 2));
+  if (data.isTied){
+    console.log("its a tie")
+    const makeChange = tieBreakerAI(doc, data.block_Id);
+    unlockRange(doc,data.block_id,makeChange,quill);
+  }
+  unlockRange(doc,data.block_id,data.makechanges,quill)}
     } catch (error) {
       console.error("Failed to parse message:", error);
       //console.log("Received message:", event.data);
@@ -113,8 +120,8 @@ const User ={
   };
 
   const handleCancelClick = () => {
-    //clearAllRelRanges(doc,quill);
-    deleteCurrentRelRange( doc, provider,quill);
+    clearAllRelRanges(doc,quill);
+    //deleteCurrentRelRange( doc, provider,quill);
     setInputDisabled(true);
     setSuggestButtonDisabled(true);
     onCancel();
@@ -129,12 +136,13 @@ const User ={
     saveNewTextForCurrentRange(doc, provider, modifiedText);
 
     const rangeId = getCurrentId(doc,provider);
+    const pollTitle = getPollTitle(doc,rangeId);
 
     console.log("blocked id = "+rangeId)
     const examplePoll = {
       makeChage:false,
       Room_id :randomId,
-      title:"a",
+      title:pollTitle || "unnamed poll",
       id: "Vote on the Text",
       options: pollOptions,
       votes: [0, 0],
@@ -156,8 +164,9 @@ const User ={
     setInputText(event.target.value);
   };
 
-  const handleInsertTrialText = () => {
-    setInputText("The origins of football in England can be traced back to as early as the eighth century.");
+  const handleGenerateText = async (type: 'clarity' | 'tone' | 'rephrase' | 'complexity-up' | 'complexity-down') => {
+    const aiGeneratedText = await generateOpenAIShortCommand(text, type);
+    setInputText(aiGeneratedText);
   };
 
   const handleClearText = () => {
@@ -211,7 +220,7 @@ const User ={
               />
           </div>
           <div className="flex flex-wrap gap-4 items-center">
-            <CustomMenu disabled={suggestButtonDisabled} onInsertTrialText={handleInsertTrialText} onSaveRange={onsaveRelRange} />
+            <CustomMenu disabled={suggestButtonDisabled} onGenerateText={handleGenerateText} />
             <Button
               className={!inputDisabled ? "bg-gray-300" : ""}
               color="primary"

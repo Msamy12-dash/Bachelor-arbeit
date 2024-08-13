@@ -1,6 +1,8 @@
-// AIVotingFunctions.tsx
-
 import { getOpenAIResponse } from '../../Prompting/OpenAIPrompting';
+import * as Y from "yjs";
+
+import {RelRange} from "../VoteComponent/TextBlocking";
+
 
 export const generateOpenAIShortCommand = async (
   text: string,
@@ -34,24 +36,54 @@ export const generateOpenAIShortCommand = async (
 };
 
 
-export const tieBreakerAI = async (oldText: string, newText: string): Promise<boolean> => {
+export const tieBreakerAI = (doc: Y.Doc, id: string): boolean => {
+  const yMap = doc.getMap<RelRange>("relRanges");
+  const relRange = yMap.get(id);
+
+  if (!relRange || !relRange.oldText || !relRange.newText) {
+    console.error("RelRange or texts not found for the given ID.");
+    return false;
+  }
+
+  const { oldText, newText } = relRange;
+
   const prompt = `
     Consider the following two versions of text. Based on clarity, tone, and overall quality, which version is better?
     
     Version 1: "${oldText}"
     Version 2: "${newText}"
     
-    Respond with "Version 1" if the first version is better, or "Version 2" if the second version is better.
+    Respond with "version 1" if the first version is better, or "version 2" if the second version is better.
   `;
 
-  const aiResponse = await getOpenAIResponse(prompt);
+  const aiResponse = getOpenAIResponse(prompt);
 
-  // Check if AI prefers the new text
-  if (aiResponse) {
-    return aiResponse.trim().toLowerCase() === "version 2";
+  if (typeof aiResponse === 'string' && aiResponse === "version 2") {
+    console.log("ai decided on version 2  "+aiResponse)
+    return true;
+
   }
 
   // If AI couldn't decide or didn't return a meaningful response, assume the old text is better
+  console.log("ai decided on version 1  " +aiResponse)
   return false;
+};
+
+export const generatePollTitle = async (oldText: string, newText: string): Promise<string> => {
+  const prompt = `
+    You are given two versions of a text. Based on their differences, generate a short, descriptive title for a poll comparing these two texts.
+
+    Version 1: "${oldText}"
+    Version 2: "${newText}"
+
+    Please respond with a short title (2-3 words).
+  `;
+
+  try {
+    const aiResponse = await getOpenAIResponse(prompt);
+    return aiResponse?.trim() || "Unnamed Poll";
+  } catch (error) {
+    return "Unnamed Poll";
+  }
 };
 

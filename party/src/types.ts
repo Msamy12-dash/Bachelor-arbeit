@@ -18,6 +18,7 @@ export const ReactionUpdateSchema = z.object({
 
 
   export type Poll = {
+    isTied?:boolean;
     makeChange?:boolean;
     Room_id:string;
     title: string;

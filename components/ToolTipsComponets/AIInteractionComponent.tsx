@@ -10,41 +10,59 @@ import {
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 interface CustomMenuProps {
-  onSaveRange: () => void;
-  onInsertTrialText: () => void;
+  onGenerateText: (type: 'clarity' | 'tone' | 'rephrase' | 'complexity-up' | 'complexity-down') => void;
   disabled: boolean;
 }
 
-
-const CustomMenu: React.FC<CustomMenuProps> = ({ onSaveRange, onInsertTrialText,disabled }) => {
+const CustomMenu: React.FC<CustomMenuProps> = ({ onGenerateText, disabled }) => {
   return (
     <Dropdown>
       <DropdownTrigger>
         <Button color="primary" variant="ghost" isDisabled={disabled}>
           <div className="flex items-center space-x-2">
-          <span>AI</span>
+            <span>AI</span>
             <AutoAwesomeIcon className="h-4 w-4 text-yellow-500" />
-        </div>
+          </div>
         </Button>
       </DropdownTrigger>
-      <DropdownMenu aria-label="Dropdown menu with description" variant="faded">
-        <DropdownSection showDivider title="Actions">
+      <DropdownMenu aria-label="AI Actions" variant="faded">
+        <DropdownSection showDivider title="Text Enhancements">
           <DropdownItem
-            key="copy"
-            description="improve clarity and vocab"
-            onClick={onInsertTrialText}
+            key="clarity"
+            description="Improve clarity and readability"
+            onClick={() => onGenerateText('clarity')}
           >
-            Improve language
+            Improve Clarity
           </DropdownItem>
           <DropdownItem
-            key="edit"
-            description="Make the tone more freindly"
-            onClick={onInsertTrialText}
+            key="tone"
+            description="Make the tone more friendly"
+            onClick={() => onGenerateText('tone')}
           >
-            Friendly Tone
+            Improve Tone
+          </DropdownItem>
+          <DropdownItem
+            key="rephrase"
+            description="Express the same idea in a different way"
+            onClick={() => onGenerateText('rephrase')}
+          >
+            Rephrase
+          </DropdownItem>
+          <DropdownItem
+            key="complexity-up"
+            description="Increase the complexity of the text"
+            onClick={() => onGenerateText('complexity-up')}
+          >
+            Increase Complexity
+          </DropdownItem>
+          <DropdownItem
+            key="complexity-down"
+            description="Simplify the language and sentence structure"
+            onClick={() => onGenerateText('complexity-down')}
+          >
+            Reduce Complexity
           </DropdownItem>
         </DropdownSection>
-      
       </DropdownMenu>
     </Dropdown>
   );
