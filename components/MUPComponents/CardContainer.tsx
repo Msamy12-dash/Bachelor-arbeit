@@ -177,16 +177,19 @@ export default function CardContainer({
                   onResponseChange={handleResponseChange}
                   onSubmittingChange={handleSubmittingChange}
                   onDiscard={handleDiscardCard}
-                  yDoc={yDoc}
+                  yProvider={yProvider}
                   setPrompts={setPrompts}
                   editor={editor}
                   range={range}
                   selectedModel={selectedModel}
 
                 />
-              ))}
-            </div>
-          </div>
+            ))}
+
+              </div>
+
         </div>
+      </div>
+    // </div>
   );
 }

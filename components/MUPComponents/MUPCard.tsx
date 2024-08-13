@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Button, Spinner } from "@nextui-org/react";
 import { useTheme } from "next-themes";
+import YPartyKitProvider from "y-partykit/provider";
 import * as Y from "yjs";
 import { IconButton } from "@mui/material";
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import CloseIcon from '@mui/icons-material/Close';
 import Quill from "quill";
 import { requestResponseForMUP } from "@/Prompting/MUPFunction";
+import StarIcon from "@mui/icons-material/Star";
 import colors from "../../highlightColors.js";
 
 
@@ -30,25 +32,23 @@ interface Range{
 
 export default function MUPCard({
   cardData,
-  room,
   onTextChange,
   onResponseChange,
   onSubmittingChange,
   onDiscard,
-  yDoc,
   setPrompts,
+  yProvider,
   editor,
   range,
   selectedModel
 }: Readonly<{
   cardData: CardData;
-  room: string;
   onTextChange: (id: string, newText: string) => void;
   onResponseChange: (id: string, newResponse: string) => void;
   onSubmittingChange: (id: string, isSubmitting: boolean) => void;
   onDiscard: (id: string) => void;
-  yDoc: Y.Doc;
   setPrompts: Function;
+  yProvider: YPartyKitProvider;
   editor: Quill & {
     highlightText: (index: number, length: number, color: string) => void;
     removeHighlight: (index: number, length: number) => void;
@@ -59,9 +59,10 @@ export default function MUPCard({
 
 }>) {
   const [loading, setLoading] = useState(false);
-  const [inputText, setInputText] = useState('')
-
+  const [inputText, setInputText] = useState(cardData.promptText || "");
   const { theme } = useTheme();
+  const yDoc = yProvider?.doc;
+  const yPrompts = yDoc?.getArray("prompts");
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
@@ -100,17 +101,8 @@ export default function MUPCard({
     
 
   const handleSave = () => {
-    const savedPrompts = JSON.parse(
-      localStorage.getItem("savedPrompts") || "[]"
-    );
-    const updatedPrompts = [...savedPrompts, inputText];
-
-    localStorage.setItem("savedPrompts", JSON.stringify(updatedPrompts));
-    setPrompts(updatedPrompts);
-    const ytext = yDoc.getText("promptList");
-      ytext.setAttribute("savePrompt", JSON.stringify(updatedPrompts));
-      console.log("🚀 ~ handleSave ~ ytext:", ytext.getAttribute("savePrompt"));
-    setInputText("");
+    console.log("----- called")
+    yPrompts.push([inputText]);
   };
 
   const handleCommit = () => {
@@ -125,26 +117,40 @@ export default function MUPCard({
   
   return (
     <div className={`${theme === 'dark' ?  'bg-gray-700' : 'bg-white'} p-6  rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 w-full box-border`}>
-      <div className="h-6">
-        <IconButton onClick={handleDiscard} className="float-right" sx={{ color: `${theme === 'dark' ?  '#fff' : 'gray'}`}}>
-          <CloseIcon/>
-        </IconButton>
-        <IconButton onClick={handleMinimize} className="float-right" sx={{ color: `${theme === 'dark' ?  '#fff' : 'gray'}`}}>
-          <MinimizeIcon/>
-        </IconButton>
-        
-      </div>
-       <p>Selected Text: </p>
+     <div className="h-6 flex justify-between mb-5  ">
+           <p className="text-lg font-semibold  pb-5 text-indigo-800 ">
+             Selected Text:{" "}
+           </p>
+   
+           <div className="flex  items-center">
+             <IconButton className="float-right">
+               <MinimizeIcon />
+             </IconButton>
+             <IconButton onClick={handleDiscard} className="float-right">
+               <CloseIcon />
+             </IconButton>
+           </div>
+         </div>
        <div className={`${theme === 'dark' ?  'bg-gray-900' : 'bg-gray-50'} mb-4 p-2`}>
          <p className="text-small font-medium">{cardData.selectedTextOnMUPCard}</p>
        </div>
-       <p>Prompt:</p>
-       <button className="underline float-right" onClick={handleSave}>Add to favourites</button>
-       <textarea
-         className={`${theme === 'dark' ?  'bg-gray-900' : 'bg-gray-50'} w-full p-4 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 box-border`}
-         value={cardData.promptText}
-         onChange={handleTextChange}
-       />
+       <p className="text-lg font-semibold  pb-5 text-indigo-800 ">Prompt:</p>
+       <div className="flex">
+          
+         <textarea
+           className="w-full p-4 mb-4 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 box-border"
+           value={cardData.promptText}
+           onChange={handleTextChange}
+         />
+          
+          
+         <button
+             className="  h-fit ml-2  inline-flex items-center justify-center  text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md rounded-lg"
+             onClick={handleSave}
+           >
+              <StarIcon className=" text-yellow-300" />
+           </button>
+           </div>
       <Button
         className={`mb-4 inline-flex items-center justify-center px-6 py-3 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md ${
           cardData.submitting ? "cursor-not-allowed" : "hover:from-blue-600 hover:to-indigo-600"

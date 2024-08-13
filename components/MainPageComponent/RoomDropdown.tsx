@@ -51,7 +51,7 @@ export default function RoomDropdown({
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button variant="flat" className="capitalize">
+        <Button variant="flat" className="capitalize  text-white bg-gradient-to-r from-blue-500 to-indigo-500">
           {currentRoom
             ? `Room: ${currentRoom} (${rooms[currentRoom] || 0})`
             : "Select Room"}
