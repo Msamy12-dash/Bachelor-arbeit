@@ -11,22 +11,11 @@ import TabPanel from "@mui/lab/TabPanel";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
 import colors from "../../highlightColors.js"
+import { Role, User } from "@/party/types";
+import { Comment } from "./CommentCard";
+import { Tabs } from "@mui/material";
+import CommentSummarizer from "../AIsumComponent/CommentSummarizer";
 
-interface Comment {
-  key: number;
-  name: string;
-  content: string;
-  date: string;
-  upvotes: number;
-  isTextSpecific: boolean;
-  shortenedSelectedText: string;
-  index: number;
-  length: number;
-  history: string[];
-  replies: Comment[];
-  parentKey: number | null;
-  canReply: boolean;
-}
 
 interface Range {
   index: number;
@@ -47,6 +36,7 @@ interface CommentHandlerProps {
   selectedRange: Range | null | undefined;
   highlightText: ((index: number, length: number, color: string) => void) | undefined;
   removeHighlight: ((index: number, length: number) => void) | undefined; 
+  user: User | null;
   selectedModel: string;
 }
 
@@ -64,6 +54,7 @@ export default function CommentHandler({
   setDeleteSelectedComments,
   highlightText,
   removeHighlight,
+  user,
   selectedModel
 }: Readonly<CommentHandlerProps>){
   const [comments, setComments] = useState<Comment[]>([]);
@@ -140,7 +131,9 @@ export default function CommentHandler({
       history: [],
       replies: [],
       parentKey: comment.parentKey,
-      canReply: canReply
+      canReply: canReply,
+      user: comment.user,
+      likedBy: comment.likedBy
     };
 
     const yarray = yDoc.getArray<Comment>("comments");
@@ -192,16 +185,25 @@ export default function CommentHandler({
   }, [deleteSelectedComments])
 
 
-  const incrementUpvote = async (IncrementComment: Comment) => {
+  const incrementUpvote = async (IncrementComment: Comment, decrement: boolean) => {
     const yarray = yDoc.getArray<Comment>("comments");
 
     const updateUpvote = (comments: Comment[]): Comment[] => {
       return comments.map(comment => {
         if (comment.key === IncrementComment.key) {
-          return {
-            ...comment,
-            upvotes: comment.upvotes + 1
-          };
+          if(decrement) {
+            return {
+              ...comment,
+              upvotes: comment.upvotes - 1,
+              likedBy: IncrementComment.likedBy
+            };
+          } else {
+            return {
+              ...comment,
+              upvotes: comment.upvotes + 1,
+              likedBy: IncrementComment.likedBy
+            }
+          }
         } else if (comment.replies.length > 0) {
           return {
             ...comment,
@@ -285,49 +287,62 @@ export default function CommentHandler({
 
   return (
     <div className="comments">
-      <Box sx={{ width: "100%", typography: "body1" }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          maxWidth: { xs: 300, sm: 480 },
+         
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
         <TabContext value={value}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={handleChange} aria-label="lab API tabs example">
-              <Tab label="Comment" value="1" />
-              <Tab label="Prompt List" value="2" />
-            </TabList>
-          </Box>
-          <TabPanel value="1">
-          <div className="comments text-center block">
-      <div className="Comment-font text-xl pt-2 font-bold">Comments</div>
-      <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-2 px-4 rounded">
-        {showComments ? "Hide Comments" : "Show Comments"}
-      </button>
-      {showComments && (
-        <div className="mt-8">
-          <CommentList
-            comments={comments}
-            selectedText={selectedText}
-            selectedRange={selectedRange}
-            incrementUpvote={incrementUpvote}
-            deleteComment={deleteComment}
-            editComment={editComment}
-            addComment={addComment}
-            editor={editor}
-            getRange={getRange}
-            setAIChanges={setAIChanges}
-            setCheckedKeys={setCheckedKeys}
-            //promptList={promptList}
-            highlightText={handleHighlightText}
-            removeHighlight={handleRemoveHighlight}
-            selectedModel={selectedModel}
-        />
-        </div>
-      )}
-    </div>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons
+            allowScrollButtonsMobile
+            aria-label="visible arrows tabs example"
+          >
+            <Tab label={<span className="mr-4">Comments</span>} value="0" />
+            <Tab label={<span className="mr-4">Summarize Comments</span>} value="1" />
+            <Tab label={<span className="mr-4">Prompt List</span>} value="2" />
+          </Tabs>
+          <TabPanel value="0" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}}>
+            <div className="comments text-center block">
+              {showComments && (
+                <div className="mt-2">
+                  <CommentList
+                    comments={comments}
+                    incrementUpvote={incrementUpvote}
+                    deleteComment={deleteComment}
+                    editComment={editComment}
+                    addComment={addComment}
+                    editor={editor}
+                    getRange={getRange}
+                    setAIChanges={setAIChanges}
+                    setCheckedKeys={setCheckedKeys}
+                    selectedText={selectedText} 
+                    selectedRange={selectedRange}
+                    highlightText={handleHighlightText}
+                    removeHighlight={handleRemoveHighlight}
+                    user={user}
+                    selectedModel={selectedModel}
+                  />
+                </div>
+              )}
+            </div>
           </TabPanel>
-          <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
+          <TabPanel value="1" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}} >
+            <CommentSummarizer comments={comments} selectedModel={selectedModel}/>
+          </TabPanel>
+          <TabPanel value="2" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}}>
             <PromptList promptList={promptList} yDoc={yDoc} />
           </TabPanel>
         </TabContext>
       </Box>
-      </div>
-
+    </div>
   );
 }

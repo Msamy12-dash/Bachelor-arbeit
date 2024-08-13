@@ -77,8 +77,7 @@ export default function IndexPage({
   return (
 
     <DefaultLayout currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} rooms={rooms} setRooms={setRooms} selectedModel={selectedModel} setSelectedModel={setSelectedModel}>
-      <EditorPage currentRoom={currentRoom} yDoc={yDoc} yProvider={yProvider} selectedModel={selectedModel}/>
-
+      <EditorPage currentRoom={currentRoom} yDoc={yDoc} yProvider={yProvider} user={user} selectedModel={selectedModel}/>
     </DefaultLayout>
   );
 }

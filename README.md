@@ -11,6 +11,11 @@
 - [PartyKit](https://partykit.io)
 - [Ollama](https://ollama.com/)
 
+
+## Component Tree
+
+![In case it doesn´t show: public\Component-Architecture.png](public\Component-Architecture.png)
+
 ## How to Use
 
 pull the branch 
@@ -64,3 +69,19 @@ npm run dev1
 ## License
 
 Licensed under the [MIT license](https://github.com/nextui-org/next-pages-template/blob/main/LICENSE).
+
+
+**Everyone who contributed:**
+        Omar Alabed Alsalh
+        Shahrzad Azimi
+        Mohamed Elnemr
+        Matin Goodarzi
+        Daniel Hadirahardjo
+        Paula Hummel
+        Ghofrane Kamoun
+        Wafi Kamoun
+        Pascal Lange 
+        Leon Lehner
+        Felix Plenk
+        Samuel Richter 
+
