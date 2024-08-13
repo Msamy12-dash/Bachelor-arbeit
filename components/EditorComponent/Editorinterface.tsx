@@ -1,6 +1,3 @@
-/* eslint-disable prettier/prettier */
-// Editor
-"use client";
 import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import Quill from "react-quill";
@@ -15,6 +12,7 @@ import * as Y from "yjs";
 import { IconButton } from '@mui/material';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import { Role,User } from "@/party/types"
 
 
 
@@ -30,7 +28,6 @@ interface MCP_AI_responses {
 
 function getRandomColor() {
   const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
-
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
@@ -38,12 +35,14 @@ export default function EditorPage({
   currentRoom,
   yDoc,
   yProvider,
-  selectedModel
+  selectedModel,
+  user,
 }: {
   currentRoom: string;
   yDoc: Y.Doc;
   yProvider: YPartyKitProvider;
   selectedModel: string;
+  user: User | null;
 }) {
   const [prompts, setPrompts] = useState<string[]>([]);
   const userColor = useMemo(() => getRandomColor(), []);
@@ -133,8 +132,8 @@ export default function EditorPage({
           <ResizableBox
             width={400}
             height={Infinity}
-            minConstraints={[400, Infinity]}
-            maxConstraints={[450, Infinity]}
+            minConstraints={[330, Infinity]}
+            maxConstraints={[530, Infinity]}
             axis="x"
             resizeHandles={['e']}
           >
@@ -153,6 +152,7 @@ export default function EditorPage({
                   yProvider={yProvider}
                   highlightText={editor?.highlightText}
                   removeHighlight={editor?.removeHighlight}
+                  user={user}
                   selectedModel={selectedModel}
                 />
 
