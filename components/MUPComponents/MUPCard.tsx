@@ -129,11 +129,23 @@ export default function MUPCard({
            </p>
          </div>
          <p className="text-lg font-semibold  pb-5 text-indigo-800 ">Prompt:</p>
+         <div className="flex">
+          
          <textarea
            className="w-full p-4 mb-4 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 box-border"
            value={cardData.promptText}
            onChange={handleTextChange}
          />
+          
+          
+         <button
+             className="  h-fit ml-2  inline-flex items-center justify-center  text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md rounded-lg"
+             onClick={handleSave}
+           >
+              <StarIcon className=" text-yellow-300" />
+           </button>
+           </div>
+        
          <div className="flex flex-col">
            <Button
              className={` inline-flex items-center justify-center  px-6  text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md mb-3 ${
@@ -156,12 +168,6 @@ export default function MUPCard({
              )}
            </Button>
    
-           <button
-             className="    inline-flex items-center justify-center px-6 py-1 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md rounded-lg"
-             onClick={handleSave}
-           >
-             Favorites <StarIcon className="ml-2 text-yellow-300" />
-           </button>
          </div>
          {cardData.responseText && (
            <div>

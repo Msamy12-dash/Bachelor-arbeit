@@ -86,7 +86,7 @@ export const Navbar = ({
         
         <DropdownMenu
           aria-label="Single selection actions"
-          color="secondary"
+          // color="secondary"
           disallowEmptySelection
           selectionMode="single"
           selectedKeys={selectedModel}
