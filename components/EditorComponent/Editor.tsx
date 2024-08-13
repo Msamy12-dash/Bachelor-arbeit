@@ -13,6 +13,7 @@ import { handleRORelSelectionChange,
   restoreSelectionToCurrentRange,
   saveRelRange
 } from "../VoteComponent/TextBlocking";
+import {DeltaStatic} from "quill/index";
 
 
 interface Range {
@@ -113,7 +114,7 @@ export default function Editor({
   }, [userColor, yProvider]);
 
   function handleSelectionChange(range: Range) {
-    handleRORelSelectionChange(quill, range, provider.doc, provider.doc.getText("quill"));
+    handleRORelSelectionChange(quillRef, range, yProvider.doc, yProvider.doc.getText("quill"));
 
     // ADDED CODE: Handle typing status reset
     if (typingTimeoutRef.current) {
@@ -139,24 +140,19 @@ export default function Editor({
         //For MUP
         setRange(selection);
 
-        // Update selectedText
-        const getText = quillRef
-          .current!.getEditor()
-          .getText(range.index, range.length);
-        setSelectedText(getText);
-
-        // Get positions of Editor itself and selected range (in pixels)
-        const bounds = quillRef.current!.getEditor().getBounds(selection!.index);
       }
-    } else {
-      setSelectedText("");
+      // Update selectedText
+      const getText = quillRef
+        .current!.getEditor()
+        .getText(range.index, range.length);
+      setSelectedText(getText);
     }
   }
 
   useEffect(() => {
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
-      const maxWidth = editor.container.offsetWidth; // Get the width of the editor
+      const maxWidth = editor.root.offsetWidth; // Get the width of the editor
 
       const handleContextMenu = (event: MouseEvent) => {
         event.preventDefault();
@@ -190,7 +186,7 @@ export default function Editor({
               maxWidth: maxWidth,
             });
             setShowTooltip(true);
-            saveRelRange(quill, provider.doc, provider,range);
+            saveRelRange(quillRef, yProvider.doc, yProvider,range);
 
           } else {
             // setShowTooltip(false);
@@ -228,7 +224,7 @@ export default function Editor({
   };
 
   const saveRange = ():void=>{
-    saveRelRange(quill, provider.doc, provider);
+    saveRelRange(quillRef, yProvider.doc, yProvider);
   }
 
   const handleHideTooltip = () => {
@@ -242,7 +238,7 @@ export default function Editor({
         Editor <code>Room #{currentRoom}</code>
       </h1>
       <ReactQuill
-        ref={quill}
+        ref={quillRef}
         className="quill"
         modules={{ cursors: true }}
         theme="snow"
@@ -250,11 +246,11 @@ export default function Editor({
         onChange={onChange}
       />
       <Tooltip
-        doc={provider.doc}
+        doc={yProvider.doc}
         onsaveRelRange={saveRange}
         position={tooltipPosition}
-        provider={provider}
-        quill={quill}
+        provider={yProvider}
+        quill={quillRef}
         show={showTooltip}
         text={selectedText}
         onCancel={handleHideTooltip}
