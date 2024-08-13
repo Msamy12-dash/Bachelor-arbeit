@@ -6,21 +6,9 @@ export const siteConfig = {
   navItems: [
    
     {
-      label: "user",
-      href: "/user",
-    },
-
-    {
       label: "Login",
       href: "/login"
     },
-
-    {
-      label: "signup",
-      href: "/signup"
-    },
-
-    
   
   ],
   navMenuItems: [
