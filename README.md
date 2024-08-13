@@ -11,6 +11,11 @@
 - [PartyKit](https://partykit.io)
 - [Ollama](https://ollama.com/)
 
+
+## Component Tree
+
+![Component Tree](public\Component Architecture.png)
+
 ## How to Use
 
 pull the branch 
