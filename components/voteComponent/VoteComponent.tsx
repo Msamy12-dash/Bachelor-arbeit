@@ -3,7 +3,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDi
 import Snackbar from "@mui/material/Snackbar";
 import usePartySocket from "partysocket/react";
 
-import PollOptions from "../voteComponent/VoteOptions";
+import PollOptions from "../VoteComponent/VoteOptions";
 
 import { Poll } from "@/party/src/types";
 import { PARTYKIT_HOST } from "@/pages/env";
@@ -18,11 +18,12 @@ function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => voi
   });
 }
 
-const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[]; title: string; username: string; roomId: string }> = ({ id, options, initialVotes, title, username, roomId }) => {
+const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[]; title: string; username: string; roomId: string; }> = ({ id, options, initialVotes, title, username, roomId }) => {
   const [votes, setVotes] = useState<number[]>(initialVotes ?? []);
   const [vote, setVote] = useState<number | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [pollTitle, setPollTitle] = useState("Open Poll");
 
   const onMessage = (event: MessageEvent) => {
     const data = event.data;
@@ -35,6 +36,9 @@ const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[];
 
       if (pollData.votes) {
         setVotes(pollData.votes);
+      }
+      if(pollData.title){
+        setPollTitle(pollData.title);
       }
     }
   };
@@ -59,7 +63,7 @@ const PollUI: React.FC<{ id: string; options: string[]; initialVotes?: number[];
 
   return (
     <>
-      <button className="btn btn-primary" onClick={onOpen}>Open Poll</button>
+      <button className="btn btn-primary" onClick={onOpen}>{pollTitle}</button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalContent>
           <ModalHeader>{title}</ModalHeader>
