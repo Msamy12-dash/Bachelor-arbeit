@@ -25,15 +25,15 @@ import { ThemeSwitch } from "@/components/MainPageComponent/theme-switch";
 import { Rooms } from "@/party/types";
 import OnlineUsers from "../UserComponent/OnlineUsers";
 
-export const Navbar = ({ 
-  currentRoom, 
-  setCurrentRoom,
-  rooms,
-  setRooms,
-  selectedModel,
-  setSelectedModel
-}: { 
-  currentRoom: string, 
+export const Navbar = ({
+                         currentRoom,
+                         setCurrentRoom,
+                         rooms,
+                         setRooms,
+                         selectedModel,
+                         setSelectedModel
+                       }: {
+  currentRoom: string,
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>,
   rooms: Rooms;
   setRooms: Function;
@@ -49,83 +49,58 @@ export const Navbar = ({
 
   const userCount = rooms[currentRoom] || 0; // Calculate user count for the current room
 
-
   return (
-
     <NextUINavbar maxWidth="xl" position="sticky">
+      {/* Lobby on the far left */}
       <NavbarContent className="basis-1/5 sm:basis-full flex items-center justify-start">
-        <div className="lg:flex gap-4 justify-start ml-2">
-          {siteConfig.navItems.map((item) => (
-            <NavbarItem key={item.href}>
-              <NextLink
-                className={clsx(
-                  linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium",
-                )}
-                color="foreground"
-                href={item.href}
-              >
-                {item.label}
-              </NextLink>
-            </NavbarItem>
-          ))}
+        <Lobby currentRoom={currentRoom} rooms={rooms} setCurrentRoom={setCurrentRoom} setRooms={setRooms} />
+      </NavbarContent>
+
+      {/* Centered AI Model Selection */}
+      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="center">
+        <div className="flex items-center space-x-2"> {/* Adjusted spacing */}
+          <p className="text-small text-blue-500 font-semibold">Choose AI Model: </p>
+          <Dropdown>
+            <DropdownTrigger>
+              <Button color="primary" variant="bordered" className="w-32">
+                <span className="flex items-center">
+                  {selectedModel}
+                  <ArrowDropDown className="ml-1" />
+                </span>
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              aria-label="Single selection actions"
+              disallowEmptySelection
+              selectionMode="single"
+              selectedKeys={selectedModel}
+              onSelectionChange={handleSelect}
+            >
+              <DropdownItem key="OpenAI">OpenAI</DropdownItem>
+              <DropdownItem key="Ollama">Ollama (local)</DropdownItem>
+              <DropdownItem key="Mistral">Mistral (local)</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </div>
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="center">
-        <NavbarItem>
-          <RoomDropdown currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} rooms={rooms} setRooms={setRooms} />
+      {/* ThemeSwitch, Notification, and OnlineUsers on the right */}
+      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="end">
+        <NavbarItem className="hidden sm:flex gap-2">
+          <NotificationComponent />
+          <ThemeSwitch />
         </NavbarItem>
-        <NavbarItem className="flex items-center justify-center">
+        <NavbarItem>
+          <OnlineUsers />
+        </NavbarItem>
+      </NavbarContent>
+
+      {/* Commented out the login button */}
+      {/* <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="end">
+        <NavbarItem>
           <UserAvatar userCount={userCount} />
         </NavbarItem>
-      </NavbarContent>
-
-     {/* Choose Model Section */}
-     <p className="text-small text-blue-500 font-semibold w-full text-end">Choose AI Model: </p>
-      <Dropdown className="p-5">
-        <DropdownTrigger >
-          <Button color="primary" variant="bordered" className="w-32">
-            <span className=" ml-2 ">
-            {selectedModel}
-
-            <ArrowDropDown/>
-
-            </span>
-          </Button>
-        </DropdownTrigger>
-        
-        <DropdownMenu
-          aria-label="Single selection actions"
-          // color="secondary"
-          disallowEmptySelection
-          selectionMode="single"
-          selectedKeys={selectedModel}
-          onSelectionChange={handleSelect}
-        >
-          <DropdownItem key="OpenAI">OpenAI</DropdownItem>
-          <DropdownItem key="Ollama">Ollama (local)</DropdownItem>
-          <DropdownItem key="Mistral">Mistral (local)</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-
-      <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
-        justify="end"
-      >
-        <NavbarItem className="hidden sm:flex gap-2">
-          <ThemeSwitch />
-          <Lobby  currentRoom={currentRoom} rooms={rooms} setCurrentRoom={setCurrentRoom} setRooms={setRooms} />
-        </NavbarItem>
-
-        <NavbarItem>
-       <OnlineUsers/>
-        </NavbarItem>
-
-
-      </NavbarContent>
-
-
+      </NavbarContent> */}
     </NextUINavbar>
   );
 };
