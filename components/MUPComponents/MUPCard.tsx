@@ -9,6 +9,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import Quill from "quill";
 import { requestResponseForMUP } from "@/Prompting/MUPFunction";
 import StarIcon from "@mui/icons-material/Star";
+import colors from "../../highlightColors.js";
+
 
 
 
@@ -87,6 +89,11 @@ export default function MUPCard({
     }
   };
 
+  const handleMinimize = () => {
+    editor?.highlightText(cardData.range.index, cardData.range.length, colors.prevMUPSectionLYellow);
+    
+  };
+
   const handleDiscard = () => {
     onDiscard(cardData.id);
   };
@@ -105,11 +112,10 @@ export default function MUPCard({
     }
   }
 
-
+  
   return (
-
-    <div className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 w-full box-border">
-         <div className="h-6 flex justify-between mb-5  ">
+    <div className={`${theme === 'dark' ?  'bg-gray-700' : 'bg-white'} p-6  rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 w-full box-border`}>
+     <div className="h-6 flex justify-between mb-5  ">
            <p className="text-lg font-semibold  pb-5 text-indigo-800 ">
              Selected Text:{" "}
            </p>
@@ -123,13 +129,11 @@ export default function MUPCard({
              </IconButton>
            </div>
          </div>
-         <div className="mb-4 p-2 bg-gray-50">
-           <p className="text-small font-medium">
-             {cardData.selectedTextOnMUPCard}
-           </p>
-         </div>
-         <p className="text-lg font-semibold  pb-5 text-indigo-800 ">Prompt:</p>
-         <div className="flex">
+       <div className={`${theme === 'dark' ?  'bg-gray-900' : 'bg-gray-50'} mb-4 p-2`}>
+         <p className="text-small font-medium">{cardData.selectedTextOnMUPCard}</p>
+       </div>
+       <p className="text-lg font-semibold  pb-5 text-indigo-800 ">Prompt:</p>
+       <div className="flex">
           
          <textarea
            className="w-full p-4 mb-4 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 box-border"
@@ -145,48 +149,39 @@ export default function MUPCard({
               <StarIcon className=" text-yellow-300" />
            </button>
            </div>
-        
-         <div className="flex flex-col">
-           <Button
-             className={` inline-flex items-center justify-center  px-6  text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md mb-3 ${
-               cardData.submitting
-                 ? "cursor-not-allowed"
-                 : "hover:from-blue-600 hover:to-indigo-600"
-             } transition-all duration-300`}
-             onClick={handleSubmitToAI}
-             disabled={
-               cardData.submitting || cardData.promptText.trim().length === 0
-             }
-           >
-             {loading ? (
-               <div className="flex items-center justify-center space-x-2">
-                 <Spinner color="current" />
-                 <span className="font-semibold">Submitting...</span>
-               </div>
-             ) : (
-               "Submit to AI"
-             )}
-           </Button>
-   
-         </div>
-         {cardData.responseText && (
-           <div>
-             <p>Response:</p>
-             <div className="p-4 bg-gray-50 border border-gray-300 rounded-lg box-border">
-               {cardData.responseText?.length && cardData.responseText}
-             </div>
-   
-             <div className="mt-4 flex space-x-2">
-               <Button
-                 onClick={handleCommit}
-                 className="px-7 py-3 text-medium text-white bg-blue-500 shadow-md hover:bg-blue-600 transition-all duration-300"
-               >
-                 Commit
-               </Button>
-             </div>
-           </div>
-         )}
-       </div>
+      <Button
+        className={`mb-4 inline-flex items-center justify-center px-6 py-3 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md ${
+          cardData.submitting ? "cursor-not-allowed" : "hover:from-blue-600 hover:to-indigo-600"
+        } transition-all duration-300`}
+        onClick={handleSubmitToAI}
+        disabled={cardData.submitting || cardData.promptText.trim().length === 0}
+      >
+        {loading ? (
+          <div className="flex items-center justify-center space-x-2">
+            <Spinner color="current" />
+            <span className="font-semibold">Submitting...</span>
+          </div>
+        ) : (
+          "Submit to AI"
+        )}
+      </Button>
+      
+       {cardData.responseText && (
+        <div>
+          <p>Response:</p>
+          <div className="p-4 bg-gray-50 border border-gray-300 rounded-lg box-border">
+            {cardData.responseText}
+          </div>
+      
+          <div className="mt-4 flex space-x-2">
+            
+            <Button onClick={handleCommit} className="px-7 py-3 text-medium text-white bg-blue-500 shadow-md hover:bg-blue-600 transition-all duration-300">
+              Commit
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
    );
 }
 

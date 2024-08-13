@@ -10,9 +10,13 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
-import colors from "../../highlightColors.js"
 import ListIcon from "@mui/icons-material/List";
 import TocIcon from "@mui/icons-material/Toc";
+import colors from "../../highlightColors.js";
+import CommentSummarizer from "../AIsumComponent/CommentSummarizer";
+import { Tabs } from "@mui/material";
+
+
 
 interface Comment {
   key: number;
@@ -287,68 +291,89 @@ export default function CommentHandler({
 
   return (
     <div className="comments">
-    <Box sx={{ width: "100%", typography: "body1" }}>
-      <TabContext value={value}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <TabList onChange={handleChange} aria-label="lab API tabs example">
+      <Box
+        sx={{
+          flexGrow: 1,
+          maxWidth: { xs: 320, sm: 480 },
+         
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
+        <TabContext value={value}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons
+            allowScrollButtonsMobile
+            aria-label="visible arrows tabs example"
+          >
             <Tab
               label={
                 <div className="flex justify-center items-center ">
-                  <TocIcon className="mr-2" /> Comment
+                  <TocIcon className="mr-2" /> Comments
                 </div>
               }
-              value="1"
+              value="0"
             />
+            <Tab 
+            
+            label={
+              <div className="flex justify-center items-center ">
+                <ListIcon className="mr-2" /> Summarize Comments
+              </div>
+            }
+            
+            value="1" />
+
             <Tab
               label={
                 <div className="flex justify-center items-center ">
                   <ListIcon className="mr-2" /> Prompt List
                 </div>
               }
-              value="2"
+              value="3"
             />
-          </TabList>
-        </Box>
-        <TabPanel value="1">
-          <div className="comments text-center block">
-            <div className="Comment-font text-xl pt-2 font-bold">
-              Comments
+          </Tabs>
+          <TabPanel value="0">
+            <div className="comments text-center block">
+              <div className="Comment-font text-xl font-bold">Comments</div>
+              <button onClick={() => setShowComments(!showComments)} className="HideShowComments font-normal py-1 px-4 rounded">
+                {showComments ? "Hide Comments" : "Show Comments"}
+              </button>
+              {showComments && (
+                <div className="mt-6">
+                  <CommentList
+                    comments={comments}
+                    incrementUpvote={incrementUpvote}
+                    deleteComment={deleteComment}
+                    editComment={editComment}
+                    addComment={addComment}
+                    editor={editor}
+                    getRange={getRange}
+                    setAIChanges={setAIChanges}
+                    setCheckedKeys={setCheckedKeys}
+                    selectedText={selectedText} // Ensure selectedText and selectedRange are passed
+                    selectedRange={selectedRange}
+                    highlightText={handleHighlightText}
+                    removeHighlight={handleRemoveHighlight}
+                    selectedModel={selectedModel}
+                  />
+                </div>
+              )}
             </div>
-            <button
-              onClick={() => setShowComments(!showComments)}
-              className="HideShowComments font-normal py-2 px-4 rounded"
-            >
-              {showComments ? "Hide Comments" : "Show Comments"}
-            </button>
-            {showComments && (
-              <div className="mt-8">
-                <CommentList
-                  comments={comments}
-                  selectedText={selectedText}
-                  selectedRange={selectedRange}
-                  incrementUpvote={incrementUpvote}
-                  deleteComment={deleteComment}
-                  editComment={editComment}
-                  addComment={addComment}
-                  editor={editor}
-                  getRange={getRange}
-                  setAIChanges={setAIChanges}
-                  setCheckedKeys={setCheckedKeys}
-                  //promptList={promptList}
-                  highlightText={handleHighlightText}
-                  removeHighlight={handleRemoveHighlight}
-                  selectedModel={selectedModel}
-                />
-              </div>
-            )}
-          </div>
-        </TabPanel>
-        <TabPanel value="2" style={{ padding: "10px 0px 10px 0px" }}>
-          <PromptList promptList={promptList} yProvider={yProvider} />
-        </TabPanel>
-      </TabContext>
-    </Box>
-  </div>
-
+          </TabPanel>
+          <TabPanel value="1" className="py-2">
+            <CommentSummarizer comments={comments} selectedModel={selectedModel}/>
+          </TabPanel>
+          <TabPanel value="3" className="py-2">
+            <PromptList promptList={promptList} yProvider={yProvider} />
+          </TabPanel>
+        </TabContext>
+      </Box>
+    </div>
   );
 }
+

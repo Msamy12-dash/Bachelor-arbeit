@@ -20,6 +20,7 @@ export default function PromptList({
   yProvider: YPartyKitProvider;
 }) {
   const [prompts, setPrompts] = useState<any[]>([]);
+  console.log("prompts list::", prompts)
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [editContent, setEditContent] = useState<string>("");
   const yProviderDoc = yProvider?.doc;
