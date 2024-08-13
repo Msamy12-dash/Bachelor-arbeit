@@ -60,6 +60,9 @@ export default function Editor({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const quillRef = useRef<ReactQuill>(null);
   const isInitialLoadRef = useRef(true);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null); // ADDED CODE: Ref for timeout
+  const userOriginalName = yProvider.awareness.getLocalState()?.user.name || "Unknown"; // ADDED CODE: Store original user name
+
 
   useEffect(() => {
     if (!yDoc) return;
@@ -100,6 +103,19 @@ export default function Editor({
   }, [userColor, yProvider]);
 
   function handleSelectionChange(range: Range) {
+    // ADDED CODE: Handle typing status reset
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      yProvider.awareness.setLocalStateField("user", {
+        name: userOriginalName,
+        color: userColor,
+      });
+
+    }, 10); // Reset to original name after 1 second of inactivity
+
     // If text is selected
     if (range && range.length > 0) {
       // Get range the user selected and store it in state

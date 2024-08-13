@@ -20,6 +20,7 @@ import { ArrowDropDown } from "@mui/icons-material";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/MainPageComponent/theme-switch";
 import { Rooms } from "@/party/types";
+import OnlineUsers from "../UserComponent/OnlineUsers";
 
 export const Navbar = ({ 
   currentRoom, 
@@ -101,9 +102,15 @@ export const Navbar = ({
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
         </NavbarItem>
+
+        <NavbarItem>
+       <OnlineUsers/>
+        </NavbarItem>
+
+
       </NavbarContent>
 
-      <UserAvatar />
+
     </NextUINavbar>
   );
 };

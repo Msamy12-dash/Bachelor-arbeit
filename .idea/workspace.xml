@@ -5,11 +5,33 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/api/README" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prompting/MUPFunction.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prompting/OpenAIPrompting.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prompting/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/EditorComponent/HighlightBlot.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/babel.config.cjs" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/babel.config.cjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/jest.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/jest.config.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/ollamaMCPFunction.js" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/MCPFunction.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/ollamaMCPFunction.test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/ollamaMUPFunction.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/ollamaMUPFunction.test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/ollamaPrompting.js" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/ollamaPrompting.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OllamaSinglePromptFunction/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Prompting/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ChatComponent/CommentHandler.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ChatComponent/CommentHandler.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ChatComponent/CommentList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ChatComponent/CommentList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/MUPComponents/CardContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MUPComponents/CardContainer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/MUPComponents/MUPCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MUPComponents/MUPCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/MainPageComponent/navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainPageComponent/navbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/layouts/default.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/layouts/default.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/api/getOllamaMCPResponse.ts" beforeDir="false" afterPath="$PROJECT_DIR$/pages/api/getOllamaMCPResponse.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/api/getOllamaMUPResponse.ts" beforeDir="false" afterPath="$PROJECT_DIR$/pages/api/getOllamaMUPResponse.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/pages/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +44,7 @@
         <option value="CSS File" />
         <option value="JavaScript File" />
         <option value="TypeScript File" />
+        <option value="TypeScript JSX File" />
       </list>
     </option>
   </component>
@@ -49,14 +72,15 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "fixing-db-connections",
-    "last_opened_file_path": "C:/Users/shahr/se24-assignment4",
+    "git-widget-placeholder": "Merging shows-logged-in",
+    "last_opened_file_path": "C:/Users/shahr/OneDrive/Desktop",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.grazie",
     "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.2\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   }
@@ -68,13 +92,21 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="inlp2024" />
-      <option name="filePath" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+    <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.dev" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -123,12 +155,50 @@
       <workItem from="1720117087448" duration="680000" />
       <workItem from="1720124807439" duration="1695000" />
       <workItem from="1720623393067" duration="42000" />
-      <workItem from="1720770182075" duration="1819000" />
+      <workItem from="1720770182075" duration="2178000" />
+      <workItem from="1720773881400" duration="69000" />
+      <workItem from="1720786693199" duration="669000" />
+      <workItem from="1720793698137" duration="656000" />
+      <workItem from="1720883008144" duration="5214000" />
+      <workItem from="1720949921873" duration="64000" />
+      <workItem from="1721067137560" duration="2278000" />
+      <workItem from="1721154823992" duration="5000" />
+      <workItem from="1721203172886" duration="73000" />
+      <workItem from="1722160185616" duration="2524000" />
+      <workItem from="1722162839516" duration="1317000" />
+      <workItem from="1722174785303" duration="487000" />
+      <workItem from="1722183516929" duration="8374000" />
+      <workItem from="1722192892448" duration="6000" />
+      <workItem from="1722255598528" duration="3524000" />
+      <workItem from="1722284408571" duration="13000" />
+      <workItem from="1722780934395" duration="2691000" />
+      <workItem from="1722965705769" duration="6122000" />
+      <workItem from="1723023428291" duration="11470000" />
+      <workItem from="1723065281047" duration="989000" />
+      <workItem from="1723123485809" duration="12150000" />
+      <workItem from="1723205999302" duration="4244000" />
+      <workItem from="1723296996373" duration="43000" />
+      <workItem from="1723366587552" duration="3196000" />
+      <workItem from="1723387872123" duration="22000" />
+      <workItem from="1723392303847" duration="612000" />
+      <workItem from="1723448032899" duration="11553000" />
+      <workItem from="1723462796412" duration="890000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
