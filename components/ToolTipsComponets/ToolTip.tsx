@@ -7,11 +7,9 @@ import { IconButton } from "@mui/material";
 import usePartySocket from "partysocket/react";
 
 import {
-  saveRangeWithText,
-  updateVoteRangeText,
-  deleteRangeFromYArray,
   getCurrentId, deleteCurrentRelRange, saveNewTextForCurrentRange,
-  unlockRange
+  unlockRange,
+  clearAllRelRanges
 } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 
@@ -112,12 +110,10 @@ const User ={
     //saveRORange(quill,doc,range);
     setInputDisabled(false);
     setSuggestButtonDisabled(false);
-    saveRangeWithText(quill, doc);
   };
 
   const handleCancelClick = () => {
-    //deleteAll(quill, doc);
-    //deleteCurrent(quill, doc, provider);
+    //clearAllRelRanges(doc,quill);
     deleteCurrentRelRange( doc, provider,quill);
     setInputDisabled(true);
     setSuggestButtonDisabled(true);
@@ -152,16 +148,8 @@ const User ={
     setInputDisabled(true);
     setSuggestButtonDisabled(true);
 
-    updateVoteRangeText(doc, selectedText, modifiedText);
-
     onCancel();
     setIsSnackbarOpen(true); // Show Snackbar on vote click
-  };
-
-  const handleEndVoteClick = () => {
-    setVotingInProgress(false);
-    deleteRangeFromYArray(doc, inputText, quill);
-    onCancel();
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {

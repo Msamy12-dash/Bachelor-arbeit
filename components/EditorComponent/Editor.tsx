@@ -9,11 +9,9 @@ import YPartyKitprovider from "y-partykit/provider";
 
 import Tooltip from "../ToolTipsComponets/ToolTip";
 import { handleCommentRangeShift } from "../ChatComponent/handleCommentRangeShift";
-import { handleRangeShift, handleROChange, handleRORelSelectionChange,
-  handleROSelectionChange,
+import { handleRORelSelectionChange,
   restoreSelectionToCurrentRange,
-  saveRelRange,
-  saveRORange
+  saveRelRange
 } from "../VoteComponent/TextBlocking";
 
 Quill.register("modules/cursors", QuillCursors);
@@ -176,9 +174,6 @@ export default function Editor({
 
 
   const onChange = (content: string, delta: DeltaStatic, source: string): void => {
-    handleROChange(quill, content, delta, source);
-    handleRangeShift(delta,quill,provider.doc);
-    console.log(JSON.stringify(quill.current?.getEditor().getSelection()?.index))
     setText(content);
   };
 
