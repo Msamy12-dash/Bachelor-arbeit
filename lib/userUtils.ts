@@ -14,6 +14,7 @@ export async function getOrCreateUser(username: string, role: Role): Promise<Use
     }
     
     const user = await response.json();
+
     return user;
   } catch (error) {
     console.error('Error getting or creating user:', error);

@@ -3,6 +3,9 @@ import { Button } from "@nextui-org/react";
 import Quill from "react-quill";
 import YPartyKitProvider from "y-partykit/provider";
 import * as Y from "yjs";
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { IconButton } from "@mui/material";
+import { useTheme } from 'next-themes';
 
 import colors from "../../highlightColors.js";
 
@@ -51,6 +54,7 @@ export default function CardContainer({
 }>) {
   const [cards, setCards] = useState<CardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!yProvider.doc) return;
@@ -72,6 +76,11 @@ export default function CardContainer({
 
     const yarray = yProvider.doc.getArray<CardData>("cards");
     const selection = editor.getSelection();
+
+
+    // if(selectedText.length > 30){
+    //   selectedText = selectedText.substring(0,30) + "...";
+    // }
 
     if (selection) {
       const newCard: CardData = {
@@ -144,26 +153,29 @@ export default function CardContainer({
   if (isLoading) return <div>Loading...</div>;
 
   return (
-        <div className="flex flex-col bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg shadow-lg overflow-y-auto relative h-full">
-          <div className="flex flex-col items-center mb-2 mx-4">
-            <Button
-              className={`inline-flex items-center justify-center w-full m-6 px-6 py-6 text-lg text-white bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full ${
+        <div className={`card bg-gradient-to-b ${theme === 'dark' ?  'black' : 'from-gray-100 to-gray-200 rounded-lg'}flex flex-col  shadow-lg overflow-y-auto relative h-[40vw]`}>
+          <div className={`card ${theme === 'dark' ?  'gray-900' : 'gray-100'} mb-2 mx-4`}>
+            <Button color="primary"
+              className={`inline-flex justify-center m-6 px-6 py-6 text-lg ${
                 selectedText
-                  ? "hover:from-blue-600 hover:to-indigo-600"
+                  ? "hover:blue-600 "
                   : "opacity-60 cursor-not-allowed"
               } transition-all duration-300`}
               disabled={!selectedText}
               style={{
-                minWidth: "200px",
+                minWidth: "60px",
                 maxWidth: "100%",
                 wordWrap: "break-word",
               }}
               onClick={handleAddCard}
             >
-              Add Card with Selected Text
+              <IconButton> <AutoAwesomeIcon sx={{ color: "#fff" }}/></IconButton>
+              Ask AI
             </Button>
           </div>
-          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 px-2 pb-6">
+
+
+          <div className="flex-1 px-2 pb-6">
             <div className="flex flex-col space-y-6">
               {cards.map((card) => (
                 <MUPCard

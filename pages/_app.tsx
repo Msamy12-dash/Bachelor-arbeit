@@ -3,16 +3,15 @@ import type { AppProps } from "next/app";
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from "next/router";
-
+import { fontSans, fontMono } from "@/config/fonts";
 import "@/styles/globals.css";
 import { useEffect, useState } from "react";
 import usePartySocket from "partysocket/react";
 import { User } from "next-auth";
 
 import { PARTYKIT_HOST } from "./env";
-
-import { Rooms, SINGLETON_ROOM_ID } from "@/party/src/types";
-import { fontSans, fontMono } from "@/config/fonts";
+import { Rooms, SINGLETON_ROOM_ID, User } from "@/party/types";
+import { OnlineUsersProvider } from "@/contexts/OnlineUsersContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [user, setUser] = useState<User | null>(null);
@@ -49,7 +48,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <NextUIProvider navigate={router.push}>
       <NextThemesProvider>
-      <Component {...pageProps} rooms={rooms} roomserverPartySocket={roomserverPartySocket} setRooms={setRooms} setUser={setUser} user={user} />
+        <OnlineUsersProvider>
+      <Component {...pageProps} user={user} setUser={setUser} rooms={rooms} setRooms={setRooms} roomserverPartySocket={roomserverPartySocket} />
+        </OnlineUsersProvider>
       </NextThemesProvider>
     </NextUIProvider>
   );

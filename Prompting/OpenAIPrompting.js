@@ -10,7 +10,7 @@ export async function getOpenAIResponse(prompt) {
         
         const client = new OpenAI({ apiKey: key, dangerouslyAllowBrowser: true});
         const completion = await client.chat.completions.create({
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-4o-mini',
             messages: [
                 { role: 'user', content: prompt }
             ]

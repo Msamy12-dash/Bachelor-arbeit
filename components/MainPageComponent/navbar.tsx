@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -13,16 +12,18 @@ import {
 import NextLink from "next/link";
 import clsx from "clsx";
 
-// Import UserAvatar component
+import UserAvatar from "../UserComponent/UserAvatar";
+import RoomDropdown from "./RoomDropdown";  // Import the new RoomDropdown component
 
-import UserAvatar from '../UserComponent/UserAvatar';
+import { ArrowDropDown } from "@mui/icons-material";
 import NotificationComponent from '../UserComponent/NotificationComponent';
 
-import Lobby from "./Lobby";
+import Lobby from "./Lobby"
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/MainPageComponent/theme-switch";
-import { Rooms } from "@/party/src/types";
+import { Rooms } from "@/party/types";
+import OnlineUsers from "../UserComponent/OnlineUsers";
 
 export const Navbar = ({ 
   currentRoom, 
@@ -69,11 +70,11 @@ export const Navbar = ({
             </NavbarItem>
           ))}
         </div>
-      </NavbarContent> 
+      </NavbarContent>
 
       <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full justify-center">
         <NavbarItem className="flex items-center justify-center">
-          <UserAvatar userCount={userCount} /> 
+          <UserAvatar userCount={userCount} />
         </NavbarItem>
       </NavbarContent>
 
@@ -106,7 +107,15 @@ export const Navbar = ({
           <ThemeSwitch />
           <Lobby  currentRoom={currentRoom} rooms={rooms} setCurrentRoom={setCurrentRoom} setRooms={setRooms} />
         </NavbarItem>
+
+        <NavbarItem>
+       <OnlineUsers/>
+        </NavbarItem>
+
+
       </NavbarContent>
+
+
     </NextUINavbar>
   );
 };

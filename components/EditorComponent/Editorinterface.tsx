@@ -1,17 +1,21 @@
-"use client";
 import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import Quill from "react-quill";
+import CommentHandler from "../ChatComponent/CommentHandler";
 import { Card, Button } from "@nextui-org/react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { Resizable } from "react-resizable";
-
+import { ResizableBox  } from "react-resizable";
 import "react-resizable/css/styles.css";
-import * as Y from "yjs";
-import YPartyKitProvider from "y-partykit/provider";
-
 import CardContainer from "../MUPComponents/CardContainer";
-import CommentHandler from "../ChatComponent/CommentHandler";
+import YPartyKitProvider from "y-partykit/provider";
+import * as Y from "yjs";
+import { IconButton } from '@mui/material';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import { Role,User } from "@/party/types"
+
+
 
 interface Range {
   index: number;
@@ -23,7 +27,6 @@ interface MCP_AI_responses {
   changes: string;
 }
 
-
 function getRandomColor() {
   const colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
 
@@ -33,13 +36,15 @@ function getRandomColor() {
 export default function EditorPage({
   currentRoom,
   yDoc,
-  provider,
-  selectedModel
+  yProvider,
+  selectedModel,
+  user,
 }: {
   currentRoom: string;
   yDoc: Y.Doc;
-  provider: YPartyKitProvider;
+  yProvider: YPartyKitProvider;
   selectedModel: string;
+  user: User | null;
 }) {
   const [prompts, setPrompts] = useState<string[]>([]);
   const userColor = useMemo(() => getRandomColor(), []);
@@ -51,7 +56,6 @@ export default function EditorPage({
   }, []);
   const [, setIsModalOpen] = useState(false);
 
-  const openModal = () => setIsModalOpen(true);
   const [editor, setEditor] = useState<
     | (Quill & {
         highlightText: (index: number, length: number, color: string) => void;
@@ -71,6 +75,10 @@ export default function EditorPage({
   const [selectedRange, setSelectedRange] = useState<Range | null>();
   const [range, setRange] = useState<Range>();
   const [commentWidth, setCommentWidth] = useState<number>(300);
+  const [isLeftCardVisible, setIsLeftCardVisible] = useState(true);
+  const [isRightCardVisible, setIsRightCardVisible] = useState(true);
+
+
 
   useEffect(() => {
     // If there is new MCP Response
@@ -78,7 +86,6 @@ export default function EditorPage({
       setShowAIChangesDiv(true);
     }
   }, [AIChanges]);
-
 
   function handleSetRange(range: Range) {
     // for 'Show in Editor'-Button functionality
@@ -120,111 +127,71 @@ export default function EditorPage({
 
   return (
     <>
-      <div style={{ display: "flex", height: "100vh" }}>
-        {isCommentsVisible && (
-          <Resizable
-            axis="x"
-            handle={
-              <div
-                style={{
-                  width: 10,
-                  cursor: "ew-resize",
-                  position: "absolute",
-                  right: -5,
-                  top: 0,
-                  bottom: 0,
-                  backgroundColor: "#ccc",
-                }}
-              />
-            }
+      <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+        {/* Possible other components go here */}
+      </div>
+      <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
+        {isLeftCardVisible && (
+          <ResizableBox
+            width={400}
             height={Infinity}
-            maxConstraints={[1000, Infinity]}
-            minConstraints={[250, Infinity]}
-            width={commentWidth}
-            onResize={(event: any, { size }: any) => setCommentWidth(size.width)}
+            minConstraints={[330, Infinity]}
+            maxConstraints={[530, Infinity]}
+            axis="x"
+            resizeHandles={['e']}
           >
-            <div
-              style={{
-                width: commentWidth,
-                position: "relative",
-                height: "100%",
-                overflow: "hidden",
-                background: "#f9f9f9",
-              }}
-            >
-              <Button
-                style={{
-                  position: "absolute",
-                  top: "10px",
-                  left: "10px",
-                  zIndex: 1000,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                onClick={toggleCommentsVisibility}
-              >
-                <FaArrowRight size={24} />
-              </Button>
-              <Card style={{ width: "100%", padding: "10px", height: "100%" }}>
-                <CommentHandler
-                  deleteSelectedComments={deleteSelectedComments}
+            <Card style={{ height: "100%", padding: "10px", boxSizing: "border-box" }}>
+            <CommentHandler
                   editor={editor}
-                  highlightText={editor?.highlightText}
-                  promptList={prompts}
-                  removeHighlight={editor?.removeHighlight}
                   room={currentRoom}
-                  selectedModel={selectedModel}
-                  selectedRange={selectedRange}
-                  selectedText={selectedText}
-                  setAIChanges={setAIChanges}
-                  setDeleteSelectedComments={setDeleteSelectedComments}
                   setRange={handleSetRange}
+                  setAIChanges={setAIChanges}
+                  selectedText={selectedText}
+                  selectedRange={selectedRange}
+                  deleteSelectedComments={deleteSelectedComments}
+                  setDeleteSelectedComments={setDeleteSelectedComments}
+                  promptList={prompts}
                   yDoc={yDoc}
-                  yProvider={provider}
+                  yProvider={yProvider}
+                  highlightText={editor?.highlightText}
+                  removeHighlight={editor?.removeHighlight}
+                  user={user}
+                  selectedModel={selectedModel}
                 />
-              </Card>
-            </div>
-          </Resizable>
-        )}
 
+            </Card>
+          </ResizableBox>
+        )}
+        <IconButton
+          onClick={() => setIsLeftCardVisible(!isLeftCardVisible)}
+          className="m-2 p-2 bg-gray-200 rounded"
+          size="small"
+        >
+          {isLeftCardVisible ? <ArrowLeftIcon /> : <ArrowRightIcon />}
+        </IconButton>
         <Card
           style={{
-            flexGrow: 1,
+            flex: 1,
             padding: "20px",
-            transition: "width 0.3s",
-            position: "relative",
+            height: "100%",
+            boxSizing: "border-box",
+            margin: isLeftCardVisible || isRightCardVisible ? "0 10px" : "0",
           }}
         >
-          {!isCommentsVisible && (
-            <Button
-              style={{
-                position: "absolute",
-                top: "10px",
-                left: "10px",
-                zIndex: 1000,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              onClick={toggleCommentsVisibility}
-            >
-              <FaArrowLeft size={24} />
-            </Button>
-          )}
+
           <Editor
             key={currentRoom}
             currentRoom={currentRoom}
-            provider={provider}
-            selectedRange={selectedRange}
-            selectedText={selectedText}
-            setCompleteText={setCompleteText}
-            setEditor={setEditor}
-            setRange={setRange}
-            setSelectedRange={setSelectedRange}
-            setSelectedText={setSelectedText}
-            userColor={userColor}
             yDoc={yDoc}
+            yProvider={yProvider}
+            userColor={userColor}
+            setEditor={setEditor}
+            selectedText={selectedText}
+            setSelectedText={setSelectedText}
+            setCompleteText={setCompleteText}
+            selectedRange={selectedRange}
+            setSelectedRange={setSelectedRange}
+            setRange={setRange}
           />
           {showAIChangesDiv && AIChanges && (
             <Card
@@ -255,8 +222,8 @@ export default function EditorPage({
                 <p style={{ marginBottom: "1vw" }}>{AIChanges.summary}</p>
                 <div style={{ display: "flex", marginBottom: "1vw" }}>
                   <input
-                    checked={isChecked}
                     type="checkbox"
+                    checked={isChecked}
                     onChange={handleCheckboxOnChange}
                   />
                   <p style={{ marginLeft: "0.5vw" }}>
@@ -265,17 +232,17 @@ export default function EditorPage({
                 </div>
                 <div style={{ display: "flex" }}>
                   <Button
-                    color="success"
                     style={{
                       color: "white",
                       paddingLeft: "1vw",
                       paddingRight: "1vw",
                     }}
+                    color="success"
                     onClick={handleAcceptOnClick}
                   >
                     Accept changes
                   </Button>
-                  <Button className="ml-5" onClick={handleDiscardOnClick}>
+                  <Button onClick={handleDiscardOnClick} className="ml-5">
                     Discard
                   </Button>
                 </div>
@@ -283,21 +250,42 @@ export default function EditorPage({
             </Card>
           )}
         </Card>
-
-        <Card className="w-1/5 p-4 overflow-y-auto">
-          <CardContainer
-            key={currentRoom}
-            completeText={completeText}
-            currentRoom={currentRoom}
-            editor={editor}
-            range={range}
-            selectedModel={selectedModel}
-            selectedText={selectedText}
-            setPrompts={setPrompts}
-            yDoc={yDoc}
-            yProvider={provider}
-          />
-        </Card>
+        <IconButton
+          onClick={() => setIsRightCardVisible(!isRightCardVisible)}
+          className="m-2 p-2 bg-gray-200 rounded"
+          size="small"
+        >
+          {isRightCardVisible ? <ArrowRightIcon /> : <ArrowLeftIcon />}
+        </IconButton>
+        {isRightCardVisible && (
+          <ResizableBox
+            width={350}
+            height={Infinity}
+            minConstraints={[350, Infinity]}
+            maxConstraints={[400, Infinity]}
+            axis="x"
+            resizeHandles={['w']}
+          >
+          <Card style={{ height: "100%", padding: "10px", boxSizing: "border-box" }}>
+            <div>
+            <Card >
+              <CardContainer
+                key={currentRoom}
+                currentRoom={currentRoom}
+                yDoc={yDoc}
+                yProvider={yProvider}
+                selectedText={selectedText}
+                completeText={completeText}
+                editor={editor}
+                setPrompts={setPrompts}
+                selectedModel={selectedModel}
+                range={range}
+              />
+            </Card>
+            </div>
+          </Card>
+        </ResizableBox>
+        )}
       </div>
     </>
   );

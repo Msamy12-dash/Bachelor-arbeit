@@ -1,13 +1,15 @@
+import EditorPage from "@/components/EditorComponent/Editorinterface";
+import DefaultLayout from "@/layouts/default";
 import { useCallback, useEffect, useState } from "react";
 import YPartyKitProvider from "y-partykit/provider";
+import { PARTYKIT_HOST, PARTYKIT_URL } from "./env";
 import * as Y from "yjs";
-import { User } from "next-auth";
-
-import { PARTYKIT_HOST } from "./env";
-
-import DefaultLayout from "@/layouts/default";
-import EditorPage from "@/components/EditorComponent/Editorinterface";
-import { Rooms } from "@/party/src/types";
+import { Role, SINGLETON_ROOM_ID, User, Rooms } from "@/party/types";
+import { getOrCreateUser } from "@/lib/userUtils";
+import { useRouter } from "next/router";
+import { getCookie } from "cookies-next";
+import UserAvatar from "@/components/UserComponent/UserAvatar";
+import { useOnlineUsers } from "@/contexts/OnlineUsersContext";
 
 export default function IndexPage({
   user,
@@ -23,6 +25,10 @@ export default function IndexPage({
   const [yDoc, setYDoc] = useState<Y.Doc | null>(null); //hand this down to your component, if you need it
   const [selectedModel, setSelectedModel] = useState("OpenAI");
 
+  const { onlineUsers, setOnlineUsers } = useOnlineUsers();  // Use the context hook
+
+
+
   const createProvider = useCallback(() => {
     if (!user) return;
     const provider = new YPartyKitProvider(
@@ -32,6 +38,23 @@ export default function IndexPage({
       { party: "editorserver", connectionId: user.id }
     );
 
+    const awareness = provider.awareness;
+    console.log("Setting local state for user:", user);
+    awareness.setLocalStateField('user', user);
+
+    awareness.on('change', () => {
+      const users: User[] = [];
+      awareness.getStates().forEach((state, clientId) => {
+        if (state.user) {
+          console.log(`State for client ${clientId}:`, state.user);
+          users.push(state.user);
+        }
+      });
+      setOnlineUsers(users);  // Update context with online users
+      console.log("Updated online users:", users);
+    });
+
+
     setYProvider(provider);
     setYDoc(provider.doc);
 
@@ -40,7 +63,7 @@ export default function IndexPage({
 
   useEffect(() => {
     if (!user) return;
-
+    console.log("User ID:", user.id);
     const provider = createProvider();
 
     return () => {
@@ -48,38 +71,14 @@ export default function IndexPage({
     };
   }, [currentRoom, user, createProvider]);
 
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
-
-  // if (error) {
-  //   return <div>Error: {error}</div>;
-  // }
-
-  // //Debugging lines:
-  //   const renderCount = useRef(0);
-  //   const mountCount = useRef(0);
-
-  //   useEffect(() => {
-  //     mountCount.current += 1;
-  //     //console.log(`Component mounted. Mount count: ${mountCount.current}`);
-
-  //     return () => {
-  //       //console.log('Component unmounted');
-  //     };
-  //   }, []);
-
-  //   renderCount.current += 1;
-  //   //console.log(`Component rendered. Render count: ${renderCount.current}`);
-
-
   if (!yProvider || !yDoc) {
     return <div>Loading...</div>;
   }
 
   return (
-    <DefaultLayout currentRoom={currentRoom} rooms={rooms} selectedModel={selectedModel} setCurrentRoom={setCurrentRoom} setRooms={setRooms} setSelectedModel={setSelectedModel}>
-      <EditorPage currentRoom={currentRoom} provider={yProvider} selectedModel={selectedModel} yDoc={yDoc}/>
+
+    <DefaultLayout currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} rooms={rooms} setRooms={setRooms} selectedModel={selectedModel} setSelectedModel={setSelectedModel}>
+      <EditorPage currentRoom={currentRoom} yDoc={yDoc} yProvider={yProvider} user={user} selectedModel={selectedModel}/>
     </DefaultLayout>
   );
 }
