@@ -163,11 +163,11 @@ export default function MUPCard({
         )}
       </Button>
       
-       {JSON.stringify(cardData.responseText) && (
+       {cardData.responseText && (
         <div>
           <p>Response:</p>
           <div className={`${theme === 'dark' ?  'bg-gray-900' : 'bg-gray-50'} p-4 border border-gray-300 rounded-lg box-border`}>
-            {cardData.responseText}
+            {JSON.stringify(cardData.responseText)}
           </div>
       
           <div className="mt-4 flex space-x-2">
