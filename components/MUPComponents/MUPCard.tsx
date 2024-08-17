@@ -108,8 +108,8 @@ export default function MUPCard({
   const handleCommit = () => {
     if(editor){
       // Replace selected text with response from AI
-      editor.editor.deleteText(range!.index, range!.length);
-      editor.editor.insertText(range!.index, cardData.responseText);
+      editor.editor.deleteText(cardData.range!.index, cardData.range!.length);
+      editor.editor.insertText(cardData.range!.index, cardData.responseText);
       handleDiscard();
     }
   }
