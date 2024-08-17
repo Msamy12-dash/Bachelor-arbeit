@@ -78,7 +78,7 @@ export default function MUPCard({
       onSubmittingChange(cardData.id, true);
       
       // Request answer from selected AI
-      const response = await requestResponseForMUP(selectedModel, "", cardData.selectedTextOnMUPCard, cardData.promptText);
+      const response = await requestResponseForMUP(selectedModel, cardData.selectedTextOnMUPCard, cardData.promptText);
 
       onResponseChange(cardData.id, response);
     } catch (error) {
@@ -167,7 +167,7 @@ export default function MUPCard({
         <div>
           <p>Response:</p>
           <div className={`${theme === 'dark' ?  'bg-gray-900' : 'bg-gray-50'} p-4 border border-gray-300 rounded-lg box-border`}>
-            {JSON.stringify(cardData.responseText)}
+            {cardData.responseText}
           </div>
       
           <div className="mt-4 flex space-x-2">
