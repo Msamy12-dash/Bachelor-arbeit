@@ -1,8 +1,5 @@
 import type * as Party from "partykit/server";
-
-import { User } from "next-auth";
-
-import { UserCore, Role } from "./src/types";
+import { User, UserCore, Role } from "./src/types";
 
 
 export default class useridserver implements Party.Server {
