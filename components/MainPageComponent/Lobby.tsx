@@ -74,9 +74,9 @@ export default function Lobby({
         value={currentRoom}
         onChange={(e) => setCurrentRoom(e.target.value)}
       >
-        {Object.entries(rooms).map(([room]) => (
+        {Object.entries(rooms).map(([room, count]) => (
           <option key={room} value={room}>
-            Room: {room}
+            {`Room ${room} (${count} user${count !== 1 ? "s" : ""})`}
           </option>
         ))}
       </select>
