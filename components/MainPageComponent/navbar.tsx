@@ -77,8 +77,8 @@ export const Navbar = ({
               onSelectionChange={handleSelect}
             >
               <DropdownItem key="OpenAI">OpenAI</DropdownItem>
-              <DropdownItem key="Ollama">Ollama (local)</DropdownItem>
-              <DropdownItem key="Mistral">Mistral (local)</DropdownItem>
+              {/* <DropdownItem key="Ollama">Ollama (local)</DropdownItem>
+              <DropdownItem key="Mistral">Mistral (local)</DropdownItem> */}
             </DropdownMenu>
           </Dropdown>
         </div>
