@@ -39,7 +39,6 @@ export async function requestResponseForSum(model, userComments) {
     Summary:
     - Most relevant comments.
     Overall: Like or dislike.
-    Number of users who like: [Count].
     follow the same structre and make it as short as possible.eliminate any sentences not related to summary. `;
 
     const summarizedComments = summarizeAllComments(userComments);
