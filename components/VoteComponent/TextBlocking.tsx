@@ -3,6 +3,10 @@ import ReactQuill from "react-quill";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
 import { generatePollTitle } from "@/components/VoteComponent/AIVotingFunctions";
+import { addAIContributionToMap } from "../VersionHistoryComponent/AIContributionTagging";
+import {AIContributionMetadata} from "../VersionHistoryComponent/AIContributionTagging";
+import {getAddContribution} from "../VersionHistoryComponent/AIContributionList"
+import { wait } from "lib0/pledge";
 
 interface ReadOnlyContext {
   quill: any;
@@ -20,6 +24,8 @@ export interface RelRange{
   newText?: string;
   pollTitle?:string;
 }
+
+
 
 const localVoteRangesDoc = new Y.Doc();
 
@@ -272,42 +278,80 @@ export const saveNewTextForCurrentRange = async (
 };
 
 
-export const unlockRange = (
+export const unlockRange = async (
   doc: Y.Doc,
   rangeId: string,
   replaceText: boolean,
   quill: React.RefObject<ReactQuill>
 ) => {
   const yMap = doc.getMap<RelRange>("relRanges");
-  let found = false
-// Log all keys in the local YMap
-  console.log("Keys in the shared Y.Map (relRanges):", Array.from(yMap.keys()));
-
   const relRange = yMap.get(rangeId);
 
   if (relRange) {
     const editor = quill.current?.getEditor();
-    found = true;
 
     if (editor) {
-      if (replaceText && relRange.newText) {
-        const rangeStart = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc)?.index;
-        const rangeEnd = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc)?.index;
+      const rangeStart = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc)?.index;
+      const rangeEnd = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc)?.index;
 
-        if (rangeStart !== undefined && rangeEnd !== undefined) {
+      if (rangeStart !== undefined && rangeEnd !== undefined) {
+        if (replaceText && relRange.newText) {
+          // Apply the new text to the editor
           editor.deleteText(rangeStart, rangeEnd - rangeStart);
           editor.insertText(rangeStart, relRange.newText, { background: false });
 
-          editor.formatText(rangeStart, relRange.newText.length, { background: false });
+          const snapshot = Y.encodeStateAsUpdate(doc);
+
+          // Generate the timestamp
+          const timestamp = new Date().toISOString();
+
+          // Hash the timestamp to create a unique ID
+          const uniqueId = await hashString(rangeId);
+
+          const aiContributionDetail = {
+            id: uniqueId,
+            user: "Unknown",
+            prompt: relRange.pollTitle || "No prompt available",
+            aiResponse: relRange.newText,
+            timestamp:timestamp,
+            ydocSnapshot: snapshot,
+          };
+          const storedContributions = JSON.parse(localStorage.getItem("aiContributions") || "[]");
+          localStorage.setItem("aiContributions", JSON.stringify([...storedContributions, aiContributionDetail]));
+
         }
+
+
+        //   try {
+        //     await fetch("/api/ai-contributions", {
+        //       method: "POST",
+        //       headers: { "Content-Type": "application/json" },
+        //       body: JSON.stringify(aiContributionDetail),
+        //     });
+        //
+        //     console.log("AI contribution successfully saved:", aiContributionDetail);
+        //
+        //     // Use the globally accessible addContribution function
+        //     const addContribution = getAddContribution();
+        //     if (addContribution) {
+        //       addContribution(aiContributionDetail);
+        //     } else {
+        //       console.error("addContribution function is not registered.");
+        //     }
+        //   } catch (error) {
+        //     console.error("Failed to save AI contribution to the server:", error);
+        //   }
+        // }
+
+        deleteRelRange(doc, rangeId, quill);
       }
-      deleteRelRange(doc,rangeId,quill)
     }
   } else {
-    console.log(`RelRange with ID ${rangeId} not found.`);
+    console.error(`RelRange with ID ${rangeId} not found.`);
   }
-
 };
+
+
 
 export const clearAllRelRanges = (
   doc: Y.Doc,
@@ -367,6 +411,15 @@ export const getPollTitle = (doc: Y.Doc, id: string): string | null => {
 
   return null;
 };
+
+async function hashString(input: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input);
+
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
 
 
 

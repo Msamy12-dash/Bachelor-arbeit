@@ -58,7 +58,7 @@ if(data.update=="delete vote"){
   console.log("Received data:", JSON.stringify(data, null, 2));
   if (data.isTied){
     console.log("its a tie")
-    const makeChange = tieBreakerAI(doc, data.block_Id);
+    const makeChange =   tieBreakerAI(doc, data.block_Id);
     unlockRange(doc,data.block_id,makeChange,quill);
   }
   unlockRange(doc,data.block_id,data.makechanges,quill)}

@@ -1,19 +1,19 @@
-/* eslint-disable prettier/prettier */
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import { QuillBinding } from "y-quill";
 import "react-quill/dist/quill.snow.css";
 import QuillCursors from "quill-cursors";
 import * as Y from "yjs";
-import Tooltip from "../ToolTipsComponets/ToolTip";
-import { PARTYKIT_HOST } from "@/pages/env";
 import YPartyKitProvider from "y-partykit/provider";
+import {DeltaStatic} from "quill/index";
+
+import Tooltip from "../ToolTipsComponets/ToolTip";
 import { handleCommentRangeShift } from "../ChatComponent/handleCommentRangeShift";
 import { handleRORelSelectionChange,
-  restoreSelectionToCurrentRange,
   saveRelRange
 } from "../VoteComponent/TextBlocking";
-import {DeltaStatic} from "quill/index";
+import { highlightAIContributions } from "@/components/VersionHistoryComponent/AIContributionTagging";
+
 
 
 interface Range {
@@ -145,6 +145,7 @@ export default function Editor({
       const getText = quillRef
         .current!.getEditor()
         .getText(range.index, range.length);
+
       setSelectedText(getText);
     }
   }
@@ -231,9 +232,34 @@ export default function Editor({
     setShowTooltip(false);
   };
 
+  const saveVersion = () => {
+    const snapshot = Y.encodeStateAsUpdate(yDoc);
+
+    // Optionally, retrieve metadata as a separate structure for debugging/logging
+    const metadataMap = yDoc.getMap("metadata");
+    const metadataSnapshot = Array.from(metadataMap.entries());
+
+    // Prepare the version object
+    const version = {
+      snapshot, // Encoded state of the entire Y.js document
+      metadata: metadataSnapshot, // Readable metadata
+      timestamp: new Date().toISOString(),
+    };
+
+    // Save to localStorage or send to a backend server
+    localStorage.setItem(`version_${version.timestamp}`, JSON.stringify(version));
+    highlightAIContributions(yDoc,quillRef);
+
+
+    console.log("Version saved:", version);
+  };
+
 
   return (
     <div>
+      <button style={{ margin: "10px", padding: "10px" }} onClick={saveVersion}>
+        Save Version
+      </button>
       <h1>
         Editor <code>Room #{currentRoom}</code>
       </h1>

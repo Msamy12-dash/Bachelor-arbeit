@@ -17,6 +17,8 @@ import { Role, User } from "@/party/types";
 import { Comment } from "./CommentCard";
 import { Tabs } from "@mui/material";
 import CommentSummarizer from "../AIsumComponent/CommentSummarizer";
+import AIContributionList from "../VersionHistoryComponent/AIContributionList";
+
 
 
 interface Range {
@@ -334,6 +336,14 @@ export default function CommentHandler({
               }
               value="3"
             />
+            <Tab
+              label={
+                <div className="flex justify-center items-center ">
+                  <ListIcon className="mr-2" /> AI Contributions
+                </div>
+              }
+              value="4"
+            />
           </Tabs>
           <TabPanel value="0" sx={{ padding: 0, paddingLeft: 2 , paddingRight: 1}}>
             <div className="comments text-center block">
@@ -365,6 +375,9 @@ export default function CommentHandler({
           </TabPanel>
           <TabPanel value="3" className="py-2">
             <PromptList promptList={promptList} yProvider={yProvider} />
+          </TabPanel>
+          <TabPanel value="4" sx={{ padding: 0, paddingLeft: 2, paddingRight: 1 }}>
+            <AIContributionList />
           </TabPanel>
         </TabContext>
       </Box>

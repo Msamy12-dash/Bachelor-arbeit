@@ -31,7 +31,8 @@ export const generateOpenAIShortCommand = async (
       throw new Error('Invalid type specified');
   }
 
-  const aiGeneratedText = await getOpenAIResponse(prompt);
+  const aiGeneratedText = `Dummy response for ${type}`;
+  //const aiGeneratedText = await getOpenAIResponse(prompt);
   return aiGeneratedText ?? "AI could not generate a response. Please try again.";
 };
 
