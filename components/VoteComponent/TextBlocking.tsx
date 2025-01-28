@@ -282,7 +282,8 @@ export const unlockRange = async (
   doc: Y.Doc,
   rangeId: string,
   replaceText: boolean,
-  quill: React.RefObject<ReactQuill>
+  quill: React.RefObject<ReactQuill>,
+  yProvider: YPartyKitProvider
 ) => {
   const yMap = doc.getMap<RelRange>("relRanges");
   const relRange = yMap.get(rangeId);
@@ -301,47 +302,28 @@ export const unlockRange = async (
           editor.insertText(rangeStart, relRange.newText, { background: false });
 
           const snapshot = Y.encodeStateAsUpdate(doc);
+          const serializedSnapshot = Array.from(snapshot)
 
           // Generate the timestamp
           const timestamp = new Date().toISOString();
 
           // Hash the timestamp to create a unique ID
           const uniqueId = await hashString(rangeId);
+          const currentUser = yProvider.awareness.getLocalState()?.user
 
           const aiContributionDetail = {
             id: uniqueId,
-            user: "Unknown",
+            user: currentUser.name,
             prompt: relRange.pollTitle || "No prompt available",
             aiResponse: relRange.newText,
             timestamp:timestamp,
-            ydocSnapshot: snapshot,
+            ydocSnapshot: serializedSnapshot  ,
           };
           const storedContributions = JSON.parse(localStorage.getItem("aiContributions") || "[]");
           localStorage.setItem("aiContributions", JSON.stringify([...storedContributions, aiContributionDetail]));
 
         }
 
-
-        //   try {
-        //     await fetch("/api/ai-contributions", {
-        //       method: "POST",
-        //       headers: { "Content-Type": "application/json" },
-        //       body: JSON.stringify(aiContributionDetail),
-        //     });
-        //
-        //     console.log("AI contribution successfully saved:", aiContributionDetail);
-        //
-        //     // Use the globally accessible addContribution function
-        //     const addContribution = getAddContribution();
-        //     if (addContribution) {
-        //       addContribution(aiContributionDetail);
-        //     } else {
-        //       console.error("addContribution function is not registered.");
-        //     }
-        //   } catch (error) {
-        //     console.error("Failed to save AI contribution to the server:", error);
-        //   }
-        // }
 
         deleteRelRange(doc, rangeId, quill);
       }

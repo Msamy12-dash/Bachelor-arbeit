@@ -59,9 +59,9 @@ if(data.update=="delete vote"){
   if (data.isTied){
     console.log("its a tie")
     const makeChange =   tieBreakerAI(doc, data.block_Id);
-    unlockRange(doc,data.block_id,makeChange,quill);
+    unlockRange(doc,data.block_id,makeChange,quill,provider);
   }
-  unlockRange(doc,data.block_id,data.makechanges,quill)}
+  unlockRange(doc,data.block_id,data.makechanges,quill,provider)}
     } catch (error) {
       console.error("Failed to parse message:", error);
       //console.log("Received message:", event.data);
