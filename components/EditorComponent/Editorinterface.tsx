@@ -3,9 +3,7 @@ import dynamic from "next/dynamic";
 import Quill from "react-quill";
 import CommentHandler from "../ChatComponent/CommentHandler";
 import { Card, Button } from "@nextui-org/react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { Resizable } from "react-resizable";
-import { ResizableBox  } from "react-resizable";
+import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
 import CardContainer from "../MUPComponents/CardContainer";
 import YPartyKitProvider from "y-partykit/provider";
@@ -142,21 +140,21 @@ export default function EditorPage({
           >
             <Card style={{ height: "100%", padding: "10px", boxSizing: "border-box" }}>
             <CommentHandler
-                  editor={editor}
-                  room={currentRoom}
-                  setRange={handleSetRange}
-                  setAIChanges={setAIChanges}
-                  selectedText={selectedText}
-                  selectedRange={selectedRange}
                   deleteSelectedComments={deleteSelectedComments}
-                  setDeleteSelectedComments={setDeleteSelectedComments}
+                  editor={editor}
+                  highlightText={editor?.highlightText}
                   promptList={prompts}
+                  removeHighlight={editor?.removeHighlight}
+                  room={currentRoom}
+                  selectedModel={selectedModel}
+                  selectedRange={selectedRange}
+                  selectedText={selectedText}
+                  setAIChanges={setAIChanges}
+                  setDeleteSelectedComments={setDeleteSelectedComments}
+                  setRange={handleSetRange}
+                  user={user}
                   yDoc={yDoc}
                   yProvider={yProvider}
-                  highlightText={editor?.highlightText}
-                  removeHighlight={editor?.removeHighlight}
-                  user={user}
-                  selectedModel={selectedModel}
                 />
 
             </Card>

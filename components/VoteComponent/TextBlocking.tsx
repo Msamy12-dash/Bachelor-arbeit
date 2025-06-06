@@ -1,12 +1,10 @@
-import { DeltaStatic, RangeStatic } from "quill/index";
 import ReactQuill from "react-quill";
 import * as Y from "yjs";
 import YPartyKitProvider from "y-partykit/provider";
 import { generatePollTitle } from "@/components/VoteComponent/AIVotingFunctions";
-import { addAIContributionToMap } from "../VersionHistoryComponent/AIContributionTagging";
-import {AIContributionMetadata} from "../VersionHistoryComponent/AIContributionTagging";
-import {getAddContribution} from "../VersionHistoryComponent/AIContributionList"
-import { wait } from "lib0/pledge";
+
+import { AIContributionDetail } from "@/types";
+import { addAIContributionToMap } from "@/components/VersionHistoryComponent/AIContributionTagging";
 
 interface ReadOnlyContext {
   quill: any;
@@ -283,10 +281,13 @@ export const unlockRange = async (
   rangeId: string,
   replaceText: boolean,
   quill: React.RefObject<ReactQuill>,
-  yProvider: YPartyKitProvider
+  yProvider: YPartyKitProvider,
+  contribSocket: { send(msg: string): void },
+  shouldSave: boolean,
 ) => {
   const yMap = doc.getMap<RelRange>("relRanges");
   const relRange = yMap.get(rangeId);
+
 
   if (relRange) {
     const editor = quill.current?.getEditor();
@@ -295,37 +296,32 @@ export const unlockRange = async (
       const rangeStart = Y.createAbsolutePositionFromRelativePosition(relRange.start, doc)?.index;
       const rangeEnd = Y.createAbsolutePositionFromRelativePosition(relRange.end, doc)?.index;
 
-      if (rangeStart !== undefined && rangeEnd !== undefined) {
+      if (rangeStart !== undefined && rangeEnd !== undefined && shouldSave) {
         if (replaceText && relRange.newText) {
-          // Apply the new text to the editor
           editor.deleteText(rangeStart, rangeEnd - rangeStart);
           editor.insertText(rangeStart, relRange.newText, { background: false });
+          const contributionId = crypto.randomUUID();
 
-          const snapshot = Y.encodeStateAsUpdate(doc);
-          const serializedSnapshot = Array.from(snapshot)
+            const snapshot = Y.encodeStateVector(doc);
+            const detail: AIContributionDetail = {
+              id: contributionId,
+              user: yProvider.awareness.getLocalState()?.user.name || "unknown",
+              prompt: relRange.pollTitle || "No prompt",
+              aiResponse: relRange.newText,
+              timestamp: new Date().toISOString(),
+              source: "Voting",
+              tags: [],
+              ydocSnapshot: Array.from(snapshot),
+            };
 
-          // Generate the timestamp
-          const timestamp = new Date().toISOString();
 
-          // Hash the timestamp to create a unique ID
-          const uniqueId = await hashString(rangeId);
-          const currentUser = yProvider.awareness.getLocalState()?.user
-
-          const aiContributionDetail = {
-            id: uniqueId,
-            user: currentUser.name,
-            prompt: relRange.pollTitle || "No prompt available",
-            aiResponse: relRange.newText,
-            timestamp:timestamp,
-            ydocSnapshot: serializedSnapshot  ,
-          };
-          const storedContributions = JSON.parse(localStorage.getItem("aiContributions") || "[]");
-          localStorage.setItem("aiContributions", JSON.stringify([...storedContributions, aiContributionDetail]));
+            contribSocket.send(JSON.stringify({ type: "contribution", detail }));
+          addAIContributionToMap(contributionId,doc, rangeStart, rangeEnd - rangeStart, "Voting");
 
         }
 
-
         deleteRelRange(doc, rangeId, quill);
+
       }
     }
   } else {

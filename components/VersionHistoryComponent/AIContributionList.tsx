@@ -1,139 +1,207 @@
-import React, { useState, useEffect } from "react";
-import { Typography, Card, CardContent, Button } from "@mui/material";
-import SnapshotDrawer from "./SnapshotDrawer";
+import React, { useRef, useState } from "react";
 import * as Y from "yjs";
+import usePartySocket from "partysocket/react";
+import { PARTYKIT_HOST } from "@/pages/env";
+import { Typography, TextField, MenuItem, Select, InputLabel, FormControl, Button, Checkbox } from "@mui/material";
+import { Accordion, AccordionItem, Avatar } from "@heroui/react";
+import { SelectChangeEvent } from "@mui/material";
+import SnapshotDrawer from "./SnapshotDrawer";
+import { AIContributionDetail } from "@/types";
 
-interface AIContribution {
-  id: string;
-  user: string;
-  prompt: string;
-  aiResponse: string;
-  timestamp: string;
-  ydocSnapshot: number[];
+interface Props {
+  yDoc: Y.Doc;
+  roomId: string;
 }
 
-let addContribution: ((newContribution: AIContribution) => void) | null = null;
-
-export const registerAddContribution = (
-  fn: (newContribution: AIContribution) => void
-) => {
-  addContribution = fn;
-};
-
-export const getAddContribution = () => addContribution;
-
-const AIContributionList: React.FC<{ yDoc: Y.Doc }> = ({ yDoc }) => {
-  const [contributions, setContributions] = useState<AIContribution[]>([]);
+const AIContributionList: React.FC<Props> = ({ yDoc, roomId }) => {
+  const [contributions, setContributions] = useState<AIContributionDetail[]>([]);
   const [selectedSnapshot, setSelectedSnapshot] = useState<Uint8Array | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFeature, setSelectedFeature] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const refreshContributions = () => {
-    const storedContributions: AIContribution[] = JSON.parse(
-      localStorage.getItem("aiContributions") || "[]"
-    );
-    const uniqueContributions = storedContributions.filter(
-      (value, index, self) =>
-        index === self.findIndex((c) => c.id === value.id)
-    );
-    setContributions(uniqueContributions);
+  const contribSocket = usePartySocket({
+    host: PARTYKIT_HOST,
+    room: roomId,
+    party: "aicontr",
+    onMessage(evt) {
+      try {
+        const msg = JSON.parse(evt.data);
+        if (msg.type === "initial") {
+          setContributions(msg.contributions);
+        } else if (msg.type === "contribution") {
+          const detail: AIContributionDetail = msg.detail;
+          setContributions(prev =>
+            prev.find(c => c.id === detail.id)
+              ? prev.map(c => c.id === detail.id ? detail : c)
+              : [...prev, detail]
+          );
+        }
+      } catch (e) {
+        console.error("Invalid message format", e);
+      }
+    },
+  });
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value.toLowerCase());
   };
 
-  useEffect(() => {
-    registerAddContribution((newContribution) => {
-      setContributions((prev) => {
-        const existingIds = new Set(prev.map((contrib) => contrib.id));
-        if (!existingIds.has(newContribution.id)) {
-          const updatedContributions = [...prev, newContribution];
-          localStorage.setItem(
-            "aiContributions",
-            JSON.stringify(updatedContributions)
-          );
-          return updatedContributions;
-        }
-        return prev;
-      });
+  const handleFeatureChange = (e: SelectChangeEvent<string>) => {
+    setSelectedFeature(e.target.value);
+  };
+
+  const uniqueTags = Array.from(new Set(contributions.flatMap(c => c.tags || [])));
+  const aiFeatures = Array.from(new Set(contributions.map(c => c.prompt)));
+
+  const toggleSortOrder = () => setSortOrder(o => (o === "asc" ? "desc" : "asc"));
+
+  // Filter and sort
+  const filtered = contributions
+    .filter(c => {
+      const matchesSearch = searchTerm
+        ? c.user.toLowerCase().includes(searchTerm) ||
+        c.aiResponse.toLowerCase().includes(searchTerm)
+        : true;
+      const matchesFeature = selectedFeature ? c.prompt === selectedFeature : true;
+      const matchesTags = selectedTags.length
+        ? selectedTags.some(tag => c.tags.includes(tag))
+        : true;
+      return matchesSearch && matchesFeature && matchesTags;
+    })
+    .sort((a, b) => {
+      const ta = new Date(a.timestamp).getTime();
+      const tb = new Date(b.timestamp).getTime();
+      return sortOrder === "asc" ? ta - tb : tb - ta;
     });
 
-    refreshContributions();
-
-    return () => {
-      registerAddContribution(() => {});
-    };
-  }, []);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      refreshContributions();
-    }, 5000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
   const handleViewSnapshot = (snapshot: number[]) => {
-    console.log("Viewing snapshot:", snapshot);
-    const ydocSnapshot = new Uint8Array(snapshot);
-    setSelectedSnapshot(ydocSnapshot);
+    setSelectedSnapshot(new Uint8Array(snapshot));
     setIsDrawerOpen(true);
   };
 
   const handleRestoreSnapshot = (snapshot: Uint8Array) => {
-
     Y.applyUpdate(yDoc, snapshot);
-    setIsDrawerOpen(false)
+    setIsDrawerOpen(false);
+  };
+
+  const addTagToContribution = (id: string, tag: string) => {
+    setContributions(prev => {
+      return prev.map(c => {
+        if (c.id === id) {
+          const newTags = Array.from(new Set([...(c.tags || []), tag]));
+          const updated = { ...c, tags: newTags };
+          contribSocket.send(
+            JSON.stringify({ type: "contribution:tag", detail: updated })
+          );
+          return updated;
+        }
+        return c;
+      });
+    });
+  };
+
+
+
+  const handleTagChange = (e: SelectChangeEvent<string[]>) => {
+    setSelectedTags(e.target.value as string[]);
   };
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", overflowY: "auto" }}>
-      <Typography variant="h5" gutterBottom>
-        AI Contributions
-      </Typography>
-
-      <div style={{ flexGrow: 1, overflowY: "auto" }}>
-        {contributions.length === 0 ? (
-          <Typography variant="body1">No contributions available.</Typography>
+    <div style={{ height: "100%", padding: 10, display: "flex", flexDirection: "column" }}>
+      <TextField
+        label="Search by User or Text"
+        size="small"
+        fullWidth
+        value={searchTerm}
+        onChange={handleSearchChange}
+      />
+      <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+        <FormControl size="small" style={{ minWidth: 150 }}>
+          <InputLabel>AI Feature</InputLabel>
+          <Select
+            value={selectedFeature}
+            onChange={handleFeatureChange}
+            label="AI Feature"
+          >
+            <MenuItem value="">All</MenuItem>
+            {aiFeatures.map(f => (
+              <MenuItem key={f} value={f}> {f} </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button onClick={toggleSortOrder}>
+          {sortOrder === "asc" ? "Sort Desc" : "Sort Asc"}
+        </Button>
+      </div>
+      <FormControl fullWidth style={{ marginTop: 10 }}>
+        <InputLabel>Select Tags</InputLabel>
+        <Select
+          multiple
+          value={selectedTags}
+          onChange={handleTagChange}
+          renderValue={sel => (sel as string[]).join(", ")}
+        >
+          {uniqueTags.map(tag => (
+            <MenuItem key={tag} value={tag}>
+              <Checkbox checked={selectedTags.includes(tag)} />
+              {tag}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <div style={{ flexGrow: 1, overflowY: "auto", marginTop: 10 }}>
+        {filtered.length === 0 ? (
+          <Typography>No contributions found.</Typography>
         ) : (
-          contributions.map((contribution) => (
-            <Card
-              key={contribution.id}
-              style={{
-                marginBottom: "0.5rem",
-                width: "100%",
-                overflow: "hidden",
-                wordWrap: "break-word",
-              }}
-            >
-              <CardContent>
-                <Typography variant="h6">User: {contribution.user || "Anonymous"}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Timestamp: {new Date(contribution.timestamp).toLocaleString()}
-                </Typography>
-                <Typography variant="subtitle2">Prompt:</Typography>
-                <Typography variant="body2">{contribution.prompt}</Typography>
+          <Accordion selectionMode="multiple">
+            {filtered.map(c => (
+              <AccordionItem
+                key={c.id}
+                startContent={<Avatar isBordered color="primary" radius="lg" />}
+                title={c.user || "Anonymous"}
+                subtitle={
+                  <div>
+                    <Typography variant="body2">{c.prompt}</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {new Date(c.timestamp).toLocaleString()}
+                    </Typography>
+                  </div>
+                }
+              >
                 <Typography variant="subtitle2">AI Response:</Typography>
-                <Typography variant="body2">{contribution.aiResponse}</Typography>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => handleViewSnapshot(contribution.ydocSnapshot)}
-                  style={{ marginTop: "1rem", width: "100%" }}
-                >
+                <Typography variant="body2">{c.aiResponse}</Typography>
+                <Button onClick={() => handleViewSnapshot(c.ydocSnapshot)}>
                   View Snapshot
                 </Button>
-              </CardContent>
-            </Card>
-          ))
+                <TextField
+                  placeholder="Add Tag"
+                  size="small"
+                  fullWidth
+                  onKeyDown={e => {
+                    const val = (e.target as HTMLInputElement).value.trim();
+                    if (e.key === "Enter" && val) {
+                      addTagToContribution(c.id, val);
+                      (e.target as HTMLInputElement).value = "";
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </AccordionItem>
+            ))}
+          </Accordion>
         )}
       </div>
-
       <SnapshotDrawer
         isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
         snapshot={selectedSnapshot}
         onRestore={handleRestoreSnapshot}
+        onClose={() => setIsDrawerOpen(false)}
       />
     </div>
   );
-
 };
 
 export default AIContributionList;

@@ -57,7 +57,8 @@ export default class NotificationServer implements Party.Server {
             update: "delete vote",
             makechanges : update.poll.makeChange,
             block_id: update.poll.bolck_id,
-            connectionKeys: Object.keys(this.connections)
+            connectionKeys: Object.keys(this.connections),
+            user: update.poll.user
           }));
         } else if (update.type === "connect" || update.type === "disconnect") {
           if (update.type === "connect") {

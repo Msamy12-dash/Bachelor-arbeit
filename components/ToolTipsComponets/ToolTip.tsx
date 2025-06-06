@@ -17,6 +17,7 @@ import CustomMenu from "./AIInteractionComponent";
 
 import { PARTYKIT_HOST } from "@/pages/env";
 import { generateOpenAIShortCommand,tieBreakerAI } from "../VoteComponent/AIVotingFunctions";
+import { boolean } from "zod";
 
 function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
   return usePartySocket({
@@ -26,6 +27,7 @@ function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => voi
     onMessage,
   });
 }
+
 interface Range {
   index: number;
   length: number;
@@ -46,6 +48,13 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [newNotification, setNewNotification] = useState(false); // New state to track notification status
 
+  const contribSocket = usePartySocket({
+    host: PARTYKIT_HOST,
+    room: provider.roomname,
+    party: "aicontr",
+    onMessage(evt) {
+    },
+  });
   const onMessage = (event: MessageEvent) => {
     let data;
 
@@ -53,15 +62,16 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
     try {
       data = JSON.parse(event.data);
       console.log(JSON.stringify(data))
-      
-if(data.update=="delete vote"){
-  console.log("Received data:", JSON.stringify(data, null, 2));
-  if (data.isTied){
-    console.log("its a tie")
-    const makeChange =   tieBreakerAI(doc, data.block_Id);
-    unlockRange(doc,data.block_id,makeChange,quill,provider);
-  }
-  unlockRange(doc,data.block_id,data.makechanges,quill,provider)}
+      let saveContribution = data.user == provider.awareness.getLocalState()?.user.name;
+
+      if(data.update=="delete vote"){
+        console.log("Received data:", JSON.stringify(data, null, 2));
+        if (data.isTied){
+          console.log("its a tie")
+          const makeChange =   tieBreakerAI(doc, data.block_id);
+          unlockRange(doc,data.block_id,makeChange,quill,provider,contribSocket,saveContribution);
+        }
+        unlockRange(doc,data.block_id,data.makechanges,quill,provider,contribSocket,saveContribution)}
     } catch (error) {
       console.error("Failed to parse message:", error);
       //console.log("Received message:", event.data);
@@ -74,8 +84,8 @@ if(data.update=="delete vote"){
       setConnectionKeys(data.connectionKeys);
       setNewNotification(true);
     }
-    
-    
+
+
   };
 
   useSocketConnection("0", onMessage);
@@ -101,9 +111,9 @@ if(data.update=="delete vote"){
 
   const [, setIsSnackbarOpen] = useState(false);
 
-const User ={
-  username : "user ",
-  id :1}
+  const User ={
+    username : "user ",
+    id :1}
 
   useEffect(() => {
     setInputText(text);
@@ -143,11 +153,10 @@ const User ={
       makeChage:false,
       Room_id :randomId,
       title:pollTitle || "unnamed poll",
-      id: "Vote on the Text",
       options: pollOptions,
       votes: [0, 0],
       bolck_id : rangeId,
-      user: User
+      user: provider.awareness.getLocalState()?.user.name || "unknown",
     };
 
 
@@ -178,69 +187,69 @@ const User ={
   }
 
   return (
-    <Draggable >
+    <Draggable handle=".drag-handle" cancel=".no-drag" >
       <div
-      style={{
-        position: "absolute",
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        maxWidth: `${position.maxWidth}px`,
-      }}
-    >
-      <Card>
-        <CardHeader className="flex gap-3">
-          <div className="flex flex-col">
-            <p className="text-md">Voting</p>
-            <Avatar name="user" />
-          </div>
+        style={{
+          position: "absolute",
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+          maxWidth: `${position.maxWidth}px`,
+          zIndex: 1000
+        }}
+      >
+        <Card>
+          <CardHeader className="flex gap-3 drag-handle cursor-move">
+            <div className="flex flex-col">
+              <p className="text-md">Voting</p>
+              <Avatar name="user" />
+            </div>
 
-        </CardHeader>
-        <CardBody>
-          <div className="mb-4">
-            {!inputDisabled && (
-              <IconButton
-                size="small"
-                style={{ position: 'absolute', top: '-10px', right: '10px' }}
-                onClick={handleClearText}
-              >
-                {/*<CloseIcon fontSize="small" />*/}
+          </CardHeader>
+          <CardBody>
+            <div className="mb-4 relative">
+              {!inputDisabled && (
+                <IconButton
+                  size="small"
+                  style={{ position: 'absolute', top: '-10px', right: '10px' }}
+                  onClick={() => setInputText('')}
+                >
                 <span className="text-sm text-blue-500 cursor-pointer">
                 clear all
               </span>
-              </IconButton>
-            )}
+                </IconButton>
+              )}
               <textarea
-                className="max-w-full p-2 border border-gray-300 rounded-md"
-                defaultValue={text}
+                className="max-w-full p-2 border border-gray-300 rounded-md no-drag"
+                value={inputText}
                 disabled={inputDisabled}
                 placeholder="Enter your text"
-                style={{ width: '100%', height: '100px', resize: 'vertical', overflow: 'auto' }}
-                value={inputText}
-                onChange={handleInputChange}
+                style={{ width: '100%', height: '100px', resize: 'vertical', overflow: 'auto', wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'pre-wrap', }}
+                onChange={e => setInputText(e.target.value)}
               />
-          </div>
-          <div className="flex flex-wrap gap-4 items-center">
-            <CustomMenu disabled={suggestButtonDisabled} onGenerateText={handleGenerateText} />
-            <Button
-              className={!inputDisabled ? "bg-gray-300" : ""}
-              color="primary"
-              disabled={!inputDisabled}
-              onClick={handleEditClick}
-            >
-              Edit
-            </Button>
+            </div>
+            <div className="flex flex-wrap gap-4 items-center">
+              <CustomMenu disabled={suggestButtonDisabled} onGenerateText={handleGenerateText} />
+              <Button
+                className={!inputDisabled ? "bg-gray-300" : ""}
+                color="primary"
+                disabled={!inputDisabled}
+                onPress={handleEditClick}
+              >
+                Edit
+              </Button>
               <Button
                 className={inputDisabled ? "bg-gray-300" : ""}
                 color="success"
-                disabled={inputDisabled}
-                onClick={handleVoteClick}
+                isDisabled={inputDisabled}
+
+                onPress={handleVoteClick}
               >
                 Vote
               </Button>
-            <Button color="danger" onClick={handleCancelClick}>Cancel</Button>
-          </div>
-        </CardBody>
-      </Card>
+              <Button color="danger" onPress={handleCancelClick}>Cancel</Button>
+            </div>
+          </CardBody>
+        </Card>
       </div>
     </Draggable>
   );

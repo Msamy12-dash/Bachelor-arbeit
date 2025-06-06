@@ -8,6 +8,7 @@
     "vote": "party/voteserver.ts",
     "likeserver":"party/likeserver.ts",
     "notificationserver":"party/NotificationServer.ts",
-    "useridserver":"party/useridserver.ts"
+    "useridserver":"party/useridserver.ts",
+    "aicontr": "party/aicontr.ts"
   }
 }

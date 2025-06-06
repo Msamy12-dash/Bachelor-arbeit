@@ -1,7 +1,9 @@
 import * as Y from "yjs";
 import ReactQuill from "react-quill";
 import { AIContributionDetail } from "@/types";
-
+import YPartyKitProvider from "y-partykit/provider";
+import PartySocket from "partysocket";
+import { PARTYKIT_URL } from "@/pages/env";
 export interface AIContributionMetadata {
   start: Y.RelativePosition;
   length: Y.RelativePosition;
@@ -12,19 +14,19 @@ export interface AIContributionMetadata {
 
 
 export const addAIContributionToMap = (
+  Id: string,
   yDoc: Y.Doc,
   start: number,
   length: number,
   source: string
 ): string => {
-  const contributionId = crypto.randomUUID();
   const yText = yDoc.getText("quill");
 
   const startRelPos = Y.createRelativePositionFromTypeIndex(yText, start);
   const endRelPos = Y.createRelativePositionFromTypeIndex(yText, start + length);
   const metadataMap = yDoc.getMap<AIContributionMetadata>("metadata");
 
-  metadataMap.set(contributionId, {
+  metadataMap.set(Id, {
     start: startRelPos,
     length: endRelPos,
     isAIContribution: true,
@@ -32,8 +34,8 @@ export const addAIContributionToMap = (
     timestamp: new Date().toISOString(),
   });
 
-  console.log(`AI contribution metadata saved: ${contributionId}`);
-  return contributionId;
+  console.log(`AI contribution metadata saved: ${Id}`);
+  return Id;
 };
 
 export const highlightAIContributions = (
@@ -71,33 +73,5 @@ export const highlightAIContributions = (
   });
 };
 
-export const saveAIContributionDetail = async (
-  yDoc: Y.Doc,
-  range: { start: number; length: number },
-  user: string,
-  prompt: string,
-  aiResponse: string,
-  source: string
-) => {
-  const id = crypto.randomUUID();
-  const timestamp = new Date().toISOString();
-
-  const contribution: AIContributionDetail = {
-    id,
-    user,
-    prompt,
-    aiResponse,
-    timestamp,
-    source,
-  };
-
-  await fetch("http://localhost:3000/aicontribution", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(contribution),
-  });
-
-  addAIContributionToMap(yDoc, range.start, range.length, source);
-};
 
 

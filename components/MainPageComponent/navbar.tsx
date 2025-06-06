@@ -50,6 +50,7 @@ export const Navbar = ({
   const userCount = rooms[currentRoom] || 0; // Calculate user count for the current room
 
   return (
+
     <NextUINavbar maxWidth="xl" position="sticky">
       {/* Lobby on the far left */}
       <NavbarContent className="basis-1/5 sm:basis-full flex items-center justify-start">
@@ -92,6 +93,15 @@ export const Navbar = ({
         </NavbarItem>
         <NavbarItem>
           <OnlineUsers />
+        </NavbarItem>
+        <NavbarItem>
+          <NextLink
+            href={`/dashboard/${encodeURIComponent(currentRoom)}`}
+            passHref
+            className={clsx(linkStyles(), /*…*/)}
+          >
+            Dashboard
+          </NextLink>
         </NavbarItem>
       </NavbarContent>
 

@@ -4,14 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="fixed navbar after merge">
-      <change afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/SnapshotDrawer.tsx" afterDir="false" />
+    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="Add SnapshotDrawer component and enhance AIContributionList with snapshot viewing functionality">
+      <change afterPath="$PROJECT_DIR$/components/Timeline/TimelineVis.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionFunctions.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/ContributioClientFunctions.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/useContributionSocket.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/api/aicontr-proxy.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/dashboard/[room].tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/party/aicontr.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/ChatComponent/CommentHandler.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ChatComponent/CommentHandler.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/MainPageComponent/navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainPageComponent/navbar.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionTagging.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionTagging.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/VoteComponent/TextBlocking.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VoteComponent/TextBlocking.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/VoteComponent/VoteCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VoteComponent/VoteCard.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/party/aicontributionserver.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/party/notificationserver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/party/notificationserver.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/party/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/party/src/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/partykit.json" beforeDir="false" afterPath="$PROJECT_DIR$/partykit.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +86,12 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Bachelor_Projekt_INLP\pages\dashboard" />
+    </key>
+  </component>
+  <component name="RunManager" selected="npm.dev">
     <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -81,10 +102,20 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="dev1" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev1" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="npm.dev" />
-        <item itemvalue="npm.dev" />
+        <item itemvalue="npm.dev1" />
         <item itemvalue="npm.dev" />
         <item itemvalue="npm.dev" />
         <item itemvalue="npm.dev" />
@@ -181,12 +212,38 @@
       <workItem from="1738009119848" duration="1107000" />
       <workItem from="1738014507442" duration="1303000" />
       <workItem from="1738016111839" duration="1883000" />
-      <workItem from="1738018222108" duration="9153000" />
+      <workItem from="1738018222108" duration="19784000" />
+      <workItem from="1739095439648" duration="1108000" />
+      <workItem from="1739731476518" duration="591000" />
+      <workItem from="1739809925652" duration="5790000" />
+      <workItem from="1740058839563" duration="2190000" />
+      <workItem from="1744694654458" duration="6910000" />
+      <workItem from="1744722480446" duration="4557000" />
+      <workItem from="1745237652508" duration="11944000" />
+      <workItem from="1745680872041" duration="866000" />
+      <workItem from="1745831864548" duration="11027000" />
+      <workItem from="1745956689856" duration="4389000" />
+      <workItem from="1746468314993" duration="13649000" />
+      <workItem from="1747647926561" duration="1324000" />
+      <workItem from="1748948993960" duration="28955000" />
+      <workItem from="1749117790009" duration="11317000" />
     </task>
+    <task id="LOCAL-00001" summary="Add SnapshotDrawer component and enhance AIContributionList with snapshot viewing functionality">
+      <option name="closed" value="true" />
+      <created>1738070371312</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1738070371312</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -201,5 +258,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Add SnapshotDrawer component and enhance AIContributionList with snapshot viewing functionality" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add SnapshotDrawer component and enhance AIContributionList with snapshot viewing functionality" />
   </component>
 </project>

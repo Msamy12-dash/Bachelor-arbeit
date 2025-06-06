@@ -255,6 +255,31 @@ export default function Editor({
   };
 
 
+  const modules = {
+    cursors: true,
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],         // dropdown: heading
+      ["bold", "italic", "underline", "strike"], // toggled buttons
+      [{ color: [] }, { background: [] }],    // dropdown with defaults from theme
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ indent: "-1" }, { indent: "+1" }],   // outdent/indent
+      [{ align: [] }],
+      ["link", "image", "video"],             // link and media
+      ["clean"],                              // remove formatting
+    ],
+  };
+
+  const formats = [
+    "header",
+    "bold", "italic", "underline", "strike",
+    "color", "background",
+    "list", "bullet", "indent",
+    "align",
+    "link", "image", "video"
+  ];
+
+
+
   return (
     <div>
       <button style={{ margin: "10px", padding: "10px" }} onClick={saveVersion}>
@@ -266,7 +291,9 @@ export default function Editor({
       <ReactQuill
         ref={quillRef}
         className="quill"
-        modules={{ cursors: true }}
+        formats={formats}
+        modules={modules}
+        placeholder="Start writing…"
         theme="snow"
         value={text}
         onChange={onChange}

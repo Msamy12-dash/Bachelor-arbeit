@@ -25,7 +25,7 @@ export const ReactionUpdateSchema = z.object({
     options: string[];
     votes?: number[];
     bolck_id : string|null;
-    user: User;
+    user: string;
   };
 
 export type Rooms = {
@@ -62,7 +62,7 @@ export type User = UserCore & {
 export const SINGLETON_ROOM_ID = "index";
 export const LOCAL_HOST = "http://localhost:1999";
 
-const CORS = {
+export const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, DELETE',
   'Access-Control-Allow-Headers': 'Content-Type', // Add this line

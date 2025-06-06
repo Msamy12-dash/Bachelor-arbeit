@@ -65,7 +65,6 @@ export default function CommentHandler({
   const [showComments, setShowComments] = useState<boolean>(true);
   const [value, setValue] = React.useState("1");
   const [checkedKeys, setCheckedKeys] = useState<number[]>([]);
-
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
@@ -377,7 +376,7 @@ export default function CommentHandler({
             <PromptList promptList={promptList} yProvider={yProvider} />
           </TabPanel>
           <TabPanel value="4" sx={{ padding: 0, paddingLeft: 2, paddingRight: 1, height: "100%", display: "flex", flexDirection: "column" }}>
-            <AIContributionList yDoc={yDoc} />
+            <AIContributionList yDoc={yDoc} roomId={room} />
           </TabPanel>
         </TabContext>
       </Box>
