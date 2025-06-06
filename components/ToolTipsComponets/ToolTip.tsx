@@ -7,10 +7,17 @@ import { IconButton } from "@mui/material";
 import usePartySocket from "partysocket/react";
 
 import {
-  getCurrentId, deleteCurrentRelRange, saveNewTextForCurrentRange,
+  getCurrentId,
+  deleteCurrentRelRange,
+  saveNewTextForCurrentRange,
   unlockRange,
-  clearAllRelRanges, getPollTitle
+  clearAllRelRanges,
+  getPollTitle,
+  getRelRangeFromDoc,
+  getRelRangeTextsFromDoc,
 } from "../VoteComponent/TextBlocking";
+import { addAIContributionToMap } from "../VersionHistoryComponent/AIContributionTagging";
+import type { AIContributionDetail } from "@/types";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 
 import CustomMenu from "./AIInteractionComponent";
@@ -169,6 +176,40 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
     setIsSnackbarOpen(true); // Show Snackbar on vote click
   };
 
+  const handleAIInspired = () => {
+    const rangeId = getCurrentId(doc, provider);
+    if (!rangeId) return;
+
+    const pos = getRelRangeFromDoc(doc, rangeId);
+    const textInfo = getRelRangeTextsFromDoc(doc, rangeId);
+    if (!pos || !textInfo) return;
+
+    const snapshot = Y.encodeStateVector(doc);
+    const contributionId = crypto.randomUUID();
+    const detail: AIContributionDetail = {
+      id: contributionId,
+      user: provider.awareness.getLocalState()?.user.name || "unknown",
+      prompt: "AI Inspired",
+      aiResponse: textInfo.oldText,
+      timestamp: new Date().toISOString(),
+      source: "AI Inspired",
+      tags: [],
+      ydocSnapshot: Array.from(snapshot),
+    };
+
+    contribSocket.send(JSON.stringify({ type: "contribution", detail }));
+    addAIContributionToMap(
+      contributionId,
+      doc,
+      pos.start,
+      pos.end - pos.start,
+      "AI Inspired"
+    );
+
+    unlockRange(doc, rangeId, false, quill, provider, contribSocket, true);
+    onCancel();
+  };
+
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(event.target.value);
   };
@@ -245,6 +286,13 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
                 onPress={handleVoteClick}
               >
                 Vote
+              </Button>
+              <Button
+                color="warning"
+                isDisabled={inputDisabled}
+                onPress={handleAIInspired}
+              >
+                AI Inspired
               </Button>
               <Button color="danger" onPress={handleCancelClick}>Cancel</Button>
             </div>
