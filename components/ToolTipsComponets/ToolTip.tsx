@@ -9,7 +9,7 @@ import usePartySocket from "partysocket/react";
 import {
   getCurrentId, deleteCurrentRelRange, saveNewTextForCurrentRange,
   unlockRange,
-  clearAllRelRanges, getPollTitle
+  clearAllRelRanges, getPollTitle, getRelRangeTextsFromDoc, getRelRangeFromDoc, deleteRelRange
 } from "../VoteComponent/TextBlocking";
 import { sendvote } from "../VoteComponent/VoteClientFunctions";
 
@@ -18,6 +18,8 @@ import CustomMenu from "./AIInteractionComponent";
 import { PARTYKIT_HOST } from "@/pages/env";
 import { generateOpenAIShortCommand,tieBreakerAI } from "../VoteComponent/AIVotingFunctions";
 import { boolean } from "zod";
+import { AIContributionDetail } from "@/types";
+import { addAIContributionToMap } from "@/components/VersionHistoryComponent/AIContributionTagging";
 
 function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
   return usePartySocket({
@@ -105,9 +107,11 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
 
 
   const [inputDisabled, setInputDisabled] = useState(true);
+  const [inputInspiredDisabled, setInputInspiredDisabled] = useState(false);
   const [suggestButtonDisabled, setSuggestButtonDisabled] = useState(true);
   const [, setVotingInProgress] = useState(false);
   const [inputText, setInputText] = useState('');
+  const [currentSource, setCurrentSource] = useState<string>("User Edit");
 
   const [, setIsSnackbarOpen] = useState(false);
 
@@ -127,6 +131,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
     //saveRORange(quill,doc,range);
     setInputDisabled(false);
     setSuggestButtonDisabled(false);
+    setInputInspiredDisabled(true);
   };
 
   const handleCancelClick = () => {
@@ -134,6 +139,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
     //deleteCurrentRelRange( doc, provider,quill);
     setInputDisabled(true);
     setSuggestButtonDisabled(true);
+    setInputInspiredDisabled(false);
     onCancel();
   };
 
@@ -142,8 +148,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
     const modifiedText = inputText;
     const pollOptions = [selectedText, modifiedText];
     const randomId = generateRandomId();
-
-    saveNewTextForCurrentRange(doc, provider, modifiedText);
+    saveNewTextForCurrentRange(doc, provider, modifiedText, currentSource);
 
     const rangeId = getCurrentId(doc,provider);
     const pollTitle = getPollTitle(doc,rangeId);
@@ -167,6 +172,7 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
 
     onCancel();
     setIsSnackbarOpen(true); // Show Snackbar on vote click
+    setInputInspiredDisabled(true);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -176,10 +182,45 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
   const handleGenerateText = async (type: 'clarity' | 'tone' | 'rephrase' | 'complexity-up' | 'complexity-down') => {
     const aiGeneratedText = await generateOpenAIShortCommand(text, type);
     setInputText(aiGeneratedText);
+    setCurrentSource(`Short command: ${type}`);
   };
 
   const handleClearText = () => {
     setInputText('');
+  };
+  const handleInspired = () => {
+    const rangeId = getCurrentId(doc, provider);
+    console.log("rangeId hereeee:" + rangeId);
+    if (!rangeId) return;
+
+    const pos = getRelRangeFromDoc(doc, rangeId);
+    const textInfo = getRelRangeTextsFromDoc(doc, rangeId);
+    if (!pos || !textInfo) return;
+
+    const snapshot = Y.encodeStateAsUpdate(doc);
+    const contributionId = crypto.randomUUID();
+    const detail: AIContributionDetail = {
+      id: contributionId,
+      user: provider.awareness.getLocalState()?.user.name || "unknown",
+      prompt: "AI Inspired",
+      aiResponse: textInfo.oldText,
+      timestamp: new Date().toISOString(),
+      source: "AI Inspired",
+      tags: [],
+      ydocSnapshot: Array.from(snapshot),
+    };
+
+    contribSocket.send(JSON.stringify({ type: "contribution", detail }));
+    addAIContributionToMap(
+      contributionId,
+      doc,
+      pos.start,
+      pos.end - pos.start,
+      "AI Inspired"
+    );
+
+    deleteRelRange(doc, rangeId, quill);
+    onCancel();
   };
 
   if (!show) {
@@ -229,6 +270,13 @@ const Tooltip: React.FC<TooltipProps> = ({ show, text, position, onsaveRelRange,
             </div>
             <div className="flex flex-wrap gap-4 items-center">
               <CustomMenu disabled={suggestButtonDisabled} onGenerateText={handleGenerateText} />
+              <Button
+                color="warning"
+                isDisabled={inputInspiredDisabled}
+                onPress={handleInspired}
+              >
+                AI Inspired
+              </Button>
               <Button
                 className={!inputDisabled ? "bg-gray-300" : ""}
                 color="primary"

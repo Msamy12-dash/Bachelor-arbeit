@@ -21,6 +21,7 @@ export interface RelRange{
   oldText: string;
   newText?: string;
   pollTitle?:string;
+  source?:string;
 }
 
 
@@ -251,7 +252,8 @@ const forceSpacesAroundRelRange = (
 export const saveNewTextForCurrentRange = async (
   doc: Y.Doc,
   provider: YPartyKitProvider,
-  newText: string
+  newText: string,
+  source?: string
 ) => {
   const currentId = getCurrentId(doc, provider);
 
@@ -262,6 +264,7 @@ export const saveNewTextForCurrentRange = async (
 
     if (relRange) {
       relRange.newText = newText;
+      if (source) relRange.source = source;
 
       const pollTitle = await generatePollTitle(relRange.oldText, newText);
       relRange.pollTitle = pollTitle || "Untitled Poll";
@@ -302,21 +305,21 @@ export const unlockRange = async (
           editor.insertText(rangeStart, relRange.newText, { background: false });
           const contributionId = crypto.randomUUID();
 
-            const snapshot = Y.encodeStateVector(doc);
+          const snapshot = Y.encodeStateAsUpdate(doc);
             const detail: AIContributionDetail = {
               id: contributionId,
               user: yProvider.awareness.getLocalState()?.user.name || "unknown",
               prompt: relRange.pollTitle || "No prompt",
               aiResponse: relRange.newText,
               timestamp: new Date().toISOString(),
-              source: "Voting",
+              source:  relRange.source || "Voting",
               tags: [],
               ydocSnapshot: Array.from(snapshot),
             };
 
 
             contribSocket.send(JSON.stringify({ type: "contribution", detail }));
-          addAIContributionToMap(contributionId,doc, rangeStart, rangeEnd - rangeStart, "Voting");
+          addAIContributionToMap(contributionId,doc, rangeStart, rangeEnd - rangeStart,relRange.source || "Voting");
 
         }
 

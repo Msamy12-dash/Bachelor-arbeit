@@ -152,7 +152,7 @@ export default function CardContainer({
                   ? "hover:blue-600 "
                   : "opacity-60 cursor-not-allowed"
               } transition-all duration-300`}
-              onClick={handleAddCard}
+              onPress={handleAddCard}
               disabled={!selectedText}
               style={{
                 minWidth: "60px",

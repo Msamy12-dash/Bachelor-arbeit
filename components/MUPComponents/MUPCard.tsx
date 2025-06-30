@@ -4,12 +4,16 @@ import { useTheme } from "next-themes";
 import YPartyKitProvider from "y-partykit/provider";
 import * as Y from "yjs";
 import { IconButton } from "@mui/material";
-import MinimizeIcon from '@mui/icons-material/Minimize';
-import CloseIcon from '@mui/icons-material/Close';
+import MinimizeIcon from "@mui/icons-material/Minimize";
+import CloseIcon from "@mui/icons-material/Close";
 import Quill from "quill";
 import { requestResponseForMUP } from "@/Prompting/MUPFunction";
 import StarIcon from "@mui/icons-material/Star";
 import colors from "../../highlightColors.js";
+import usePartySocket from "partysocket/react";
+import { PARTYKIT_HOST } from "@/pages/env";
+import { addAIContributionToMap } from "../VersionHistoryComponent/AIContributionTagging";
+import type { AIContributionDetail } from "@/types";
 
 
 
@@ -63,6 +67,11 @@ export default function MUPCard({
   const { theme } = useTheme();
   const yDoc = yProvider?.doc;
   const yPrompts = yDoc?.getArray("prompts");
+  const contribSocket = usePartySocket({
+    host: PARTYKIT_HOST,
+    room: yProvider.roomname,
+    party: "aicontr",
+  });
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
@@ -78,8 +87,8 @@ export default function MUPCard({
       onSubmittingChange(cardData.id, true);
       
       // Request answer from selected AI
-      const response = await requestResponseForMUP(selectedModel, cardData.selectedTextOnMUPCard, cardData.promptText);
-
+      //const response = await requestResponseForMUP(selectedModel, cardData.selectedTextOnMUPCard, cardData.promptText);
+      const response = "AI Response to prompt: " + cardData.promptText +"On: "+ cardData.selectedTextOnMUPCard ;
       onResponseChange(cardData.id, response);
     } catch (error) {
       console.error("Error submitting to AI:", error);
@@ -106,13 +115,39 @@ export default function MUPCard({
   };
 
   const handleCommit = () => {
-    if(editor){
+    if (editor && yDoc) {
+      const start = cardData.range!.index;
+      const length = cardData.range!.length;
+
       // Replace selected text with response from AI
-      editor.editor.deleteText(cardData.range!.index, cardData.range!.length);
-      editor.editor.insertText(cardData.range!.index, cardData.responseText);
+      editor.editor.deleteText(start, length);
+      editor.editor.insertText(start, cardData.responseText);
+
+      const contributionId = crypto.randomUUID();
+      const snapshot = Y.encodeStateAsUpdate(yDoc);
+      const detail: AIContributionDetail = {
+        id: contributionId,
+        user: yProvider.awareness.getLocalState()?.user.name || "unknown",
+        prompt: cardData.promptText,
+        aiResponse: cardData.responseText,
+        timestamp: new Date().toISOString(),
+        source: "AI MUP ",
+        tags: [],
+        ydocSnapshot: Array.from(snapshot),
+      };
+
+      contribSocket.send(JSON.stringify({ type: "contribution", detail }));
+      addAIContributionToMap(
+        contributionId,
+        yDoc,
+        start,
+        cardData.responseText.length,
+        "Ask AI"
+      );
+
       handleDiscard();
     }
-  }
+  };
 
   
   return (
@@ -150,7 +185,7 @@ export default function MUPCard({
         className={`mb-4 inline-flex items-center justify-center px-6 py-3 text-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md ${
           cardData.submitting ? "cursor-not-allowed" : "hover:from-blue-600 hover:to-indigo-600"
         } transition-all duration-300`}
-        onClick={handleSubmitToAI}
+        onPress={handleSubmitToAI}
         disabled={cardData.submitting || cardData.promptText.trim().length === 0}
       >
         {loading ? (
@@ -172,7 +207,7 @@ export default function MUPCard({
       
           <div className="mt-4 flex space-x-2">
             
-            <Button onClick={handleCommit} className="px-7 py-3 text-medium text-white bg-blue-500 shadow-md hover:bg-blue-600 transition-all duration-300">
+            <Button onPress={handleCommit} className="px-7 py-3 text-medium text-white bg-blue-500 shadow-md hover:bg-blue-600 transition-all duration-300">
               Commit
             </Button>
           </div>

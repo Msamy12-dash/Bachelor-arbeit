@@ -7,13 +7,16 @@ import { Accordion, AccordionItem, Avatar } from "@heroui/react";
 import { SelectChangeEvent } from "@mui/material";
 import SnapshotDrawer from "./SnapshotDrawer";
 import { AIContributionDetail } from "@/types";
+import { AIContributionMetadata } from "./AIContributionTagging";
 
 interface Props {
   yDoc: Y.Doc;
   roomId: string;
+  highlightText?: (index: number, length: number, color: string) => void;
+  removeHighlight?: (index: number, length: number) => void;
 }
 
-const AIContributionList: React.FC<Props> = ({ yDoc, roomId }) => {
+const AIContributionList: React.FC<Props> = ({ yDoc, roomId, highlightText, removeHighlight }) => {
   const [contributions, setContributions] = useState<AIContributionDetail[]>([]);
   const [selectedSnapshot, setSelectedSnapshot] = useState<Uint8Array | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -102,7 +105,19 @@ const AIContributionList: React.FC<Props> = ({ yDoc, roomId }) => {
       });
     });
   };
-
+  const handleHighlightContribution = (id: string) => {
+    if (!highlightText || !removeHighlight) return;
+    const metadataMap = yDoc.getMap<AIContributionMetadata>("metadata");
+    const metadata = metadataMap.get(id);
+    if (!metadata) return;
+    const startPos = Y.createAbsolutePositionFromRelativePosition(metadata.start, yDoc);
+    const endPos = Y.createAbsolutePositionFromRelativePosition(metadata.length, yDoc);
+    if (!startPos || !endPos) return;
+    const index = startPos.index;
+    const length = endPos.index - index;
+    highlightText(index, length, "#FFFF99");
+    setTimeout(() => removeHighlight(index, length), 2000);
+  };
 
 
   const handleTagChange = (e: SelectChangeEvent<string[]>) => {
@@ -175,6 +190,9 @@ const AIContributionList: React.FC<Props> = ({ yDoc, roomId }) => {
                 <Typography variant="body2">{c.aiResponse}</Typography>
                 <Button onClick={() => handleViewSnapshot(c.ydocSnapshot)}>
                   View Snapshot
+                </Button>
+                <Button onClick={() => handleHighlightContribution(c.id)}>
+                  Highlight Range
                 </Button>
                 <TextField
                   placeholder="Add Tag"

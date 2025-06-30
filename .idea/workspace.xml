@@ -5,29 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="Add SnapshotDrawer component and enhance AIContributionList with snapshot viewing functionality">
-      <change afterPath="$PROJECT_DIR$/components/Timeline/TimelineVis.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionFunctions.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/ContributioClientFunctions.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/useContributionSocket.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/api/aicontr-proxy.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/dashboard/[room].tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/party/aicontr.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/ChatComponent/CommentHandler.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ChatComponent/CommentHandler.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/EditorComponent/Editorinterface.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MainPageComponent/navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainPageComponent/navbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/MUPComponents/CardContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MUPComponents/CardContainer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/MUPComponents/MUPCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MUPComponents/MUPCard.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionTagging.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionTagging.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/VoteComponent/TextBlocking.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VoteComponent/TextBlocking.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/VoteComponent/VoteCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VoteComponent/VoteCard.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/party/aicontributionserver.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/party/notificationserver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/party/notificationserver.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/party/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/party/src/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/partykit.json" beforeDir="false" afterPath="$PROJECT_DIR$/partykit.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +33,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="29-Revert-Merge" />
+        <entry key="$PROJECT_DIR$" value="main-Codex" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -117,7 +103,7 @@
         <item itemvalue="npm.dev" />
         <item itemvalue="npm.dev1" />
         <item itemvalue="npm.dev" />
-        <item itemvalue="npm.dev" />
+        <item itemvalue="npm.dev1" />
         <item itemvalue="npm.dev" />
       </list>
     </recent_temporary>
@@ -227,6 +213,7 @@
       <workItem from="1747647926561" duration="1324000" />
       <workItem from="1748948993960" duration="28955000" />
       <workItem from="1749117790009" duration="11317000" />
+      <workItem from="1751280963752" duration="7250000" />
     </task>
     <task id="LOCAL-00001" summary="Add SnapshotDrawer component and enhance AIContributionList with snapshot viewing functionality">
       <option name="closed" value="true" />

@@ -282,9 +282,9 @@ export default function Editor({
 
   return (
     <div>
-      <button style={{ margin: "10px", padding: "10px" }} onClick={saveVersion}>
-        Save Version
-      </button>
+      {/*<button style={{ margin: "10px", padding: "10px" }} onClick={saveVersion}>*/}
+      {/*  Save Version*/}
+      {/*</button>*/}
       <h1>
         Editor <code>Room #{currentRoom}</code>
       </h1>

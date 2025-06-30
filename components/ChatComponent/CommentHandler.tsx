@@ -376,7 +376,7 @@ export default function CommentHandler({
             <PromptList promptList={promptList} yProvider={yProvider} />
           </TabPanel>
           <TabPanel value="4" sx={{ padding: 0, paddingLeft: 2, paddingRight: 1, height: "100%", display: "flex", flexDirection: "column" }}>
-            <AIContributionList yDoc={yDoc} roomId={room} />
+            <AIContributionList yDoc={yDoc} roomId={room} highlightText={highlightText} removeHighlight={removeHighlight} />
           </TabPanel>
         </TabContext>
       </Box>
