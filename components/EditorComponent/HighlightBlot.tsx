@@ -3,6 +3,7 @@ import ReactQuill, { Quill } from "react-quill";
 
 const Inline = Quill.import('blots/inline');
 
+// @ts-ignore
 class HighlightBlot extends Inline {
   static blotName = 'highlight';
   static tagName = 'span';

@@ -68,6 +68,14 @@ npx partykit dev
 npm run dev1
 ```
 
+### Build and run with Docker
+
+```bash
+docker build -t collaboration-app .
+docker run -p 3000:3000 next-template
+```
+
+
 ## License
 
 Licensed under the [MIT license](https://github.com/nextui-org/next-pages-template/blob/main/LICENSE).

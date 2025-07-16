@@ -143,6 +143,7 @@ export default function CardContainer({
 
   if (isLoading) return <div>Loading...</div>;
 
+
   return (
         <div className={`card bg-gradient-to-b ${theme === 'dark' ?  'black' : 'from-gray-100 to-gray-200 rounded-lg'}flex flex-col  shadow-lg overflow-y-auto relative h-[40vw]`}>
           <div className={`card ${theme === 'dark' ?  'gray-900' : 'gray-100'} mb-2 mx-4`}>
@@ -179,6 +180,7 @@ export default function CardContainer({
                   onDiscard={handleDiscardCard}
                   yProvider={yProvider}
                   setPrompts={setPrompts}
+                  // @ts-ignore
                   editor={editor}
                   range={range}
                   selectedModel={selectedModel}

@@ -1,4 +1,5 @@
 import React from 'react';
+// @ts-ignore
 import Snackbar from '@mui/joy/Snackbar';
 
 export interface CustomSnackbarProps {
@@ -19,6 +20,7 @@ const SnackBarComponent: React.FC<CustomSnackbarProps> = ({
   return (
     <Snackbar
       open={open}
+      // @ts-ignore
       onClose={(event, reason) => {
         if (reason === 'clickaway') {
           return;

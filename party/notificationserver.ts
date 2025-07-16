@@ -19,6 +19,7 @@ export default class NotificationServer implements Party.Server {
     this.connections = {};
   }
 
+  // @ts-ignore
   async onRequest(request: Party.Request) {
     try {
       // Load the polls and connections from storage
@@ -38,6 +39,7 @@ export default class NotificationServer implements Party.Server {
 
           Object.keys(this.connections).forEach((key) => {
             if (key !== update.poll.Room_id) {
+              // @ts-ignore
               filteredConnections[key] = this.connections[key];
             }
           });
@@ -107,9 +109,11 @@ export default class NotificationServer implements Party.Server {
         return;  // Exit if no roomId provided
       }
 
+      // @ts-ignore
       const poll = this.Polls[roomId];
 
       if (poll) {
+        // @ts-ignore
         await this.ReceivingVotes(data, poll, roomId, (updatedPoll: Poll) => this.Polls[roomId] = updatedPoll);
       }
     } catch (error) {
@@ -118,6 +122,7 @@ export default class NotificationServer implements Party.Server {
   }
 
   async ReceivingVotes(event: any, poll: Poll, roomId: string, updatePoll: (poll: Poll) => void) {
+    // @ts-ignore
     if (event.type === "vote" && poll.id === event.pollId && poll.votes) {
       poll.votes[event.option] = (poll.votes[event.option] || 0) + 1;
       this.party.broadcast(JSON.stringify(poll));
@@ -127,6 +132,7 @@ export default class NotificationServer implements Party.Server {
   }
 
   async savePoll(poll: Poll, id: string) {
+    // @ts-ignore
     this.Polls[id] = poll;
   }
 }

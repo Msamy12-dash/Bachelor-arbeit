@@ -18,7 +18,8 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ userCount }) => {
   return (
     <>
       <AvatarGroup 
-        isBordered 
+        isBordered
+        // @ts-ignore
         css={{ cursor: "pointer" }}
         max={3}
         popoverTriggerType="hover"

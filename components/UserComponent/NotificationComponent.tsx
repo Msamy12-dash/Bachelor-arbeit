@@ -3,7 +3,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDi
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import usePartySocket from "partysocket/react";
 
-import VoteCard from "../voteComponent/VoteCard";
+import VoteCard from "../VoteComponent/VoteCard";
 
 import { PARTYKIT_HOST } from "@/pages/env";
 

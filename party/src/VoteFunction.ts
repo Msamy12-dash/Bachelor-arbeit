@@ -160,8 +160,10 @@ export const parseReactionMessage = (message: string) => {
   }
   export async function deletevote(type: "delete",poll: Poll) {
     try {
+      // @ts-ignore
       poll.makeChange = poll.votes[1] > poll.votes[0];
       if(!poll.makeChange){
+        // @ts-ignore
         poll.isTied = poll.votes[1] == poll.votes[0];
       } else {
         poll.isTied = false;

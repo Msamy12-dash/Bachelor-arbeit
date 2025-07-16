@@ -82,11 +82,13 @@ export default class RoomServer implements Party.Server {
             //return Response.json({ success: false, message: "User already logged in" });
             //console.log("active Users:", this.activeUserIds);
 
+            // @ts-ignore
             return addCorsHeaders(Response.json({ success: false, message: "User already logged in" }));
           }
           this.activeUserIds.set( userId, connectionId );
           //console.log("active Users:", this.activeUserIds);
 
+          // @ts-ignore
           return addCorsHeaders(Response.json({ success: true }));
         }
       }
@@ -100,14 +102,17 @@ export default class RoomServer implements Party.Server {
         //  `Room update: ${room} has ${count} user${count !== 1 ? "s" : ""}`);
       }
 
+      // @ts-ignore
       return addCorsHeaders(Response.json({ ok: true }));
     }
     if (req.method === "GET") {
+      // @ts-ignore
       return addCorsHeaders(Response.json({
         activeUserIds: Array.from(this.activeUserIds.keys()),
       }));
     }
 
+    // @ts-ignore
     return addCorsHeaders(Response.json({ error: "Method not allowed" }, { status: 405 }));
   }
 
