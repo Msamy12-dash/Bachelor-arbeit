@@ -1,13 +1,13 @@
 {
   "name": "next-pages-template-party",
-  "main": "party/EditorServer.ts",
+  "main": "party/editorServer.ts",
   "compatibilityDate": "2024-06-20",
   "parties": {
-    "editorserver": "party/EditorServer.ts",
+    "editorserver": "party/editorServer.ts",
     "roomserver":"party/roomserver.ts",
     "vote": "party/voteserver.ts",
     "likeserver":"party/likeserver.ts",
-    "notificationserver":"party/NotificationServer.ts",
+    "notificationserver":"party/notificationServer.ts",
     "useridserver":"party/useridserver.ts",
     "aicontr": "party/aicontr.ts"
   }

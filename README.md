@@ -14,6 +14,12 @@
 
 ---
 
+### Build and run with Docker
+```bash
+docker build -t next-pages-template .
+docker run --env-file .env -p 3000:3000 -p 1999:1999 next-pages-template
+```
+
 ## Component Tree
 
 ![Component Tree](public\Component-Architecture.png)
@@ -98,7 +104,7 @@ npm start
 npx partykit dev
 ```
 
-### 3. (Coming soon) Build and run with Docker
+
 
 
 ---
