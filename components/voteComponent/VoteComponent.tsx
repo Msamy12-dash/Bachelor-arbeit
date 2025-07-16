@@ -3,7 +3,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDi
 import Snackbar from "@mui/material/Snackbar";
 import usePartySocket from "partysocket/react";
 
-import PollOptions from "../VoteComponent/VoteOptions";
+import PollOptions from "../voteComponent/VoteOptions";
 
 import { Poll } from "@/party/src/types";
 import { PARTYKIT_HOST } from "@/env";

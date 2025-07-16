@@ -1,11 +1,8 @@
-import { Fira_Code as FontMono, Inter as FontSans } from "next/font/google";
+// Using system fonts to avoid external network fetches during build
+export const fontSans = {
+  style: { fontFamily: "sans-serif" },
+};
 
-export const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
-
-export const fontMono = FontMono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
+export const fontMono = {
+  style: { fontFamily: "monospace" },
+};
