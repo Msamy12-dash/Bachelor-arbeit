@@ -3,7 +3,7 @@ import ReactQuill from "react-quill";
 import { AIContributionDetail } from "@/types";
 import YPartyKitProvider from "y-partykit/provider";
 import PartySocket from "partysocket";
-import { PARTYKIT_URL } from "@/pages/env";
+import { PARTYKIT_URL } from "@/env";
 export interface AIContributionMetadata {
   start: Y.RelativePosition;
   length: Y.RelativePosition;

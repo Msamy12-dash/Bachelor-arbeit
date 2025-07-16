@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PollUI from "../VoteComponent/VoteComponent";
-import { PARTYKIT_URL } from "@/pages/env";
+import { PARTYKIT_URL } from "@/env";
 
 type Poll = {
   id: string;

@@ -7,7 +7,7 @@ import { fontSans, fontMono } from "@/config/fonts";
 import "@/styles/globals.css";
 import { useEffect, useState } from "react";
 import usePartySocket from "partysocket/react";
-import { PARTYKIT_HOST } from "./env";
+import { PARTYKIT_HOST } from "../env";
 import { Rooms, SINGLETON_ROOM_ID, User } from "@/party/types";
 import { OnlineUsersProvider } from "@/contexts/OnlineUsersContext";
 

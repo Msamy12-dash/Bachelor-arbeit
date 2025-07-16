@@ -5,7 +5,7 @@ import usePartySocket from "partysocket/react";
 
 import VoteCard from "../VoteComponent/VoteCard";
 
-import { PARTYKIT_HOST } from "@/pages/env";
+import { PARTYKIT_HOST } from "@/env";
 
 function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {
   return usePartySocket({

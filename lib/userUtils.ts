@@ -1,4 +1,4 @@
-import { PARTYKIT_URL } from "@/pages/env";
+import { PARTYKIT_URL } from "@/env";
 import { Role, SINGLETON_ROOM_ID, User } from "@/party/src/types";
 
 export async function getOrCreateUser(username: string, role: Role): Promise<User> {

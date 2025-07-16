@@ -15,7 +15,7 @@ import { sendvote } from "../VoteComponent/VoteClientFunctions";
 
 import CustomMenu from "./AIInteractionComponent";
 
-import { PARTYKIT_HOST } from "@/pages/env";
+import { PARTYKIT_HOST } from "@/env";
 import { generateOpenAIShortCommand,tieBreakerAI } from "../VoteComponent/AIVotingFunctions";
 import { boolean } from "zod";
 import { AIContributionDetail } from "@/types";

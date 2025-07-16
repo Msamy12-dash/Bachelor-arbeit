@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { PartySocket } from "partysocket";
 
-import { PARTYKIT_URL } from "./env";
+import { PARTYKIT_URL } from "../env";
 
 
 import { getOrCreateUser } from "@/lib/userUtils";

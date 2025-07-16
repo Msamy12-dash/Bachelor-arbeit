@@ -12,9 +12,10 @@ import {
   LineChartOutlined,
 } from "@ant-design/icons";
 import usePartySocket from "partysocket/react";
-import { PARTYKIT_HOST } from "@/pages/env";
+import { PARTYKIT_HOST } from "@/env";
 import { AIContributionDetail } from "@/types";
 import TimelineVis from "@/components/Timeline/TimelineVis";
+
 
 const { Title, Text } = Typography;
 

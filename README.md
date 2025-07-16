@@ -1,97 +1,128 @@
 
+
 ## Technologies Used
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [NextUI](https://nextui.org)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [Framer Motion](https://www.framer.com/motion)
-- [next-themes](https://github.com/pacocoursey/next-themes)
-- [PartyKit](https://partykit.io)
-- [Ollama](https://ollama.com/)
+* [Next.js 14](https://nextjs.org/docs/getting-started)
+* [NextUI](https://nextui.org)
+* [Tailwind CSS](https://tailwindcss.com)
+* [Tailwind Variants](https://tailwind-variants.org)
+* [TypeScript](https://www.typescriptlang.org)
+* [Framer Motion](https://www.framer.com/motion)
+* [next-themes](https://github.com/pacocoursey/next-themes)
+* [PartyKit](https://partykit.io)
+* [Ollama](https://ollama.com/)
 
+---
 
 ## Component Tree
 
-![In case it doesn´t show: public\Component-Architecture.png](public\Component-Architecture.png)
+![Component Tree](public\Component-Architecture.png)
+
+---
 
 ## How to Use
 
-pull the branch 
+### 1. Clone and Setup
 
-### Install Ollama once per PC
+```bash
+git clone <repo-url>
+cd <repo-folder>
+```
 
-https://ollama.com/
+### 2. Install Ollama (once per machine)
 
-### Install dependencies
+Download from [https://ollama.com](https://ollama.com)
 
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+---
+
+## Development Setup
+
+### 1. Install dependencies
+
+You can use `npm`, `yarn`, `pnpm`, or `bun`. Example using `npm`:
 
 ```bash
 npm install --legacy-peer-deps
 ```
 
-### install for the Commenticons:
+### 2. Install extra dependencies for comment icons
+
 ```bash
 npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 ```
-### server configuration
 
-
-## server configuration
+### 3. Configure environment
 
 ```bash
 cp .env.example .env
 ```
-### run server and party kit together 
+
+### 4. Run development server (Next.js + PartyKit)
 
 ```bash
 npm run dev
 ```
 
-### To preload AI functionality
-
-```bash
-ollama run llama3
-```
-
-### Run partykit only 
+### 5. Run PartyKit only (optional)
 
 ```bash
 npx partykit dev
 ```
 
-### Run Next js only 
+### 6. Run Next.js only (optional)
 
 ```bash
 npm run dev1
 ```
 
-### Build and run with Docker
+### 7. Preload AI model (optional)
 
 ```bash
-docker build -t collaboration-app .
-docker run -p 3000:3000 next-template
+ollama run llama3
 ```
 
+---
+
+## Production Build & Deployment
+
+### 1. Create a production build
+
+```bash
+npm run build
+```
+
+### 2. Start the built app
+
+```bash
+npm start
+npx partykit dev
+```
+
+### 3. (Coming soon) Build and run with Docker
+
+
+---
 
 ## License
 
 Licensed under the [MIT license](https://github.com/nextui-org/next-pages-template/blob/main/LICENSE).
 
+---
 
-**Everyone who contributed:**
-        Omar Alabed Alsalh
-        Shahrzad Azimi
-        Mohamed Elnemr
-        Matin Goodarzi
-        Daniel Hadirahardjo
-        Paula Hummel
-        Ghofrane Kamoun
-        Wafi Kamoun
-        Pascal Lange 
-        Leon Lehner
-        Felix Plenk
-        Samuel Richter 
+## Contributors
+
+* Omar Alabed Alsalh
+* Shahrzad Azimi
+* Mohamed Elnemr
+* Matin Goodarzi
+* Daniel Hadirahardjo
+* Paula Hummel
+* Ghofrane Kamoun
+* Wafi Kamoun
+* Pascal Lange
+* Leon Lehner
+* Felix Plenk
+* Samuel Richter
+
+
 

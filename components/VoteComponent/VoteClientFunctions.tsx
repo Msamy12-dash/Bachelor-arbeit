@@ -1,6 +1,6 @@
 import PartySocket from "partysocket";
 
-import { PARTYKIT_URL } from "@/pages/env";
+import { PARTYKIT_URL } from "@/env";
 import { Poll } from "@/party/src/types";
 
 export async function sendvote(ID:string,poll: Poll) {

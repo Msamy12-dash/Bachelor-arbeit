@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { DataSet, Timeline } from "vis-timeline/standalone";
+import { Timeline, DataSet } from "vis-timeline/standalone/esm/vis-timeline-graph2d.min.js";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import { AIContributionDetail } from "@/types";
 

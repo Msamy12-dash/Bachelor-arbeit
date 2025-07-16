@@ -1,6 +1,6 @@
 import * as Y from "yjs";
 import PartySocket from "partysocket";
-import { PARTYKIT_URL } from "@/pages/env";
+import { PARTYKIT_URL } from "@/env";
 import type { AIContributionDetail } from "@/types";
 
 export async function sendContribution(

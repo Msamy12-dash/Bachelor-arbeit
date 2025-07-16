@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import * as Y from "yjs";
 import usePartySocket from "partysocket/react";
-import { PARTYKIT_HOST } from "@/pages/env";
+import { PARTYKIT_HOST } from "@/env";
 import { Typography, TextField, MenuItem, Select, InputLabel, FormControl, Button, Checkbox } from "@mui/material";
 import { Accordion, AccordionItem, Avatar } from "@heroui/react";
 import { SelectChangeEvent } from "@mui/material";

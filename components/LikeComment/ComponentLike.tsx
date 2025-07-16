@@ -4,7 +4,7 @@ import { useState } from "react";
 import usePartySocket from "partysocket/react";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
-import { PARTYKIT_HOST } from "@/pages/env";
+import { PARTYKIT_HOST } from "@/env";
 import { IconButton } from "@mui/material";
 
 const reactionTypes = ["thumbsup", "heart"] as const;

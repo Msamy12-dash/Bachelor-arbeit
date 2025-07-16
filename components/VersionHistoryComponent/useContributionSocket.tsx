@@ -1,7 +1,7 @@
 // src/hooks/useContributionSocket.tsx
 import usePartySocket from "partysocket/react";
 import { AIContributionDetail } from "@/types";
-import { PARTYKIT_HOST } from "@/pages/env";
+import { PARTYKIT_HOST } from "@/env";
 
 export default function useContributionSocket(
   roomId: string,

@@ -3,7 +3,7 @@ import MUPCard from "./MUPCard";
 import { Button } from "@nextui-org/react";
 import Quill from "react-quill";
 import colors from "../../highlightColors.js";
-import { PARTYKIT_HOST } from "@/pages/env";
+import { PARTYKIT_HOST } from "@/env";
 import YPartyKitProvider from "y-partykit/provider";
 import * as Y from "yjs";
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';

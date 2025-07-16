@@ -6,7 +6,7 @@ import usePartySocket from "partysocket/react";
 import PollOptions from "../VoteComponent/VoteOptions";
 
 import { Poll } from "@/party/src/types";
-import { PARTYKIT_HOST } from "@/pages/env";
+import { PARTYKIT_HOST } from "@/env";
 
 // Custom hook to create and handle WebSocket connection
 function useSocketConnection(ID: string, onMessage: (event: MessageEvent) => void) {

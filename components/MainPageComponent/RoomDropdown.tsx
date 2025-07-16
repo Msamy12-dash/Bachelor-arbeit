@@ -8,7 +8,7 @@ import {
 } from "@nextui-org/react";
 import usePartySocket from "partysocket/react";
 import { Rooms, SINGLETON_ROOM_ID } from "@/party/types";
-import { PARTYKIT_HOST } from "@/pages/env";
+import { PARTYKIT_HOST } from "@/env";
 
 export default function RoomDropdown({
   currentRoom,

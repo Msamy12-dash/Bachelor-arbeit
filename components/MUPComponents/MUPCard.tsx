@@ -11,7 +11,7 @@ import { requestResponseForMUP } from "@/Prompting/MUPFunction";
 import StarIcon from "@mui/icons-material/Star";
 import colors from "../../highlightColors.js";
 import usePartySocket from "partysocket/react";
-import { PARTYKIT_HOST } from "@/pages/env";
+import { PARTYKIT_HOST } from "@/env";
 import { addAIContributionToMap } from "../VersionHistoryComponent/AIContributionTagging";
 import type { AIContributionDetail } from "@/types";
 

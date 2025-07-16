@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { Reactions } from "./ComponentLike";
 
-import { PARTYKIT_HOST, PARTYKIT_URL } from "@/pages/env";
+import { PARTYKIT_HOST, PARTYKIT_URL } from "@/env";
 
 interface LikeConnectorProps {
   roomID: string;
