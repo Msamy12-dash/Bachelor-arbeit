@@ -4,34 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="Minor fixes for building">
-      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+    <list default="true" id="01429580-710a-4394-8a36-70022a2970d2" name="Changes" comment="Added docker config">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/LikeComment/ComponentLike.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/LikeComment/ComponentLike.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/LikeComment/LikeConnector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/LikeComment/LikeConnector.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MUPComponents/CardContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MUPComponents/CardContainer.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/MUPComponents/MUPCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MUPComponents/MUPCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MainPageComponent/RoomDropdown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MainPageComponent/RoomDropdown.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Timeline/TimelineVis.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Timeline/TimelineVis.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ToolTipsComponets/ToolTip.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/UserComponent/NotificationComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/UserComponent/NotificationComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionTagging.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/AIContributionTagging.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/VersionHistoryComponent/ContributioClientFunctions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/ContributioClientFunctions.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/VersionHistoryComponent/useContributionSocket.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VersionHistoryComponent/useContributionSocket.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/VoteComponent/VoteCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VoteComponent/VoteCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/VoteComponent/VoteClientFunctions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/VoteComponent/VoteClientFunctions.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/voteComponent/VoteComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/voteComponent/VoteComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/userUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/userUtils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/pages/_app.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/dashboard/[room].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/pages/dashboard/[room].tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/env.ts" beforeDir="false" afterPath="$PROJECT_DIR$/env.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/pages/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/pages/login.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/party/src/VoteFunction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/party/src/VoteFunction.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +21,7 @@
         <option value="JavaScript File" />
         <option value="TypeScript File" />
         <option value="TypeScript JSX File" />
+        <option value="Dockerfile" />
       </list>
     </option>
   </component>
@@ -76,6 +53,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
@@ -241,6 +219,7 @@
       <workItem from="1751280963752" duration="8379000" />
       <workItem from="1751452106958" duration="7364000" />
       <workItem from="1752657732635" duration="11560000" />
+      <workItem from="1752908498133" duration="2479000" />
     </task>
     <task id="LOCAL-00001" summary="Add SnapshotDrawer component and enhance AIContributionList with snapshot viewing functionality">
       <option name="closed" value="true" />
@@ -266,7 +245,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752664722981</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added docker config">
+      <option name="closed" value="true" />
+      <created>1752693903223</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1752693903223</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -303,6 +290,7 @@
     <MESSAGE value="Add SnapshotDrawer component and enhance AIContributionList with snapshot viewing functionality" />
     <MESSAGE value="Final Version" />
     <MESSAGE value="Minor fixes for building" />
-    <option name="LAST_COMMIT_MESSAGE" value="Minor fixes for building" />
+    <MESSAGE value="Added docker config" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added docker config" />
   </component>
 </project>

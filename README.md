@@ -1,32 +1,40 @@
+# Collab App
 
+A collaborative web app built with Next.js and PartyKit.
+
+---
 
 ## Technologies Used
 
-* [Next.js 14](https://nextjs.org/docs/getting-started)
-* [NextUI](https://nextui.org)
-* [Tailwind CSS](https://tailwindcss.com)
-* [Tailwind Variants](https://tailwind-variants.org)
-* [TypeScript](https://www.typescriptlang.org)
-* [Framer Motion](https://www.framer.com/motion)
-* [next-themes](https://github.com/pacocoursey/next-themes)
-* [PartyKit](https://partykit.io)
-* [Ollama](https://ollama.com/)
+- [Next.js 14](https://nextjs.org/docs/getting-started)
+- [NextUI](https://nextui.org)
+- [Tailwind CSS](https://tailwindcss.com)
+- [Tailwind Variants](https://tailwind-variants.org)
+- [TypeScript](https://www.typescriptlang.org)
+- [Framer Motion](https://www.framer.com/motion)
+- [next-themes](https://github.com/pacocoursey/next-themes)
+- [PartyKit](https://partykit.io)
+- [Ollama](https://ollama.com)
 
 ---
 
-### Build and run with Docker
+## Run with Docker
+
 ```bash
-docker build -t next-pages-template .
-docker run --env-file .env -p 3000:3000 -p 1999:1999 next-pages-template
+cp .env.example .env
+docker pull msamy12/colab-app:ready
+docker run --env-file .env -p 3000:3000 -p 1999:1999 msamy12/colab-app:ready
 ```
+
+---
 
 ## Component Tree
 
-![Component Tree](public\Component-Architecture.png)
+![Component Tree](public/Component-Architecture.png)
 
 ---
 
-## How to Use
+## How to Use (Development)
 
 ### 1. Clone and Setup
 
@@ -35,17 +43,15 @@ git clone <repo-url>
 cd <repo-folder>
 ```
 
-### 2. Install Ollama (once per machine)
+### 2. Install Ollama
 
-Download from [https://ollama.com](https://ollama.com)
+Download and install from [https://ollama.com](https://ollama.com)
 
 ---
 
 ## Development Setup
 
 ### 1. Install dependencies
-
-You can use `npm`, `yarn`, `pnpm`, or `bun`. Example using `npm`:
 
 ```bash
 npm install --legacy-peer-deps
@@ -104,31 +110,25 @@ npm start
 npx partykit dev
 ```
 
-
-
-
 ---
 
 ## License
 
-Licensed under the [MIT license](https://github.com/nextui-org/next-pages-template/blob/main/LICENSE).
+Licensed under the [MIT license](https://github.com/nextui-org/next-pages-template/blob/main/LICENSE)
 
 ---
 
 ## Contributors
 
-* Omar Alabed Alsalh
-* Shahrzad Azimi
-* Mohamed Elnemr
-* Matin Goodarzi
-* Daniel Hadirahardjo
-* Paula Hummel
-* Ghofrane Kamoun
-* Wafi Kamoun
-* Pascal Lange
-* Leon Lehner
-* Felix Plenk
-* Samuel Richter
-
-
-
+- Omar Alabed Alsalh
+- Shahrzad Azimi
+- Mohamed Elnemr
+- Matin Goodarzi
+- Daniel Hadirahardjo
+- Paula Hummel
+- Ghofrane Kamoun
+- Wafi Kamoun
+- Pascal Lange
+- Leon Lehner
+- Felix Plenk
+- Samuel Richter
