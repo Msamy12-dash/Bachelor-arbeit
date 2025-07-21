@@ -21,9 +21,8 @@ A collaborative web app built with Next.js and PartyKit.
 ## Run with Docker
 
 ```bash
-cp .env.example .env
-docker pull msamy12/colab-app:ready
-docker run --env-file .env -p 3000:3000 -p 1999:1999 msamy12/colab-app:ready
+docker pull msamy12/colab-app:latest
+docker run --rm -p 3000:3000 -p 1999:1999 msamy12/colab-app:latest
 ```
 
 ---
@@ -34,20 +33,6 @@ docker run --env-file .env -p 3000:3000 -p 1999:1999 msamy12/colab-app:ready
 
 ---
 
-## How to Use (Development)
-
-### 1. Clone and Setup
-
-```bash
-git clone <repo-url>
-cd <repo-folder>
-```
-
-### 2. Install Ollama
-
-Download and install from [https://ollama.com](https://ollama.com)
-
----
 
 ## Development Setup
 

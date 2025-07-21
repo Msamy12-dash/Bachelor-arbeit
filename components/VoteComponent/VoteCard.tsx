@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import PollUI from "../voteComponent/VoteComponent";
+import PollUI from "../VoteComponent/VoteComponent";
 import { PARTYKIT_URL } from "@/env";
 
 type Poll = {
