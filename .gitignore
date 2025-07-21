@@ -176,3 +176,6 @@ dist
 .next
 next-env.d.ts
 dist
+
+.idea
+.vscode
